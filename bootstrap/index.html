@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>demo bootstrap</title>
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="./public/asset/boostrap/css/bootstrap.min.css"
+    />
+    <link rel="stylesheet" href="./public/asset/css/style.css" />
+    <!-- Bootstrap Icons (for the icons) -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <header class="header">
+      <div class="container">
+        <div class="row align-items-center">
+          <!-- Logo and Slogan -->
+          <div class="col-3">
+            <div class="logo-container">
+              <img src="./public/asset/img/logo.png" alt="logo" class="logo" />
+              <span class="logo-text">SMART STATION</span>
+            </div>
+          </div>
+
+          <!-- Search Bar -->
+          <div class="col-6 d-flex justify-content-center">
+            <div class="input-group search-bar">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Hôm nay bạn muốn tìm kiếm gì?"
+              />
+              <button class="btn btn-outline-secondary" type="button">
+                <i class="bi bi-search"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Icons -->
+          <div class="col-3 text-end">
+            <a href="#" class="icon-link">
+              <i class="bi bi-person"></i> Tài khoản
+            </a>
+            <a href="#" class="icon-link cart-icon">
+              <i class="bi bi-cart"></i>
+              <span class="cart-badge">0</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Slider Section -->
+    <section class="slider-section">
+      <div class="container">
+        <div id="promoCarousel" class="carousel slide" data-bs-ride="carousel">
+          <!-- Indicators -->
+          <div class="carousel-indicators">
+            <button
+              type="button"
+              data-bs-target="#promoCarousel"
+              data-bs-slide-to="0"
+              class="active"
+              aria-current="true"
+              aria-label="Slide 1"
+            ></button>
+            <button
+              type="button"
+              data-bs-target="#promoCarousel"
+              data-bs-slide-to="1"
+              aria-label="Slide 2"
+            ></button>
+            <button
+              type="button"
+              data-bs-target="#promoCarousel"
+              data-bs-slide-to="2"
+              aria-label="Slide 3"
+            ></button>
+          </div>
+
+          <!-- Slides -->
+          <div class="carousel-inner">
+            <!-- Slide 1 -->
+            <div class="carousel-item active">
+              <div class="carousel-content">
+                <div class="brand">SAMSUNG</div>
+                <div class="d-flex align-items-center">
+                  <span class="new-badge">NEW</span>
+                  <span class="title">Galaxy S24 Ultra</span>
+                </div>
+                <div class="subtitle">
+                  Camera Mắt thần bóng đêm - Bật cận nét idol với Zoom 100x
+                </div>
+                <div class="d-flex align-items-center">
+                  <span class="price">28.999 Triệu đồng</span>
+                  <span class="discount">Giá chỉ từ 0% đến 12 tháng</span>
+                </div>
+                <div class="installment">Ưu đãi đặc quyền XANH TITAN</div>
+                <div class="offer">Chỉ từ 14.03 đến 17.03.2025</div>
+              </div>
+              <!-- Placeholder for the image -->
+              <img
+                src="/public/asset/img/bancho.jpg"
+                alt="Person with phone"
+                class="carousel-image"
+              />
+            </div>
+
+            <!-- Slide 2 (Placeholder) -->
+            <div class="carousel-item">
+              <div class="carousel-content">
+                <div class="brand">SAMSUNG</div>
+                <div class="d-flex align-items-center">
+                  <span class="new-badge">NEW</span>
+                  <span class="title">Galaxy S25 Ultra</span>
+                </div>
+                <div class="subtitle">
+                  Camera Mắt thần bóng đêm - Bật cận nét idol với Zoom 100x
+                </div>
+                <div class="d-flex align-items-center">
+                  <span class="price">28.999 Triệu đồng</span>
+                  <span class="discount">Giá chỉ từ 0% đến 12 tháng</span>
+                </div>
+                <div class="installment">Ưu đãi đặc quyền XANH TITAN</div>
+                <div class="offer">Chỉ từ 14.03 đến 17.03.2025</div>
+              </div>
+              <img
+                src="./public/asset/img/bancho.jpg"
+                alt="Person with phone"
+                class="carousel-image"
+              />
+            </div>
+
+            <!-- Slide 3 (Placeholder) -->
+            <div class="carousel-item">
+              <div class="carousel-content">
+                <div class="brand">SAMSUNG</div>
+                <div class="d-flex align-items-center">
+                  <span class="new-badge">NEW</span>
+                  <span class="title">Galaxy S26 Ultra</span>
+                </div>
+                <div class="subtitle">
+                  Camera Mắt thần bóng đêm - Bật cận nét idol với Zoom 100x
+                </div>
+                <div class="d-flex align-items-center">
+                  <span class="price">28.999 Triệu đồng</span>
+                  <span class="discount">Giá chỉ từ 0% đến 12 tháng</span>
+                </div>
+                <div class="installment">Ưu đãi đặc quyền XANH TITAN</div>
+                <div class="offer">Chỉ từ 14.03 đến 17.03.2025</div>
+              </div>
+              <img
+                src="./public/asset/img/bancho.jpg"
+                alt="Person with phone"
+                class="carousel-image"
+              />
+            </div>
+          </div>
+
+          <!-- Controls -->
+          <button
+            class="carousel-control-prev"
+            type="button"
+            data-bs-target="#promoCarousel"
+            data-bs-slide="prev"
+          >
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button
+            class="carousel-control-next"
+            type="button"
+            data-bs-target="#promoCarousel"
+            data-bs-slide="next"
+          >
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Product Section with Filter -->
+    <section class="product-section py-5">
+      <div class="container">
+        <div class="row">
+          <!-- Filter Sidebar -->
+          <div class="col-lg-3 col-md-4">
+            <div class="filter-section">
+              <h5>LỰA CHỌN HÀNG</h5>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="apple" />
+                <label class="form-check-label" for="apple">Apple</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="samsung" />
+                <label class="form-check-label" for="samsung">Samsung</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="xiaomi" />
+                <label class="form-check-label" for="xiaomi">Xiaomi</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="tecno" />
+                <label class="form-check-label" for="tecno">Tecno</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="oppo" />
+                <label class="form-check-label" for="oppo">Oppo</label>
+              </div>
+              <!-- Add more brands as needed -->
+
+              <h5 class="mt-4">MỨC GIÁ</h5>
+              <div class="price-range">
+                <input
+                  type="range"
+                  class="form-range"
+                  min="400000"
+                  max="48500000"
+                  step="100000"
+                  value="400000"
+                />
+                <div class="d-flex justify-content-between">
+                  <span>400,000 đ</span>
+                  <span>48,500,000 đ</span>
+                </div>
+              </div>
+
+              <h5 class="mt-4">ỨNG DỤNG</h5>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="app1" />
+                <label class="form-check-label" for="app1">Dưới 1 triệu</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="app2" />
+                <label class="form-check-label" for="app2">1 đến 3 triệu</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="app3" />
+                <label class="form-check-label" for="app3">3 đến 5 triệu</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product Grid -->
+          <div class="col-lg-9 col-md-8">
+            <!-- Sorting Options -->
+            <div class="d-flex justify-content-between mb-3">
+              <div>
+                <button class="btn btn-outline-secondary">Sắp xếp theo</button>
+                <button class="btn btn-outline-secondary">Liên quan</button>
+                <button class="btn btn-outline-secondary">Mới nhất</button>
+                <button class="btn btn-outline-secondary">Bán chạy</button>
+              </div>
+              <div>
+                <button class="btn btn-outline-secondary">
+                  Giá tiền <i class="bi bi-chevron-down"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Product Grid -->
+            <div
+              class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 product-grid"
+            >
+              <!-- Sản phẩm sẽ được load bằng AJAX -->
+            </div>
+
+            <!-- Pagination -->
+            <nav aria-label="Page navigation">
+              <ul class="pagination">
+                <li class="page-item active">
+                  <a class="page-link page-btn" href="#" data-page="1">1</a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link page-btn" href="#" data-page="2">2</a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link page-btn" href="#" data-page="3">3</a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </section>
+    <footer>
+      <div class="container">
+        <div class="row">
+          <!-- Column 1: Support -->
+          <div class="col-md-3">
+            <h5>Hỗ trợ - Dịch vụ</h5>
+            <ul>
+              <li><a href="#">Chính sách và hướng dẫn mua hàng trả góp</a></li>
+              <li>
+                <a href="#">Hướng dẫn mua hàng và chính sách vận chuyển</a>
+              </li>
+              <li><a href="#">Tra cứu đơn hàng</a></li>
+              <li><a href="#">Chính sách đổi mới và bảo hành</a></li>
+              <li><a href="#">Dịch vụ bảo hành mở rộng</a></li>
+              <li><a href="#">Chính sách bảo mật</a></li>
+              <li><a href="#">Quy chế hoạt động</a></li>
+            </ul>
+          </div>
+
+          <!-- Column 2: Contact Info -->
+          <div class="col-md-3">
+            <h5>Thông tin liên hệ</h5>
+            <ul>
+              <li>Thương hiệu: Công ty Cổ phần TMDT</li>
+              <li>Chứng nhận ĐKKD số: 0106773191</li>
+              <li>Dịch vụ sửa chữa Hoàng Hà Care</li>
+              <li>Khách hàng doanh nghiệp (B2B)</li>
+              <li>Tuyển dụng</li>
+              <li>Tra cứu bảo hành</li>
+            </ul>
+          </div>
+
+          <!-- Column 3: Payment Methods -->
+          <div class="col-md-3">
+            <h5>Thanh toán miễn phí</h5>
+            <div class="payment-methods">
+              <img src="./public/asset/img/visa.png" alt="Visa" />
+              <img src="public/asset/img/nhattin.png" alt="MasterCard" />
+              <img src="public/asset/img/masstel.gif" alt="MoMo" />
+              <img src="/public/asset/img/itel-logo.png" alt="Samsung Pay" />
+              <img src="/public/asset/img/vnpay.png" alt="VNPay" />
+              <img src="/public/asset/img/zalopay.png" alt="ZaloPay" />
+              <img src="/public/asset/img/applepay.png" alt="Apple Pay" />
+            </div>
+            <h5 class="mt-3">Nhận tin vắn chuyển</h5>
+            <div>
+              <img src="/public/asset/img/vnpost.png" alt="Vietnam Post" />
+            </div>
+          </div>
+
+          <!-- Column 4: Hotline and Social -->
+          <div class="col-md-3">
+            <h5>Tổng đài</h5>
+            <p>1900.2091 (Tư 8h30 - 21h30)</p>
+            <h5 class="mt-3">Kết nối với chúng tôi</h5>
+            <div class="social-icons">
+              <a href="#"><i class="bi bi-facebook"></i></a>
+              <a href="#"><i class="bi bi-tiktok"></i></a>
+              <a href="#"><i class="bi bi-youtube"></i></a>
+              <a href="#"><i class="bi bi-instagram"></i></a>
+              <a href="#"><i class="bi bi-globe"></i></a>
+            </div>
+            <div class="certification mt-3">
+              <img src="/public/asset/img/logo-bct.png" alt="Certified" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer Bottom -->
+        <div class="footer-bottom">
+          <p>
+            © 2020, CÔNG TY CỔ PHẦN XÂY DỰNG VÀ ĐẦU TƯ THƯƠNG MẠI HOÀNG HÀ -
+            MST: 0106773191. (Đăng ký lần đầu: Ngày 15 tháng 01 năm 2014, Đăng
+            ký thay đổi ngày: 24/11/2022)
+          </p>
+          <p>
+            Địa chỉ: Số 89 Đường Tam Trinh, Phường Mai Động, Quận Hoàng Mai,
+            Thành Phố Hà Nội, Việt Nam. Điện thoại: 1900.2091. Chịu trách nhiệm
+            nội dung: Hoàng Minh Tâm.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Bootstrap JS (optional, for interactive components) -->
+    <script src="./public/asset/boostrap/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        function loadProducts(page) {
+          $.ajax({
+            url: "product.json", // Đường dẫn file JSON
+            method: "GET",
+            dataType: "json",
+            success: function (data) {
+              let products = data[page]; // Lấy sản phẩm của trang hiện tại
+              let productHTML = "";
+              if (products) {
+                products.forEach(function (product) {
+                  productHTML += `
+                                <div class="col">
+                                    <div class="product-card">
+                                        <img src="${product.image}" alt="${
+                    product.name
+                  }">
+                                        <div class="product-name">${
+                                          product.name
+                                        }</div>
+                                        <div class="product-specs">${
+                                          product.specs
+                                        }</div>
+                                        <div class="product-price">${
+                                          product.price
+                                        } 
+                                            ${
+                                              product.old_price
+                                                ? `<span class="text-muted text-decoration-line-through">${product.old_price}</span>`
+                                                : ""
+                                            }
+                                        </div>
+                                        <div class="product-discount">${
+                                          product.discount
+                                        }</div>
+                                        <div class="product-points">${
+                                          product.points
+                                        }</div>
+                                        <button class="btn btn-success">MUA NGAY</button>
+                                        <a href="#" class="btn btn-link">Chi tiết</a>
+                                    </div>
+                                </div>`;
+                });
+              }
+              $(".product-grid").html(productHTML); // Đổ dữ liệu vào grid
+              $(".pagination .page-item").removeClass("active");
+              $(`.pagination .page-btn[data-page='${page}']`)
+                .parent()
+                .addClass("active");
+              $(".prev-page").attr("data-page", Math.max(1, page - 1));
+              $(".next-page").attr("data-page", Math.min(3, page + 1));
+            },
+          });
+        }
+
+        // Load trang đầu tiên
+        loadProducts(1);
+
+        // Xử lý click vào số trang
+        $(".pagination").on("click", ".page-btn", function (e) {
+          e.preventDefault();
+          let page = $(this).data("page");
+          loadProducts(page);
+        });
+
+        // Xử lý nút Previous và Next
+        $(".pagination").on("click", ".prev-page, .next-page", function (e) {
+          e.preventDefault();
+          let page = parseInt($(this).data("page"));
+          loadProducts(page);
+        });
+      });
+    </script>
+  </body>
+</html>
