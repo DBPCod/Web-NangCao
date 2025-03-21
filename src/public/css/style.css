@@ -2,64 +2,51 @@
     background-color: #f8f9fa;
     padding: 10px 0;
 }
-
 .logo-container {
     display: flex;
     align-items: center;
 }
-
 .logo {
     height: 40px;
     width: 40px;
 }
-
 .logo img {
     height: 20px;
-    /* Thu nhỏ logo */
     margin-right: 10px;
 }
-
 .logo-text {
     font-size: 20px;
     font-weight: bold;
     color: #28a745;
 }
-
 .search-bar {
     max-width: 500px;
     width: 100%;
 }
-
 .trending-searches {
     font-size: 14px;
     color: #6c757d;
 }
-
 .trending-searches a {
     color: #6c757d;
     text-decoration: none;
     margin-right: 10px;
 }
-
 .trending-searches a:hover {
     color: #28a745;
 }
-
 .icon-link {
     color: #6c757d;
     text-decoration: none;
     margin-left: 15px;
     font-size: 14px;
 }
-
 .icon-link:hover {
     color: #28a745;
 }
-
 .cart-icon {
     position: relative;
 }
-
 .cart-badge {
     position: absolute;
     top: -10px;
@@ -70,113 +57,44 @@
     padding: 2px 6px;
     font-size: 12px;
 }
-
 /* Slider Section */
 .slider-section {
     background-color: #e6f0fa;
-    /* Light blue background */
     padding: 20px 0;
 }
-
 .carousel-item {
-    height: 400px;
-    /* Adjust height as needed */
-    position: relative;
+    height: auto; /* Bỏ chiều cao cố định để tự động theo ảnh */
+    position: relative; /* Giữ position để indicator/control hoạt động */
 }
-
-.carousel-content {
-    position: absolute;
-    top: 50%;
-    left: 10%;
-    transform: translateY(-50%);
-    color: #000;
-}
-
-.carousel-content .brand {
-    font-size: 24px;
-    font-weight: bold;
-    color: #000;
-}
-
-.carousel-content .new-badge {
-    background-color: #ffcc00;
-    color: #000;
-    padding: 2px 8px;
-    font-size: 14px;
-    border-radius: 4px;
-    margin-right: 10px;
-}
-
-.carousel-content .title {
-    font-size: 36px;
-    font-weight: bold;
-    margin: 10px 0;
-}
-
-.carousel-content .subtitle {
-    font-size: 18px;
-    color: #6c757d;
-}
-
-.carousel-content .price {
-    font-size: 24px;
-    font-weight: bold;
-    color: #000;
-    margin: 10px 0;
-}
-
-.carousel-content .discount {
-    font-size: 18px;
-    color: #28a745;
-    margin-left: 10px;
-}
-
-.carousel-content .installment {
-    font-size: 14px;
-    color: #6c757d;
-}
-
-.carousel-content .offer {
-    font-size: 14px;
-    color: #6c757d;
-    margin-top: 10px;
-}
-
 .carousel-image {
-    position: absolute;
-    top: 0;
-    right: 10%;
-    height: 100%;
-    object-fit: contain;
+    width: 100%; /* Giữ nguyên chiều rộng */
+    height: auto; /* Chiều cao tự động theo tỷ lệ ảnh */
+    object-fit: contain; /* Đổi lại contain để hiển thị toàn bộ ảnh */
 }
-
 .carousel-control-prev,
 .carousel-control-next {
-    width: 5%;
+    width: 5%; /* Giữ nguyên chiều rộng nút điều khiển */
 }
-
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
     background-color: rgba(0, 0, 0, 0.5);
     border-radius: 50%;
+    width: 40px; 
+    height: 40px;
 }
-
 .carousel-indicators {
     bottom: 10px;
 }
-
 .carousel-indicators button {
     background-color: #6c757d;
-    border-radius: 10%;
-    width: 10px;
-    height: 50px;
+    width: 12px; 
+    height: 12px;
     margin: 0 5px;
 }
-
 .carousel-indicators .active {
     background-color: #28a745;
 }
-
+/* Product Section */
 .filter-section {
     background-color: #f8f9fa;
     padding: 20px;
@@ -305,7 +223,28 @@ footer ul li a:hover {
     margin: 5px 0;
 }
 @media (max-width: 768px) {
+    
     .filter-section {
         margin-bottom: 20px;
+    }
+}
+/* Media Queries cho màn hình nhỏ */
+@media (max-width: 768px) {
+    .carousel-control-prev,
+    .carousel-control-next {
+        width: 8%; /* Tăng chiều rộng nút điều khiển cho dễ bấm */
+    }
+}
+
+@media (max-width: 576px) {
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+        width: 30px; /* Giảm kích thước icon cho phù hợp */
+        height: 30px;
+    }
+
+    .carousel-indicators button {
+        width: 10px; /* Giảm kích thước indicator */
+        height: 10px;
     }
 }
