@@ -7,9 +7,9 @@
     <!-- Bootstrap CSS -->
     <link
       rel="stylesheet"
-      href="./public/asset/boostrap/css/bootstrap.min.css"
+      href="./public/bootstrap/css/bootstrap.min.css"
     />
-    <link rel="stylesheet" href="./public/asset/css/style.css" />
+    <link rel="stylesheet" href="./public/css/style.css" />
     <!-- Bootstrap Icons (for the icons) -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
@@ -24,7 +24,7 @@
           <!-- Logo and Slogan -->
           <div class="col-3">
             <div class="logo-container">
-              <img src="./public/asset/img/logo.png" alt="logo" class="logo" />
+              <img src="./public/img/logo.png" alt="logo" class="logo" />
               <span class="logo-text">SMART STATION</span>
             </div>
           </div>
@@ -107,7 +107,7 @@
               </div>
               <!-- Placeholder for the image -->
               <img
-                src="/public/asset/img/bancho.jpg"
+                src="./public/img/bancho.jpg"
                 alt="Person with phone"
                 class="carousel-image"
               />
@@ -132,7 +132,7 @@
                 <div class="offer">Chỉ từ 14.03 đến 17.03.2025</div>
               </div>
               <img
-                src="./public/asset/img/bancho.jpg"
+                src="./public/img/bancho.jpg"
                 alt="Person with phone"
                 class="carousel-image"
               />
@@ -157,7 +157,7 @@
                 <div class="offer">Chỉ từ 14.03 đến 17.03.2025</div>
               </div>
               <img
-                src="./public/asset/img/bancho.jpg"
+                src="./public/img/bancho.jpg"
                 alt="Person with phone"
                 class="carousel-image"
               />
@@ -327,17 +327,17 @@
           <div class="col-md-3">
             <h5>Thanh toán miễn phí</h5>
             <div class="payment-methods">
-              <img src="./public/asset/img/visa.png" alt="Visa" />
-              <img src="public/asset/img/nhattin.png" alt="MasterCard" />
-              <img src="public/asset/img/masstel.gif" alt="MoMo" />
-              <img src="/public/asset/img/itel-logo.png" alt="Samsung Pay" />
-              <img src="/public/asset/img/vnpay.png" alt="VNPay" />
-              <img src="/public/asset/img/zalopay.png" alt="ZaloPay" />
-              <img src="/public/asset/img/applepay.png" alt="Apple Pay" />
+              <img src="./public/img/visa.png" alt="Visa" />
+              <img src="./public/img/nhattin.png" alt="MasterCard" />
+              <img src="./public/img/masstel.gif" alt="MoMo" />
+              <img src="./public/img/itel-logo.png" alt="Samsung Pay" />
+              <img src="./public/img/vnpay.png" alt="VNPay" />
+              <img src="./public/img/zalopay.png" alt="ZaloPay" />
+              <img src="./public/img/applepay.png" alt="Apple Pay" />
             </div>
             <h5 class="mt-3">Nhận tin vắn chuyển</h5>
             <div>
-              <img src="/public/asset/img/vnpost.png" alt="Vietnam Post" />
+              <img src="./public/img/vnpost.png" alt="Vietnam Post" />
             </div>
           </div>
 
@@ -354,7 +354,7 @@
               <a href="#"><i class="bi bi-globe"></i></a>
             </div>
             <div class="certification mt-3">
-              <img src="/public/asset/img/logo-bct.png" alt="Certified" />
+              <img src="./public/img/logo-bct.png" alt="Certified" />
             </div>
           </div>
         </div>
@@ -376,13 +376,13 @@
     </footer>
 
     <!-- Bootstrap JS (optional, for interactive components) -->
-    <script src="./public/asset/boostrap/js/bootstrap.bundle.min.js"></script>
+    <script src="./public/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
       $(document).ready(function () {
         function loadProducts(page) {
           $.ajax({
-            url: "product.json", // Đường dẫn file JSON
+            url: "./public/product.json", // Đường dẫn file JSON
             method: "GET",
             dataType: "json",
             success: function (data) {
