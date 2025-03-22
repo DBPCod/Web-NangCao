@@ -72,7 +72,8 @@
 
 /* Slider Section */
 .slider-section {
-    background-color: #e6f0fa;
+    /* background-color: #e6f0fa; */
+    background: linear-gradient(to right, #28a745, rgba(40, 167, 69, 0.1));
     padding: 20px 0;
 }
 
@@ -107,16 +108,18 @@
 }
 
 .carousel-indicators {
-    bottom: 10px;
+    position: absolute;
+    bottom: -20px;
+    display: flex;
+    justify-content: center;
 }
+
 
 .carousel-indicators button {
-    background-color: #6c757d;
-    width: 12px;
-    height: 12px;
-    margin: 0 5px;
+    width: 10px;
+    height: 10px;
+    transition: background-color 0.3s ease;
 }
-
 .carousel-indicators .active {
     background-color: #28a745;
 }
