@@ -229,8 +229,6 @@ footer ul li a:hover {
     }
 }
 
-/* Pop-up Section */
-
 /* Media Queries cho màn hình nhỏ */
 @media (max-width: 768px) {
     .carousel-control-prev,
@@ -251,4 +249,3 @@ footer ul li a:hover {
         height: 10px;
     }
 }
-
