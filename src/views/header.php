@@ -1,4 +1,4 @@
-<!-- Header -->
+<!-- header.php -->
 <header class="header">
     <div class="container">
         <div class="row align-items-center">
@@ -25,10 +25,10 @@
 
             <!-- Icons -->
             <div class="col-3 text-end">
-                <a href="#" class="icon-link">
+                <a href="#" class="icon-link" data-bs-toggle="modal" data-bs-target="#loginPopup">
                     <i class="bi bi-person"></i> Tài khoản
                 </a>
-                <a href="#" class="icon-link cart-icon">
+                <a href="#" class="icon-link cart-icon" data-bs-toggle="modal" data-bs-target="#cartPopup">
                     <i class="bi bi-cart"></i>
                     <span class="cart-badge">0</span>
                 </a>
