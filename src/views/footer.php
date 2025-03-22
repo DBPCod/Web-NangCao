@@ -57,7 +57,7 @@
                 <div class="social-icons">
                     <a href="#"><i class="bi bi-facebook"></i></a>
                     <a href="#"><i class="bi bi-tiktok"></i></a>
-                    <a href="#"><i class="bi bi-youtube"></i></a>
+                    <a href="https://youtu.be/dQw4w9WgXcQ?si=dmiRAtDq74ihMVst"><i class="bi bi-youtube"></i></a>
                     <a href="#"><i class="bi bi-instagram"></i></a>
                     <a href="#"><i class="bi bi-globe"></i></a>
                 </div>

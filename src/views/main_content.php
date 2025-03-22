@@ -1,7 +1,7 @@
 <!-- Slider Section -->
 <section class="slider-section">
     <div class="container">
-        <div id="promoCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div id="promoCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
             <!-- Indicators -->
             <div class="carousel-indicators">
                 <button
@@ -27,73 +27,25 @@
             <div class="carousel-inner">
                 <!-- Slide 1 -->
                 <div class="carousel-item active">
-                    <div class="carousel-content">
-                        <div class="brand">SAMSUNG</div>
-                        <div class="d-flex align-items-center">
-                            <span class="new-badge">NEW</span>
-                            <span class="title">Galaxy S24 Ultra</span>
-                        </div>
-                        <div class="subtitle">
-                            Camera Mắt thần bóng đêm - Bật cận nét idol với Zoom 100x
-                        </div>
-                        <div class="d-flex align-items-center">
-                            <span class="price">28.999 Triệu đồng</span>
-                            <span class="discount">Giá chỉ từ 0% đến 12 tháng</span>
-                        </div>
-                        <div class="installment">Ưu đãi đặc quyền XANH TITAN</div>
-                        <div class="offer">Chỉ từ 14.03 đến 17.03.2025</div>
-                    </div>
                     <!-- Placeholder for the image -->
                     <img
-                        src="./src/public/img/bancho.jpg"
+                        src="./src/public/img/slider1.jpg"
                         alt="Person with phone"
                         class="carousel-image" />
                 </div>
 
                 <!-- Slide 2 (Placeholder) -->
                 <div class="carousel-item">
-                    <div class="carousel-content">
-                        <div class="brand">SAMSUNG</div>
-                        <div class="d-flex align-items-center">
-                            <span class="new-badge">NEW</span>
-                            <span class="title">Galaxy S25 Ultra</span>
-                        </div>
-                        <div class="subtitle">
-                            Camera Mắt thần bóng đêm - Bật cận nét idol với Zoom 100x
-                        </div>
-                        <div class="d-flex align-items-center">
-                            <span class="price">28.999 Triệu đồng</span>
-                            <span class="discount">Giá chỉ từ 0% đến 12 tháng</span>
-                        </div>
-                        <div class="installment">Ưu đãi đặc quyền XANH TITAN</div>
-                        <div class="offer">Chỉ từ 14.03 đến 17.03.2025</div>
-                    </div>
                     <img
-                        src="./src/public/img/bancho.jpg"
+                        src="./src/public/img/slider2.png"
                         alt="Person with phone"
                         class="carousel-image" />
                 </div>
 
                 <!-- Slide 3 (Placeholder) -->
                 <div class="carousel-item">
-                    <div class="carousel-content">
-                        <div class="brand">SAMSUNG</div>
-                        <div class="d-flex align-items-center">
-                            <span class="new-badge">NEW</span>
-                            <span class="title">Galaxy S26 Ultra</span>
-                        </div>
-                        <div class="subtitle">
-                            Camera Mắt thần bóng đêm - Bật cận nét idol với Zoom 100x
-                        </div>
-                        <div class="d-flex align-items-center">
-                            <span class="price">28.999 Triệu đồng</span>
-                            <span class="discount">Giá chỉ từ 0% đến 12 tháng</span>
-                        </div>
-                        <div class="installment">Ưu đãi đặc quyền XANH TITAN</div>
-                        <div class="offer">Chỉ từ 14.03 đến 17.03.2025</div>
-                    </div>
                     <img
-                        src="./src/public/img/bancho.jpg"
+                        src="./src/public/img/slider3.png"
                         alt="Person with phone"
                         class="carousel-image" />
                 </div>
