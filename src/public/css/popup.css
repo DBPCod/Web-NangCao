@@ -1,0 +1,98 @@
+/* src/public/css/popup.css */
+
+/* Tùy chỉnh modal */
+.modal {
+    z-index: 1060;
+}
+
+/* Tùy chỉnh backdrop */
+.modal-backdrop {
+    z-index: 1050;
+    opacity: 0.3 !important; /* Làm backdrop mờ nhẹ hơn */
+}
+
+/* Tùy chỉnh modal-content */
+.custom-modal {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* Tùy chỉnh nút đóng */
+.custom-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 1.2rem;
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+    z-index: 1065;
+}
+
+.custom-close:hover {
+    opacity: 1;
+}
+
+/* Tùy chỉnh modal-body */
+.modal-body {
+    padding: 30px;
+}
+
+/* Tùy chỉnh tiêu đề */
+.modal-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Tùy chỉnh input */
+.custom-input {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 0.95rem;
+    transition: border-color 0.3s ease;
+}
+
+.custom-input:focus {
+    border-color: #007bff;
+    box-shadow: none;
+}
+
+/* Tùy chỉnh nút */
+.custom-btn {
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 1rem;
+    font-weight: 500;
+    background-color: #00AA00;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+.custom-btn:hover {
+    background-color: #138a13;
+}
+
+/* Định dạng cart-item trong giỏ hàng */
+.cart-item {
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 10px;
+}
+
+.cart-item:last-child {
+    border-bottom: none;
+}
+
+.cart-item .btn-danger {
+    font-size: 0.8rem;
+    padding: 2px 8px;
+}
+
+/* Định dạng khi giỏ hàng trống */
+.cart-empty {
+    padding: 20px 0;
+}
