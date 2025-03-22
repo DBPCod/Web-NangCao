@@ -21,11 +21,8 @@
             </div>
 
             <!-- Icons -->
-            <div class="col-3 text-end">
-                <a href="#" class="icon-link" data-bs-toggle="modal" data-bs-target="#loginPopup">
-                    <i class="bi bi-person"></i> Tài khoản
             <div class="col-12 col-md-3 text-end text-md-end mt-2 mt-md-0">
-                <a href="#" class="icon-link account-icon">
+                <a href="#" class="icon-link account-icon" data-bs-toggle="modal" data-bs-target="#loginPopup">
                     <i class="bi bi-person"></i> Đăng nhập
                 </a>
                 <a href="#" class="icon-link cart-icon" data-bs-toggle="modal" data-bs-target="#cartPopup">

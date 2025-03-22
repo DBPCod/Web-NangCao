@@ -19,7 +19,10 @@
         include("header.php");
         include("main_content.php");
         include("footer.php");
-        include("popups.php");
+        include 'login_popup.php';
+        include 'cart_popup.php';
+        include 'register_popup.php';
+        // include 'product_detail_popup.php';
     ?>
     <script src="./src/public/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
