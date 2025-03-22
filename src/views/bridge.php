@@ -16,12 +16,12 @@
 
 <body>
     <?php 
-        include("header.php");
-        include("main_content.php");
-        include("footer.php");
-        include 'login_popup.php';
-        include 'cart_popup.php';
-        include 'register_popup.php';
+        include 'header.php';
+        include 'product.php';
+        include 'footer.php';
+        include 'login.php';
+        include 'cart.php';
+        include 'register.php';
         // include 'product_detail_popup.php';
     ?>
     <script src="./src/public/bootstrap/js/bootstrap.bundle.min.js"></script>

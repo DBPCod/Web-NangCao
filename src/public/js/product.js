@@ -11,26 +11,18 @@ $(document).ready(function () {
                     products.forEach(function (product) {
                         productHTML += `
                             <div class="col">
-                                <div class="product-card">
-                                    <img src="${product.image}" alt="${product.name
-                            }">
-                                    <div class="product-name">${product.name
-                            }</div>
-                                    <div class="product-specs">${product.specs
-                            }</div>
-                                    <div class="product-price">${product.price
-                            } 
+                                <div class="product-card" data-bs-toggle="modal" data-bs-target="#productModal" data-product='${JSON.stringify(product)}'>
+                                    <img src="${product.image}" alt="${product.name}">
+                                    <div class="product-name">${product.name}</div>
+                                    <div class="product-specs">${product.specs}</div>
+                                    <div class="product-price">${product.price} 
                                         ${product.old_price
-                                ? `<span class="text-muted text-decoration-line-through">${product.old_price}</span>`
-                                : ""
-                            }
+                                            ? `<span class="text-muted text-decoration-line-through">${product.old_price}</span>`
+                                            : ""
+                                        }
                                     </div>
-                                    <div class="product-discount">${product.discount
-                            }</div>
-                                    <div class="product-points">${product.points
-                            }</div>
-                                    <button class="btn btn-success">MUA NGAY</button>
-                                    <a href="#" class="btn btn-link">Chi tiết</a>
+                                    <div class="product-discount">${product.discount}</div>
+                                    <div class="product-points">${product.points}</div>
                                 </div>
                             </div>`;
                     });
@@ -62,5 +54,52 @@ $(document).ready(function () {
         let page = parseInt($(this).data("page"));
         loadProducts(page);
     });
-});
 
+    // Xử lý khi click vào product card để hiển thị modal
+    $(".product-grid").on("click", ".product-card", function () {
+        let product = $(this).data("product"); // Lấy dữ liệu sản phẩm từ data-product
+        // Điền thông tin vào modal
+        $("#modalProductImage").attr("src", product.image).attr("alt", product.name);
+        $("#modalProductName").text(product.name);
+        $("#modalProductSpecs").text(product.specs);
+        $("#modalProductPrice").html(`${product.price} ${product.old_price ? `<span class="text-muted text-decoration-line-through">${product.old_price}</span>` : ""}`);
+        $("#modalProductDiscount").text(product.discount);
+        $("#modalProductPoints").text(product.points);
+        // Điền thông số kỹ thuật
+        $("#modalProductRam").text(product.ram || "N/A");
+        $("#modalProductRom").text(product.rom || "N/A");
+        $("#modalProductManHinh").text(product.manHinh || "N/A");
+        $("#modalProductPin").text(product.pin || "N/A");
+        $("#modalProductMauSac").text(product.mauSac || "N/A");
+        $("#modalProductCamera").text(product.camera || "N/A");
+        $("#modalProductTrangThai").text(product.trangThai ? "Còn hàng" : "Hết hàng");
+
+        // Điền ảnh vào thumbnail gallery
+        let thumbnailHTML = "";
+        if (product.images && Array.isArray(product.images)) {
+            product.images.forEach(function (imgSrc, index) {
+                thumbnailHTML += `
+                    <img src="${imgSrc}" alt="${product.name} thumbnail ${index + 1}" class="thumbnail-image" data-index="${index}">
+                `;
+            });
+        } else {
+            // Nếu không có mảng images, chỉ hiển thị ảnh chính
+            thumbnailHTML = `
+                <img src="${product.image}" alt="${product.name} thumbnail" class="thumbnail-image" data-index="0">
+            `;
+        }
+        $(".thumbnail-gallery").html(thumbnailHTML);
+
+        // Thêm active class cho thumbnail đầu tiên
+        $(".thumbnail-image").first().addClass("active");
+    });
+
+    // Xử lý khi click vào thumbnail để thay đổi ảnh chính
+    $("#productModal").on("click", ".thumbnail-image", function () {
+        let imgSrc = $(this).attr("src");
+        $("#modalProductImage").attr("src", imgSrc); // Thay đổi ảnh chính
+        // Xóa class active từ tất cả thumbnail và thêm vào thumbnail được click
+        $(".thumbnail-image").removeClass("active");
+        $(this).addClass("active");
+    });
+});
