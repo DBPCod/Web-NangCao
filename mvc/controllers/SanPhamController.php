@@ -23,11 +23,13 @@ class SanPhamController {
                 echo json_encode($data);
                 break;
 
-            // case 'POST':
-            //     $result = $this->model->addProduct($input['name'], $input['price']);
-            //     echo json_encode(["message" => $result ? "Thêm thành công" : "Thêm thất bại"]);
-            //     break;
-
+            case 'POST':
+                $newProduct = $this->model->addProduct($input);
+                echo json_encode([
+                    "message: " => "Them san pham thanh cong",
+                    "product" => $newProduct
+                ]);
+                break;
             // case 'PUT':
             //     parse_str(file_get_contents("php://input"), $_PUT);
             //     $result = $this->model->updateProduct($_GET['id'], $_PUT['name'], $_PUT['price']);
