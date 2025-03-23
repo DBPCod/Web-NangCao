@@ -2,7 +2,7 @@
 <header class="header">
     <div class="container">
         <div class="row align-items-center flex-column flex-md-row">
-            <!-- Logo and Slogan -->
+            <!-- Logo và Slogan -->
             <div class="col-12 col-md-3 text-center text-md-start">
                 <div class="logo-container">
                     <img src="./src/public/img/logo.png" alt="logo" class="logo" />
@@ -21,13 +21,17 @@
             </div>
 
             <!-- Icons -->
-            <div class="col-3 text-end">
-                <a href="#" class="icon-link" data-bs-toggle="modal" data-bs-target="#loginPopup">
-                    <i class="bi bi-person"></i> Tài khoản
-            <div class="col-12 col-md-3 text-end text-md-end mt-2 mt-md-0">
-                <a href="#" class="icon-link account-icon">
-                    <i class="bi bi-person"></i> Đăng nhập
-                </a>
+            <div class="col-12 col-md-3 d-flex justify-content-end align-items-center mt-2 mt-md-0">
+                <div class="account-container">
+                    <a href="#" id="accountLink" class="icon-link account-icon" data-bs-toggle="modal" data-bs-target="#loginPopup">
+                        <i class="bi bi-person"></i> <span id="accountText">Đăng nhập</span>
+                    </a>
+                    <div id="accountDropdown" class="dropdown-menu" style="display: none;">
+                        <a href="#" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#updateProfile">Cập nhật thông tin</a>
+                        <a href="#" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#orderHistory">Lịch sử mua hàng</a>
+                        <a href="#" class="dropdown-item" id="logoutLink">Đăng xuất</a>
+                    </div>
+                </div>
                 <a href="#" class="icon-link cart-icon" data-bs-toggle="modal" data-bs-target="#cartPopup">
                     <i class="bi bi-cart"></i>
                     <span class="cart-badge">0</span>
