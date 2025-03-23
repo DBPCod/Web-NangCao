@@ -100,9 +100,10 @@ CREATE TABLE DongSanPham (
 
 -- Tạo bảng SanPham (Sản phẩm)
 CREATE TABLE SanPham (
-    IdCHSP INT PRIMARY KEY,
+    IdCHSP INT,
     IdDongSanPham VARCHAR(20),
     SoLuong INT NOT NULL,
+    primary key (IdCHSP, IdDongSanPham),
     FOREIGN KEY (IdCHSP) REFERENCES CauHinhSanPham(IdCHSP),
     FOREIGN KEY (IdDongSanPham) REFERENCES DongSanPham(IdDongSanPham)
 );

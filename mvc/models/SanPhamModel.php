@@ -14,17 +14,21 @@ class SanPhamModel {
     }
 
     public function getProductById($id) {
-        $stmt = $this->db->prepare("SELECT * FROM sanpham WHERE id = ?");
+        $stmt = $this->db->prepare("SELECT * FROM sanpham WHERE IdCHSP = ?");
         $stmt->bind_param("i", $id);
         $stmt->execute();
         return $stmt->get_result()->fetch_assoc();
     }
 
-    // public function addProduct($name, $price) {
-    //     $stmt = $this->db->prepare("INSERT INTO sanpham (name, price) VALUES (?, ?)");
-    //     $stmt->bind_param("sd", $name, $price);
-    //     return $stmt->execute();
-    // }
+    public function addProduct($data)
+    {
+        $stmt = $this->db->prepare("insert into sanpham (IdCHSP, IdDongSanPham, SoLuong) values (?,?,?)");
+        $stmt->bind_param("isi", $data['IdCHSP'], $data['IdDongSanPham'], $data['SoLuong']);
+        $stmt->execute();
+
+        $newId = $stmt->insert_id;
+        return $this->getProductById($newId);
+    }
 
     // public function updateProduct($id, $name, $price) {
     //     $stmt = $this->db->prepare("UPDATE products SET name = ?, price = ? WHERE id = ?");
