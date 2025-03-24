@@ -1,4 +1,3 @@
-<!-- header.php -->
 <header class="header">
     <div class="container">
         <div class="row align-items-center flex-column flex-md-row">
@@ -26,11 +25,6 @@
                     <a href="#" id="accountLink" class="icon-link account-icon" data-bs-toggle="modal" data-bs-target="#loginPopup">
                         <i class="bi bi-person"></i> <span id="accountText">Đăng nhập</span>
                     </a>
-                    <div id="accountDropdown" class="dropdown-menu" style="display: none;">
-                        <a href="#" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#updateProfile">Cập nhật thông tin</a>
-                        <a href="#" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#orderHistory">Lịch sử mua hàng</a>
-                        <a href="#" class="dropdown-item" id="logoutLink">Đăng xuất</a>
-                    </div>
                 </div>
                 <a href="#" class="icon-link cart-icon" data-bs-toggle="modal" data-bs-target="#cartPopup">
                     <i class="bi bi-cart"></i>
@@ -40,3 +34,24 @@
         </div>
     </div>
 </header>
+
+<!-- Offcanvas Sidebar -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="accountOffcanvas" aria-labelledby="accountOffcanvasLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="accountOffcanvasLabel">Tài khoản</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+                <a href="#" data-bs-toggle="modal" data-bs-target="#updateProfile">Cập nhật thông tin</a>
+            </li>
+            <li class="list-group-item">
+                <a href="#" data-bs-toggle="modal" data-bs-target="#orderHistory">Lịch sử mua hàng</a>
+            </li>
+            <li class="list-group-item">
+                <a href="#" id="logoutLink">Đăng xuất</a>
+            </li>
+        </ul>
+    </div>
+</div>

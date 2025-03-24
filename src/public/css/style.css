@@ -473,3 +473,17 @@ footer ul li a:hover {
         height: 10px;
     }
 }
+
+/* Tùy chỉnh offcanvas nếu cần */
+.offcanvas-end {
+    width: 300px; /* Độ rộng sidebar */
+}
+
+.offcanvas-body a {
+    text-decoration: none;
+    color: #333;
+}
+
+.offcanvas-body a:hover {
+    color: #007bff;
+}

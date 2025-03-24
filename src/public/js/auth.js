@@ -1,7 +1,16 @@
-// src/public/js/auth.js
 document.addEventListener('DOMContentLoaded', function () {
     // Kiểm tra trạng thái đăng nhập khi tải trang
     checkLoginStatus();
+
+    // Xử lý mở offcanvas
+    const accountLink = document.getElementById('accountLink');
+    accountLink.addEventListener('click', function (e) {
+        if (localStorage.getItem('isLoggedIn') === 'true') {
+            e.preventDefault();
+            const offcanvas = new bootstrap.Offcanvas(document.getElementById('accountOffcanvas'));
+            offcanvas.show();
+        }
+    });
 
     // Xử lý form đăng nhập
     const loginForm = document.querySelector('#loginPopup form');
@@ -30,7 +39,25 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Xử lý form đăng ký
+    // Xử lý đăng xuất
+    const logoutLink = document.getElementById('logoutLink');
+    if (logoutLink) {
+        logoutLink.addEventListener('click', function (e) {
+            e.preventDefault();
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('username');
+            localStorage.removeItem('password');
+            localStorage.removeItem('fullName');
+            localStorage.removeItem('phone');
+            localStorage.removeItem('email');
+            localStorage.removeItem('address');
+            checkLoginStatus();
+            const offcanvas = bootstrap.Offcanvas.getInstance(document.getElementById('accountOffcanvas'));
+            offcanvas.hide();
+        });
+    }
+
+    // Xử lý form đăng ký (nếu có)
     const registerForm = document.querySelector('#registerForm');
     if (registerForm) {
         registerForm.addEventListener('submit', function (e) {
@@ -71,7 +98,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         updateProfileForm.addEventListener('submit', function (e) {
             e.preventDefault();
-
             const currentPassword = document.getElementById('currentPassword').value;
             const storedPassword = localStorage.getItem('password');
             const fullName = document.getElementById('updateFullName').value;
@@ -97,41 +123,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (newPassword && newPassword !== confirmPassword) {
                 document.getElementById('updatePasswordMatchError').style.display = 'block';
-                document.getElementById('updatePasswordMatchSuccess').style.display = 'none';
                 return;
-            } else if (newPassword) {
+            } else {
                 document.getElementById('updatePasswordMatchError').style.display = 'none';
-                document.getElementById('updatePasswordMatchSuccess').style.display = 'block';
-            }
-
-            if (!fullName) {
-                document.getElementById('updateFullNameError').style.display = 'block';
-                return;
-            } else {
-                document.getElementById('updateFullNameError').style.display = 'none';
-            }
-
-            const phoneRegex = /^0\d{9}$/;
-            if (!phoneRegex.test(phone)) {
-                document.getElementById('updatePhoneError').style.display = 'block';
-                return;
-            } else {
-                document.getElementById('updatePhoneError').style.display = 'none';
-            }
-
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) {
-                document.getElementById('updateEmailError').style.display = 'block';
-                return;
-            } else {
-                document.getElementById('updateEmailError').style.display = 'none';
-            }
-
-            if (!address) {
-                document.getElementById('updateAddressError').style.display = 'block';
-                return;
-            } else {
-                document.getElementById('updateAddressError').style.display = 'none';
             }
 
             localStorage.setItem('fullName', fullName);
@@ -189,68 +183,20 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
-
-    // Xử lý đăng xuất
-    const logoutLink = document.getElementById('logoutLink');
-    if (logoutLink) {
-        logoutLink.addEventListener('click', function (e) {
-            e.preventDefault();
-            localStorage.removeItem('isLoggedIn');
-            localStorage.removeItem('username');
-            localStorage.removeItem('password');
-            localStorage.removeItem('fullName');
-            localStorage.removeItem('phone');
-            localStorage.removeItem('email');
-            localStorage.removeItem('address');
-            // Không xóa danh sách đơn hàng để giữ lịch sử mua hàng
-            checkLoginStatus();
-        });
-    }
 });
 
 function checkLoginStatus() {
     const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
     const accountText = document.getElementById('accountText');
     const accountLink = document.getElementById('accountLink');
-    const accountDropdown = document.getElementById('accountDropdown');
-    const accountContainer = document.querySelector('.account-container');
-
-    accountContainer.removeEventListener('mouseenter', handleMouseEnter);
-    accountContainer.removeEventListener('mouseleave', handleMouseLeave);
 
     if (isLoggedIn) {
         accountText.textContent = 'Tài khoản';
         accountLink.removeAttribute('data-bs-toggle');
         accountLink.removeAttribute('data-bs-target');
-
-        accountContainer.addEventListener('mouseenter', handleMouseEnter);
-        accountContainer.addEventListener('mouseleave', handleMouseLeave);
     } else {
         accountText.textContent = 'Đăng nhập';
         accountLink.setAttribute('data-bs-toggle', 'modal');
         accountLink.setAttribute('data-bs-target', '#loginPopup');
-        accountDropdown.style.display = 'none';
     }
-}
-
-function handleMouseEnter() {
-    const accountDropdown = document.getElementById('accountDropdown');
-    accountDropdown.style.display = 'block';
-}
-
-function handleMouseLeave() {
-    const accountDropdown = document.getElementById('accountDropdown');
-    accountDropdown.style.display = 'none';
-}
-
-// Thêm vào đầu file auth.js, ngay sau document.addEventListener('DOMContentLoaded', ...)
-const username = localStorage.getItem('username');
-if (username) {
-    // Giả lập dữ liệu đơn hàng
-    const sampleOrders = [
-        { orderId: 'DH001', date: '2025-03-20', total: 8790000, status: 'Đã giao' },
-        { orderId: 'DH002', date: '2025-03-21', total: 3500000, status: 'Đang xử lý' },
-        { orderId: 'DH003', date: '2025-03-22', total: 1200000, status: 'Đã hủy' }
-    ];
-    localStorage.setItem(`orders_${username}`, JSON.stringify(sampleOrders));
 }
