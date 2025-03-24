@@ -473,3 +473,35 @@ footer ul li a:hover {
         height: 10px;
     }
 }
+
+.dropdown-menu {
+    padding: 0;
+}
+
+/* Tùy chỉnh kích thước offcanvas */
+.offcanvas-end {
+    width: 300px; /* Chiều rộng mặc định trên desktop */
+}
+
+/* Thu nhỏ trên mobile */
+@media (max-width: 767px) {
+    .offcanvas-end {
+        width: 250px; /* Chiều rộng nhỏ hơn trên mobile */
+    }
+}
+
+/* Tùy chỉnh giao diện trong offcanvas-body */
+.offcanvas-body a {
+    text-decoration: none;
+    color: #333;
+}
+
+.offcanvas-body a:hover {
+    color: #007bff;
+}
+
+/* Giảm padding nếu cần để chữ không quá to trên mobile */
+.offcanvas-body .list-group-item {
+    padding: 8px 12px; /* Giảm padding so với mặc định của Bootstrap */
+}
+

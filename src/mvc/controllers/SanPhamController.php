@@ -31,22 +31,28 @@ class SanPhamController {
                     "product" => $newProduct
                 ]);
                 break;
-            // case 'PUT':
-            //     parse_str(file_get_contents("php://input"), $_PUT);
-            //     $result = $this->model->updateProduct($_GET['id'], $_PUT['name'], $_PUT['price']);
-            //     echo json_encode(["message" => $result ? "Cập nhật thành công" : "Cập nhật thất bại"]);
-            //     break;
 
-            case 'DELETE':
-                $result = $this->model->deleteProduct($_GET['idCHSP'],$_GET['idDSP']);
-                echo json_encode(["message" => $result ? "Xóa thành công" : "Xóa thất bại"]);
+            case 'PUT':
+                //đổi sang kiểu đọc json
+                $json = file_get_contents("php://input");
+                $_PUT = json_decode($json, true);
+                if($_GET['idCHSP'] && $_GET['idDSP'])
+                {
+                    $result = $this->model->updateProduct($_PUT['IdCHSP'], $_PUT['IdDongSanPham'], $_PUT['SoLuong'], $_PUT['TrangThai']);
+                    echo json_encode(["message" => $result ? "Cập nhật thành công" : "Cập nhật thất bại"]);
+                }
                 break;
-
+            case 'DELETE':
+                if(isset($_GET['idCHSP']) && $_GET['idDSP'])
+                {
+                    $result = $this->model->deleteProduct($_GET['idCHSP'],$_GET['idDSP']);
+                    echo json_encode(["message" => $result ? "Xóa thành công" : "Xóa thất bại"]);
+                }
+                break;
             default:
                 echo json_encode(["message" => "Yêu cầu không hợp lệ"]);
         }
     }
 }
-
 (new SanPhamController())->handleRequest();
 ?>

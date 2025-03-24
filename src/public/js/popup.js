@@ -213,3 +213,15 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
+
+// Hàm xử lý mouseenter
+function handleMouseEnter() {
+    const accountDropdown = document.getElementById('accountDropdown');
+    accountDropdown.style.display = 'block';
+}
+
+// Hàm xử lý mouseleave
+function handleMouseLeave() {
+    const accountDropdown = document.getElementById('accountDropdown');
+    accountDropdown.style.display = 'none';
+}
