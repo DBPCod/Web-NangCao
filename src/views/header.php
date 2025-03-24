@@ -15,7 +15,7 @@
                 <div class="input-group search-bar">
                     <input type="text" class="form-control" placeholder="Hôm nay bạn muốn tìm kiếm gì?" />
                     <button class="btn btn-outline-secondary" type="button">
-                        <i class="bi bi-search"></i>
+                       <i class="bi bi-search"></i>
                     </button>
                 </div>
             </div>
