@@ -13,21 +13,19 @@ class SanPhamModel {
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
-    public function getProductById($id) {
-        $stmt = $this->db->prepare("SELECT * FROM sanpham WHERE IdCHSP = ?");
-        $stmt->bind_param("i", $id);
+    public function getProductById($idCHSP, $idDSP) {
+        $stmt = $this->db->prepare("SELECT * FROM sanpham WHERE IdCHSP = ? and IdDongSanPham = ?");
+        $stmt->bind_param("is", $idCHSP, $idDSP);
         $stmt->execute();
         return $stmt->get_result()->fetch_assoc();
     }
 
     public function addProduct($data)
     {
-        $stmt = $this->db->prepare("insert into sanpham (IdCHSP, IdDongSanPham, SoLuong) values (?,?,?)");
+        $stmt = $this->db->prepare("INSERT into sanpham (IdCHSP, IdDongSanPham, SoLuong) values (?,?,?)");
         $stmt->bind_param("isi", $data['IdCHSP'], $data['IdDongSanPham'], $data['SoLuong']);
         $stmt->execute();
-
-        $newId = $stmt->insert_id;
-        return $this->getProductById($newId);
+        return $this->getProductById($data['IdCHSP'], $data['IdDongSanPham']);
     }
 
     // public function updateProduct($id, $name, $price) {
@@ -36,10 +34,10 @@ class SanPhamModel {
     //     return $stmt->execute();
     // }
 
-    // public function deleteProduct($id) {
-    //     $stmt = $this->db->prepare("DELETE FROM products WHERE id = ?");
-    //     $stmt->bind_param("i", $id);
-    //     return $stmt->execute();
-    // }
+    public function deleteProduct($idCHSP, $idDSP) {
+        $stmt = $this->db->prepare("DELETE FROM sanpham WHERE IdCHSP = ? and IdDongSanPham= ?");
+        $stmt->bind_param("is", $idCHSP, $idDSP);
+        return $stmt->execute();
+    }
 }
 ?>

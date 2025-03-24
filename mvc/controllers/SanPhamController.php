@@ -15,8 +15,8 @@ class SanPhamController {
 
         switch ($method) {
             case 'GET':
-                if (isset($_GET['id'])) {
-                    $data = $this->model->getProductById($_GET['id']);
+                if (isset($_GET['idCHSP']) && isset($_GET['idDSP'])) {
+                    $data = $this->model->getProductById($_GET['idCHSP'], $_GET['idDSP']);
                 } else {
                     $data = $this->model->getAllProducts();
                 }
@@ -25,6 +25,7 @@ class SanPhamController {
 
             case 'POST':
                 $newProduct = $this->model->addProduct($input);
+                
                 echo json_encode([
                     "message: " => "Them san pham thanh cong",
                     "product" => $newProduct
@@ -36,10 +37,10 @@ class SanPhamController {
             //     echo json_encode(["message" => $result ? "Cập nhật thành công" : "Cập nhật thất bại"]);
             //     break;
 
-            // case 'DELETE':
-            //     $result = $this->model->deleteProduct($_GET['id']);
-            //     echo json_encode(["message" => $result ? "Xóa thành công" : "Xóa thất bại"]);
-            //     break;
+            case 'DELETE':
+                $result = $this->model->deleteProduct($_GET['idCHSP'],$_GET['idDSP']);
+                echo json_encode(["message" => $result ? "Xóa thành công" : "Xóa thất bại"]);
+                break;
 
             default:
                 echo json_encode(["message" => "Yêu cầu không hợp lệ"]);
