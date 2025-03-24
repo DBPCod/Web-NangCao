@@ -22,12 +22,14 @@
         include 'login.php';
         include 'cart.php';
         include 'register.php';
-        // include 'product_detail_popup.php';
+        include 'updateprofile.php';
+        include 'orderhistory.php';
     ?>
     <script src="./src/public/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="./src/public/js/product.js"></script>
     <script src="./src/public/js/popup.js"></script>
+    <script src="./src/public/js/auth.js"></script>
 </body>
 
 </html>
