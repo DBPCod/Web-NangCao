@@ -78,7 +78,19 @@
         <div class="row">
             <!-- Filter Sidebar -->
             <div class="col-lg-3 col-md-4">
-                <div class="filter-section">
+                <!-- Nút bật/tắt filter cho màn hình nhỏ -->
+                <button
+                    class="btn btn-primary d-md-none mb-3"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#filterCollapse"
+                    aria-expanded="false"
+                    aria-controls="filterCollapse">
+                    Lọc sản phẩm <i class="bi bi-funnel"></i>
+                </button>
+
+                <!-- Filter content -->
+                <div class="filter-section collapse d-md-block" id="filterCollapse">
                     <h5>LỰA CHỌN HÀNG</h5>
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" id="apple" />
@@ -100,7 +112,6 @@
                         <input class="form-check-input" type="checkbox" id="oppo" />
                         <label class="form-check-label" for="oppo">Oppo</label>
                     </div>
-                    <!-- Add more brands as needed -->
 
                     <h5 class="mt-4">MỨC GIÁ</h5>
                     <div class="price-range">

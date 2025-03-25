@@ -22,8 +22,8 @@
         include 'login.php';
         include 'cart.php';
         include 'register.php';
-        include 'updateprofile.php';
-        include 'orderhistory.php';
+        include 'updateProfile.php';
+        include 'orderHistory.php';
     ?>
     <script src="./src/public/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
