@@ -12,7 +12,7 @@
 <body>
     <div class="container-fluid">
         <div class="row">
-            <?php include './src/views/admin/includes/sidebar.php'; ?>
+            <?php include './src/mvc/views/admin/includes/sidebar.php'; ?>
             <div class="col-md-9 col-lg-10 content-area">
                 <div id="contentArea"></div>
             </div>
@@ -24,13 +24,13 @@
     <script src="./src/public/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script>
         $(document).ready(function() {
-            $("#contentArea").load("src/views/admin/pages/dashboard.php");
+            $("#contentArea").load("src/mvc/views/admin/pages/dashboard.php");
             $(".nav-link[data-section]").click(function(e) {
                 e.preventDefault();
                 let page = $(this).data("section");
                 if (page) {
                     $.ajax({
-                        url: "src/views/admin/pages/" + page + ".php",
+                        url: "src/mvc/views/admin/pages/" + page + ".php",
                         type: "GET",
                         success: function(data) {
                             $("#contentArea").html(data);

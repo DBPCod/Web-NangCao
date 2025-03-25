@@ -1,3 +1,3 @@
 <?php
-    include("./src/views/user/bridge.php");
+    include("./src/mvc/views/user/home.php");
 ?>
