@@ -8,36 +8,49 @@ class CTQuyenModel {
         $this->db = (new DB())->conn;
     }
 
-    public function getAllCTQuyen() {
+    // Lấy tất cả dữ liệu CTQuyen
+    public function getAllCtQuyen() {
         $result = $this->db->query("SELECT * FROM ctquyen");
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
-    public function getCTQuyenById($idVaiTro, $idQuyen) {
-        $stmt = $this->db->prepare("SELECT * FROM ctquyen WHERE IdVaiTro = ? AND IdQuyen = ?");
-        $stmt->bind_param("ii", $idVaiTro, $idQuyen);
+    // Lấy dữ liệu CTQuyen theo IdQuyen và IdVaiTro
+    public function getCtQuyenByIdQuyen($idQuyen) {
+        $stmt = $this->db->prepare("SELECT * FROM ctquyen WHERE IdQuyen = ?");
+        $stmt->bind_param("i", $idQuyen);
         $stmt->execute();
-        return $stmt->get_result()->fetch_assoc();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
 
-    public function addCTQuyen($data) {
-        $stmt = $this->db->prepare("INSERT INTO ctquyen (IdVaiTro, IdQuyen, TrangThai) VALUES (?, ?, ?)");
-        $stmt->bind_param("iii", $data['IdVaiTro'], $data['IdQuyen'], $data['TrangThai']);
+    // Lấy dữ liệu CTQuyen theo IdQuyen và IdVaiTro
+    public function getCtQuyenByIdVaiTro($idVaiTro) {
+        $stmt = $this->db->prepare("SELECT * FROM ctquyen WHERE IdVaiTro = ?");
+        $stmt->bind_param("i", $idVaiTro);
         $stmt->execute();
-        return $this->getCTQuyenById($data['IdVaiTro'], $data['IdQuyen']);
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
 
-    public function updateCTQuyen($idVaiTro, $idQuyen, $trangThai) {
-        $stmt = $this->db->prepare("UPDATE ctquyen SET TrangThai = ? WHERE IdVaiTro = ? AND IdQuyen = ?");
-        $stmt->bind_param("iii", $trangThai, $idVaiTro, $idQuyen);
-        return $stmt->execute();
+
+    // Thêm mới CTQuyen
+    public function addCtQuyen($data) {
+        $stmt = $this->db->prepare("INSERT INTO ctquyen (IdQuyen, IdVaiTro) VALUES (?, ?)");
+        $stmt->bind_param("ii", $data['IdQuyen'], $data['IdVaiTro']);
+        $stmt->execute();
+        return $this->getCtQuyenByIdQuyen($data['IdQuyen']);
     }
 
-    public function deleteCTQuyen($idVaiTro, $idQuyen) {
-        $stmt = $this->db->prepare("UPDATE ctquyen SET TrangThai = ? WHERE IdVaiTro = ? AND IdQuyen = ?");
-        $TrangThai = 0;  // Đánh dấu đã xóa (ẩn)
-        $stmt->bind_param("iii", $TrangThai, $idVaiTro, $idQuyen);
-        return $stmt->execute();
-    }
+    // // Cập nhật CTQuyen
+    // public function updateCtQuyen($idQuyen, $idVaiTro, $trangThai) {
+    //     $stmt = $this->db->prepare("UPDATE CTQuyen SET TrangThai = ? WHERE IdQuyen = ? AND IdVaiTro = ?");
+    //     $stmt->bind_param("iii", $trangThai, $idQuyen, $idVaiTro);
+    //     return $stmt->execute();
+    // }
+
+    // Xóa CTQuyen (cập nhật trạng thái TrangThai = 0)
+    // public function deleteCtQuyen($idQuyen, $idVaiTro) {
+    //     $stmt = $this->db->prepare("UPDATE CTQuyen SET TrangThai = 0 WHERE IdQuyen = ? AND IdVaiTro = ?");
+    //     $stmt->bind_param("ii", $idQuyen, $idVaiTro);
+    //     return $stmt->execute();
+    // }
 }
 ?>
