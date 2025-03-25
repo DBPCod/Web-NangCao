@@ -1,0 +1,126 @@
+/* Sidebar (giữ nguyên phần lớn) */
+.sidebar {
+    min-height: 100vh;
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 250px;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+/* Logo và tiêu đề */
+.sidebar .text-center {
+    padding-bottom: 2rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.sidebar h4 {
+    margin-top: 0.5rem;
+    color: #218838;
+    font-weight: 600;
+}
+
+/* Nav links */
+.sidebar .nav-link {
+    color: #333;
+    padding: 0.75rem 1rem;
+    border-radius: 5px;
+    margin: 0.25rem 0;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+/* Hover và active state */
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+    background-color: #218838;
+    color: white;
+    transform: translateX(5px);
+}
+
+/* Dropdown menu */
+.sidebar .collapse {
+    background-color: #f1f3f5;
+    padding: 0.5rem 0;
+    border-radius: 5px;
+}
+
+.sidebar .collapse .nav-link {
+    padding: 0.5rem 1rem;
+    font-size: 0.95rem;
+}
+
+/* Icon chevron */
+.sidebar .bi-chevron-down {
+    margin-left: auto;
+    transition: transform 0.3s ease;
+}
+
+/* Xoay icon khi dropdown mở */
+.sidebar .nav-link[aria-expanded="true"] .bi-chevron-down {
+    transform: rotate(180deg);
+}
+
+/* Header (sửa để không bị cách ra) */
+.header {
+    background-color: #218838;
+    color: white;
+    padding: 1.5rem;
+    text-align: center;
+    font-size: 1.5rem;
+    position: fixed; /* Cố định header ở trên cùng */
+    top: 0;
+    left: 250px; /* Đẩy header sang phải để không đè sidebar */
+    right: 0; /* Kéo dài header đến mép phải */
+    z-index: 900; /* Đặt dưới sidebar nhưng trên content */
+    margin: 0; /* Loại bỏ margin thừa */
+}
+
+/* Content area (đẩy xuống dưới header) */
+.content-area {
+    padding: 2rem;
+    margin-left: 250px; /* Đồng bộ với sidebar */
+    margin-top: 70px; /* Khoảng cách để không bị header đè */
+    min-height: calc(100vh - 70px); /* Trừ chiều cao header */
+    background-color: #fff;
+}
+
+/* Responsive design */
+@media (max-width: 991px) {
+    .sidebar {
+        width: 200px;
+    }
+    
+    .header {
+        left: 200px; /* Đồng bộ với sidebar */
+    }
+    
+    .content-area {
+        margin-left: 200px;
+    }
+}
+
+@media (max-width: 767px) {
+    .sidebar {
+        width: 250px;
+        transform: translateX(-100%);
+    }
+    
+    .sidebar.show {
+        transform: translateX(0);
+    }
+    
+    .header {
+        left: 0; /* Header full width trên mobile */
+        position: fixed;
+    }
+    
+    .content-area {
+        margin-left: 0;
+        margin-top: 70px; /* Giữ khoảng cách với header */
+    }
+}

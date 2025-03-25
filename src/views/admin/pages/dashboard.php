@@ -1,8 +1,7 @@
-<?php include 'header.php'; ?>
+<?php include '../header.php'; ?>
 <div class="container-fluid">
     <div class="row">
-        <?php include 'includes/sidebar.php'; ?>
-        <div class="col-md-9 col-lg-10 content-area">
+        <div class="col-md-9 col-lg-10">
             <h2>Trang tổng quan</h2>
             <div class="row">
                 <div class="col-md-4">
