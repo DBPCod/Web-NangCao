@@ -97,3 +97,8 @@
     padding: 20px 0;
 }
 
+.modal-body {
+    max-height: 65vh; /* Giới hạn chiều cao tối đa (60% chiều cao màn hình) */
+    padding: auto;
+    overflow-y: auto; /* Bật thanh cuộn dọc khi nội dung vượt quá */
+}
