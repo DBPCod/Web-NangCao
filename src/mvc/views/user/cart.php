@@ -92,6 +92,26 @@
                     </div>
                 </div>
                 <p class="text-end mt-3">Tổng cộng: <strong>100.000 VNĐ</strong></p>
+                
+                <!-- Phần radio button và trường nhập địa chỉ -->
+                <div class="address-selection mt-4 mb-4">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="addressOption" id="defaultAddress" value="default" checked>
+                        <label class="form-check-label" for="defaultAddress">
+                            Sử dụng địa chỉ mặc định
+                        </label>
+                    </div>
+                    <div class="form-check mt-2">
+                        <input class="form-check-input" type="radio" name="addressOption" id="otherAddress" value="other">
+                        <label class="form-check-label" for="otherAddress">
+                            Chọn địa chỉ khác
+                        </label>
+                    </div>
+                    <div class="mt-2" id="customAddressField" style="display: none;">
+                        <textarea class="form-control" rows="3" placeholder="Nhập địa chỉ mới" id="customAddressInput"></textarea>
+                    </div>
+                </div>
+
                 <a href="#" class="btn btn-success w-100 custom-btn">Thanh toán</a>
             </div>
         </div>
