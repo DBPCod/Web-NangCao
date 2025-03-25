@@ -189,7 +189,10 @@
                         <input class="form-check-input" type="checkbox" id="pin4" />
                         <label class="form-check-label" for="pin4">5000mAh trở lên</label>
                     </div>
-                    
+                    <!-- Nút LỌC -->
+                    <div class="mt-4">
+                        <button class="btn btn-primary w-100" id="applyFilterBtn">LỌC</button>
+                    </div>
                 </div>
             </div>
 

@@ -504,3 +504,10 @@ footer ul li a:hover {
 .offcanvas-body .list-group-item {
     padding: 8px 12px; /* Giảm padding so với mặc định của Bootstrap */
 }
+
+#applyFilterBtn {
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 10px;
+    background-color: #00AA00;
+}
