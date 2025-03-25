@@ -92,13 +92,28 @@
     padding: 2px 8px;
 }
 
-/* Định dạng khi giỏ hàng trống */
-.cart-empty {
-    padding: 20px 0;
+.cart-items {
+    max-height: 300px; /* Giới hạn chiều cao tối đa cho danh sách sản phẩm */
+    overflow-y: auto; /* Bật thanh cuộn dọc */
+    padding: 15px;
+    margin-bottom: 20px; /* Khoảng cách với phần tổng cộng và nút thanh toán */
 }
 
-.modal-body {
-    max-height: 65vh; /* Giới hạn chiều cao tối đa (60% chiều cao màn hình) */
-    padding: auto;
-    overflow-y: auto; /* Bật thanh cuộn dọc khi nội dung vượt quá */
+/* Tùy chỉnh thanh cuộn cho Webkit */
+.cart-items::-webkit-scrollbar {
+    width: 8px; /* Chiều rộng thanh cuộn */
+}
+
+.cart-items::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Màu nền của track */
+    border-radius: 4px; /* Bo góc track */
+}
+
+.cart-items::-webkit-scrollbar-thumb {
+    background: #888; /* Màu của thumb (phần kéo) */
+    border-radius: 4px; /* Bo góc thumb */
+}
+
+.cart-items::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Màu khi hover */
 }
