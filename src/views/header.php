@@ -5,8 +5,8 @@
             <!-- Logo và Slogan -->
             <div class="col-12 col-md-3 text-center text-md-start">
                 <div class="logo-container">
-                    <img src="./src/public/img/logo.png" alt="logo" class="logo" />
-                    <span class="logo-text">SMART STATION</span>
+                        <img src="./src/public/img/logo.png" alt="logo" class="logo" />
+                        <span class="logo-text">SMART STATION</span>
                 </div>
             </div>
             <!-- Search Bar -->
@@ -14,7 +14,7 @@
                 <div class="input-group search-bar">
                     <input type="text" class="form-control" placeholder="Hôm nay bạn muốn tìm kiếm gì?" />
                     <button class="btn btn-outline-secondary" type="button">
-                        <i class="bi bi-search"></i>
+                       <i class="bi bi-search"></i>
                     </button>
                 </div>
             </div>
