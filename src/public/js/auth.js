@@ -28,6 +28,25 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    const defaultAddressRadio = document.getElementById("defaultAddress");
+    const otherAddressRadio = document.getElementById("otherAddress");
+    const customAddressField = document.getElementById("customAddressField");
+
+    // Khi chọn "Chọn địa chỉ khác", hiển thị trường nhập
+    otherAddressRadio.addEventListener("change", function () {
+        if (this.checked) {
+            customAddressField.style.display = "block";
+        }
+    });
+
+    // Khi chọn "Sử dụng địa chỉ mặc định", ẩn trường nhập
+    defaultAddressRadio.addEventListener("change", function () {
+        if (this.checked) {
+            customAddressField.style.display = "none";
+        }
+    });
+    
+
     // Xử lý form đăng nhập
     const loginForm = document.querySelector('#loginPopup form');
     if (loginForm) {

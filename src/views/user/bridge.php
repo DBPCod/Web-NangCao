@@ -21,6 +21,7 @@
         include 'footer.php';
         include 'login.php';
         include 'cart.php';
+        // include 'register.php';
         include 'registerForm.php';
         include 'updateProfile.php';
         include 'orderHistory.php';
