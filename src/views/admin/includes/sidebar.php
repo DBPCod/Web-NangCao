@@ -5,8 +5,6 @@
     </div>
     <nav class="nav flex-column">
         <a class="nav-link" href="#" data-section="dashboard">Trang tổng quan</a>
-
-        <!-- Dropdown Quản lý user -->
         <a class="nav-link" data-bs-toggle="collapse" href="#userMenu" role="button">
             Quản lý user <i class="bi bi-chevron-down"></i>
         </a>
@@ -14,25 +12,20 @@
             <a class="nav-link" href="#" data-section="customers">Quản lý khách hàng</a>
             <a class="nav-link" href="#" data-section="roles">Quản lý quyền quản trị</a>
         </div>
-
-        <!-- Dropdown Quản lý sản phẩm -->
         <a class="nav-link" data-bs-toggle="collapse" href="#productMenu" role="button">
             Quản lý sản phẩm <i class="bi bi-chevron-down"></i>
         </a>
         <div class="collapse ms-3" id="productMenu">
             <a class="nav-link" href="#" data-section="promotions">Quản lý khuyến mãi</a>
             <a class="nav-link" href="#" data-section="warranty">Quản lý bảo hành</a>
+            <a class="nav-link" href="#" data-section="providers">Quản lý nhà cung cấp</a>
         </div>
-
         <a class="nav-link" href="#" data-section="orders">Quản lý đơn hàng</a>
         <a class="nav-link" href="#" data-section="statistics">Thống kê</a>
-        <a class="nav-link" href="logout.php">Đăng xuất</a>
+        <a class="nav-link" href="https://youtu.be/dQw4w9WgXcQ?si=GILjL-20b7J5nDke">Đăng xuất</a>
+        <!-- Bản quyền -->
+        <div class="sidebar-footer mt-auto">
+            <small>&copy; 2025 Smart Station. All rights reserved.</small>
+        </div>
     </nav>
 </div>
-<button class="btn btn-primary d-md-none" id="sidebarToggle">☰</button>
-
-<script>
-    document.getElementById('sidebarToggle').addEventListener('click', function() {
-        document.querySelector('.sidebar').classList.toggle('show');
-    });
-</script>

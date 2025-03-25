@@ -1,5 +1,7 @@
-/* Sidebar (giữ nguyên phần lớn) */
+/* Sidebar */
 .sidebar {
+    display: flex;
+    flex-direction: column;
     min-height: 100vh;
     background-color: #f8f9fa;
     padding: 1.5rem;
@@ -9,6 +11,7 @@
     width: 250px;
     box-shadow: 2px 0 5px rgba(0,0,0,0.1);
     transition: all 0.3s ease;
+    z-index: 1000; /* Đảm bảo sidebar nằm trên header */
 }
 
 /* Logo và tiêu đề */
@@ -32,6 +35,9 @@
     display: flex;
     align-items: center;
     transition: all 0.3s ease;
+}
+.sidebar .nav {
+    flex-grow: 1;
 }
 
 /* Hover và active state */
@@ -65,28 +71,83 @@
     transform: rotate(180deg);
 }
 
-/* Header (sửa để không bị cách ra) */
+/* Sidebar footer */
+.sidebar-footer {
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    width: 100%;
+    padding: 0 1.5rem;
+    color: #666;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+/* Header */
 .header {
     background-color: #218838;
     color: white;
     padding: 1.5rem;
     text-align: center;
     font-size: 1.5rem;
-    position: fixed; /* Cố định header ở trên cùng */
+    position: fixed;
     top: 0;
     left: 250px; /* Đẩy header sang phải để không đè sidebar */
-    right: 0; /* Kéo dài header đến mép phải */
-    z-index: 900; /* Đặt dưới sidebar nhưng trên content */
-    margin: 0; /* Loại bỏ margin thừa */
+    right: 0;
+    z-index: 900; /* Nằm dưới sidebar */
+    margin: 0;
+    transition: left 0.3s ease; /* Hiệu ứng mượt khi thay đổi */
 }
 
-/* Content area (đẩy xuống dưới header) */
+/* Content area */
 .content-area {
     padding: 2rem;
     margin-left: 250px; /* Đồng bộ với sidebar */
     margin-top: 70px; /* Khoảng cách để không bị header đè */
-    min-height: calc(100vh - 70px); /* Trừ chiều cao header */
+    min-height: calc(100vh - 70px);
     background-color: #fff;
+    transition: margin-left 0.3s ease; /* Hiệu ứng mượt */
+}
+
+.content-area h2 {
+    color: #218838;
+    margin-bottom: 20px;
+}
+
+.table {
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.table thead th {
+    background-color: #218838;
+    color: white;
+}
+
+.chart-container {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+}
+
+/* Nút toggle sidebar */
+#sidebarToggle {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 1100; /* Nằm trên cả sidebar và header */
+    background-color: #218838;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    font-size: 1.2rem;
+    display: none; /* Ẩn mặc định trên màn hình lớn */
+    transition: all 0.3s ease;
+}
+
+#sidebarToggle:hover {
+    background-color: #1a6d2e; /* Màu tối hơn khi hover */
 }
 
 /* Responsive design */
@@ -107,20 +168,24 @@
 @media (max-width: 767px) {
     .sidebar {
         width: 250px;
-        transform: translateX(-100%);
+        transform: translateX(-100%); /* Ẩn sidebar mặc định */
     }
     
     .sidebar.show {
-        transform: translateX(0);
+        transform: translateX(0); /* Hiện sidebar khi có class .show */
     }
     
     .header {
         left: 0; /* Header full width trên mobile */
-        position: fixed;
+        font-size: 1rem;
+        text-align: end;
     }
     
     .content-area {
-        margin-left: 0;
-        margin-top: 70px; /* Giữ khoảng cách với header */
+        margin-left: 0; /* Nội dung full width khi sidebar ẩn */
+    }
+    
+    #sidebarToggle {
+        display: block; /* Hiện nút toggle trên mobile */
     }
 }
