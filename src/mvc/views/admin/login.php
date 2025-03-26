@@ -1,3 +1,7 @@
+<title>SmartStation</title>
+<link rel="shortcut icon" href="./src/public/img/logo.png" type="image/x-icon">
+<link rel="stylesheet" href="./src/public/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href="./src/public/css/adminLogin.css">
 <div class="login-container">
     <!-- Illustration Side (Left) -->
     <div class="illustration-side">
@@ -17,4 +21,4 @@
             <button type="submit" class="btn btn-login w-100">LOGIN</button>
         </form>
     </div>
-</div>    
+</div>
