@@ -25,7 +25,7 @@
                     <!-- Desktop: Dropdown -->
                     <div class="d-none d-md-block">
                         <div class="dropdown">
-                            <a href="#" id="accountDropdownDesktop" class="icon-link account-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            <a href="#" id="accountDropdownDesktop" class="icon-link account-icon" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="bi bi-person"></i> <span id="accountTextDesktop">Đăng nhập</span>
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="accountDropdownDesktop">
@@ -68,3 +68,4 @@
         </div>
     </div>
 </div>
+

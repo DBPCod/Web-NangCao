@@ -117,3 +117,25 @@
 .cart-items::-webkit-scrollbar-thumb:hover {
     background: #555; /* Màu khi hover */
 }
+
+/* Đảm bảo hamburger và nút đăng nhập căn chỉnh tốt trên mobile */
+.navbar-toggler,
+#mobileLoginLink {
+    display: none; /* Ẩn mặc định, JS sẽ điều khiển */
+}
+
+#mobileLoginLink {
+    align-items: center;
+    text-decoration: none;
+    color: #6c757d;
+}
+
+#mobileLoginLink:hover {
+    color: #28a745;
+}
+
+/* Thanh tìm kiếm trong offcanvas */
+.offcanvas-body .search-bar {
+    width: 100%;
+    margin-bottom: 15px;
+}

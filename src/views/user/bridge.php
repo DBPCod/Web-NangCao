@@ -16,7 +16,7 @@
 
 <body>
     <?php 
-        include 'header.php';
+        include 'header1.php';
         include 'product.php';
         include 'footer.php';
         include 'login.php';
