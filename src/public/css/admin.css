@@ -2,7 +2,7 @@
 .sidebar {
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    height: 100vh; /* Thay min-height thành height để cố định */
     background-color: #f8f9fa;
     padding: 1.5rem;
     position: fixed;
@@ -11,7 +11,8 @@
     width: 250px;
     box-shadow: 2px 0 5px rgba(0,0,0,0.1);
     transition: all 0.3s ease;
-    z-index: 1000; /* Đảm bảo sidebar nằm trên header */
+    z-index: 1000;
+    overflow-y: auto; /* Thêm cuộn dọc nếu nội dung dài */
 }
 
 /* Logo và tiêu đề */
@@ -73,14 +74,11 @@
 
 /* Sidebar footer */
 .sidebar-footer {
-    position: absolute;
-    bottom: 10px;
-    left: 0;
-    width: 100%;
     padding: 0 1.5rem;
     color: #666;
     font-size: 0.85rem;
     text-align: center;
+    margin-top: auto; /* Đẩy footer xuống dưới cùng */
 }
 
 /* Header */

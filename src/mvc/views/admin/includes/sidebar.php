@@ -24,8 +24,8 @@
         <a class="nav-link" href="#" data-section="statistics">Thống kê</a>
         <a class="nav-link" href="https://youtu.be/dQw4w9WgXcQ?si=GILjL-20b7J5nDke">Đăng xuất</a>
         <!-- Bản quyền -->
-        <div class="sidebar-footer mt-auto">
-            <small>&copy; 2025 Smart Station. All rights reserved.</small>
+        <div class="sidebar-footer">
+            <small>© 2025 Smart Station. All rights reserved.</small>
         </div>
     </nav>
 </div>
