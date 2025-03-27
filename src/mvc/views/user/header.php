@@ -71,7 +71,8 @@
         </div>
         <!-- Cart Icon trong offcanvas -->
         <a href="#" class="btn btn-outline-secondary mb-3 d-flex align-items-center justify-content-center" data-bs-toggle="modal" data-bs-target="#cartPopup" data-bs-dismiss="offcanvas">
-            <i class="bi bi-cart me-2"></i> Giỏ hàng <span class="cart-badge ms-2">0</span>
+            <i class="bi bi-cart me-2"></i> Giỏ hàng
+             <!-- <span class="cart-badge ms-2">0</span> -->
         </a>
         <!-- Các tùy chọn menu -->
         <div class="d-grid gap-2">
