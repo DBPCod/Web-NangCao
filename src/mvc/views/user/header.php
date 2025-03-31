@@ -5,7 +5,7 @@
             <!-- Logo và Slogan -->
             <div class="col-12 col-md-3 text-center text-md-start">
                 <div class="logo-container">
-                    <img src="./src/public/img/logo.png" alt="logo" class="logo" />
+                    <img src="../../../public/img/logo.png" alt="logo" class="logo" />
                     <span class="logo-text">SMART STATION</span>
                 </div>
             </div>

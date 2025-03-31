@@ -1,14 +1,14 @@
 {
     "1": [
         {
-            "image": "./src/public/img/ip16_4.png",
+            "image": "../../../public/img/ip16_4.png",
             "images": [
-                "./src/public/img/ip16_3.png",
-                "./src/public/img/ip16_4.png",
-                "./src/public/img/ip16_5.png",
-                "./src/public/img/ip16_6.png",
-                "./src/public/img/ip16_1.png",
-                "./src/public/img/ip16_3.png" 
+                "../../../public/img/ip16_3.png",
+                "../../../public/img/ip16_4.png",
+                "../../../public/img/ip16_5.png",
+                "../../../public/img/ip16_6.png",
+                "../../../public/img/ip16_1.png",
+                "../../../public/img/ip16_3.png" 
            ],
             "name": "iPhone 16 - Chính hãng VN/A",
             "specs": "A18 | 128GB",
@@ -25,11 +25,11 @@
             "trangThai": true
         },
         {
-            "image": "./src/public/img/ip16_5.png",
+            "image": "../../../public/img/ip16_5.png",
             "images": [
-                "./src/public/img/ip16_6.png",
-                "./src/public/img/ip16_3.png",
-                "./src/public/img/ip16_4.png"
+                "../../../public/img/ip16_6.png",
+                "../../../public/img/ip16_3.png",
+                "../../../public/img/ip16_4.png"
             ],
             "name": "Samsung Galaxy Z Fold6 12GB/1TB",
             "specs": "Snap 8 Gen 3 | 4400mAh",
@@ -46,11 +46,11 @@
             "trangThai": true
         },
         {
-            "image": "./src/public/img/ip16_5.png",
+            "image": "../../../public/img/ip16_5.png",
             "images": [
-                "./src/public/img/ip16_6.png",
-                "./src/public/img/ip16_3.png",
-                "./src/public/img/ip16_4.png"
+                "../../../public/img/ip16_6.png",
+                "../../../public/img/ip16_3.png",
+                "../../../public/img/ip16_4.png"
             ],
             "name": "Samsung Galaxy Z Fold6 12GB/1TB",
             "specs": "Snap 8 Gen 3 | 4400mAh",
@@ -67,11 +67,11 @@
             "trangThai": true
         },
         {
-            "image": "./src/public/img/ip16_1.png",
+            "image": "../../../public/img/ip16_1.png",
             "images": [
-                "./src/public/img/ip16_3.png",
-                "./src/public/img/ip16_5.png",
-                "./src/public/img/ip16_1.png"
+                "../../../public/img/ip16_3.png",
+                "../../../public/img/ip16_5.png",
+                "../../../public/img/ip16_1.png"
             ],
             "name": "Product 2",
             "specs": "A18 Pro | 256GB",
@@ -88,11 +88,11 @@
             "trangThai": true
         },
         {
-            "image": "./src/public/img/ip16_4.png",
+            "image": "../../../public/img/ip16_4.png",
             "images": [
-                "./src/public/img/ip16_3.png",
-                "./src/public/img/ip16_1.png",
-                "./src/public/img/ip16_6.png"
+                "../../../public/img/ip16_3.png",
+                "../../../public/img/ip16_1.png",
+                "../../../public/img/ip16_6.png"
             ],
             "name": "iPhone 16 - Chính hãng VN/A",
             "specs": "A18 | 128GB",
@@ -109,11 +109,11 @@
             "trangThai": true
         },
         {
-            "image": "./src/public/img/ip16_5.png",
+            "image": "../../../public/img/ip16_5.png",
             "images": [
-                "./src/public/img/ip16_6.png",
-                "./src/public/img/ip16_3.png",
-                "./src/public/img/ip16_4.png"
+                "../../../public/img/ip16_6.png",
+                "../../../public/img/ip16_3.png",
+                "../../../public/img/ip16_4.png"
             ],
             "name": "Samsung Galaxy Z Fold6 12GB/1TB",
             "specs": "Snap 8 Gen 3 | 4400mAh",
@@ -132,11 +132,11 @@
     ],
     "2": [
         {
-            "image": "./src/public/img/ip16_4.png",
+            "image": "../../../public/img/ip16_4.png",
             "images": [
-                "./src/public/img/ip16_3.png",
-                "./src/public/img/ip16_1.png",
-                "./src/public/img/ip16_6.png"
+                "../../../public/img/ip16_3.png",
+                "../../../public/img/ip16_1.png",
+                "../../../public/img/ip16_6.png"
             ],
             "name": "iPhone 16 - Chính hãng VN/A",
             "specs": "A18 | 128GB",
@@ -153,11 +153,11 @@
             "trangThai": true
         },
         {
-            "image": "./src/public/img/ip16_5.png",
+            "image": "../../../public/img/ip16_5.png",
             "images": [
-                "./src/public/img/ip16_6.png",
-                "./src/public/img/ip16_3.png",
-                "./src/public/img/ip16_4.png"
+                "../../../public/img/ip16_6.png",
+                "../../../public/img/ip16_3.png",
+                "../../../public/img/ip16_4.png"
             ],
             "name": "Samsung Galaxy Z Fold6 12GB/1TB",
             "specs": "Snap 8 Gen 3 | 4400mAh",
@@ -174,11 +174,11 @@
             "trangThai": true
         },
         {
-            "image": "./src/public/img/ip16_5.png",
+            "image": "../../../public/img/ip16_5.png",
             "images": [
-                "./src/public/img/ip16_6.png",
-                "./src/public/img/ip16_3.png",
-                "./src/public/img/ip16_4.png"
+                "../../../public/img/ip16_6.png",
+                "../../../public/img/ip16_3.png",
+                "../../../public/img/ip16_4.png"
             ],
             "name": "Samsung Galaxy Z Fold6 12GB/1TB",
             "specs": "Snap 8 Gen 3 | 4400mAh",
@@ -195,11 +195,11 @@
             "trangThai": true
         },
         {
-            "image": "./src/public/img/ip16_5.png",
+            "image": "../../../public/img/ip16_5.png",
             "images": [
-                "./src/public/img/ip16_6.png",
-                "./src/public/img/ip16_3.png",
-                "./src/public/img/ip16_4.png"
+                "../../../public/img/ip16_6.png",
+                "../../../public/img/ip16_3.png",
+                "../../../public/img/ip16_4.png"
             ],
             "name": "Samsung Galaxy Z Fold6 12GB/1TB",
             "specs": "Snap 8 Gen 3 | 4400mAh",
@@ -218,11 +218,11 @@
     ],
     "3": [
         {
-            "image": "./src/public/img/ip16_5.png",
+            "image": "../../../public/img/ip16_5.png",
             "images": [
-                "./src/public/img/ip16_6.png",
-                "./src/public/img/ip16_3.png",
-                "./src/public/img/ip16_4.png"
+                "../../../public/img/ip16_6.png",
+                "../../../public/img/ip16_3.png",
+                "../../../public/img/ip16_4.png"
             ],
             "name": "Samsung Galaxy Z Fold6 12GB/1TB",
             "specs": "Snap 8 Gen 3 | 4400mAh",
@@ -239,16 +239,16 @@
             "trangThai": true
         },
         {
-            "image": "./src/public/img/ip16_5.png",
+            "image": "../../../public/img/ip16_5.png",
             "images": [
-                "./src/public/img/ip16_3.png",
-                "./src/public/img/ip16_3.png",
-                "./src/public/img/ip16_3.png",
-                "./src/public/img/ip16_3.png",
-                "./src/public/img/ip16_6.png",
-                "./src/public/img/ip16_3.png",
-                "./src/public/img/ip16_6.png",
-                "./src/public/img/ip16_4.png"
+                "../../../public/img/ip16_3.png",
+                "../../../public/img/ip16_3.png",
+                "../../../public/img/ip16_3.png",
+                "../../../public/img/ip16_3.png",
+                "../../../public/img/ip16_6.png",
+                "../../../public/img/ip16_3.png",
+                "../../../public/img/ip16_6.png",
+                "../../../public/img/ip16_4.png"
             ],
             "name": "Samsung Galaxy Z Fold6 12GB/1TB",
             "specs": "Snap 8 Gen 3 | 4400mAh",

@@ -35,17 +35,17 @@
             <div class="col-md-3">
                 <h5>Thanh toán miễn phí</h5>
                 <div class="payment-methods">
-                    <img src="./src/public/img/visa.png" alt="Visa" />
-                    <img src="./src/public/img/nhattin.png" alt="MasterCard" />
-                    <img src="./src/public/img/masstel.gif" alt="MoMo" />
-                    <img src="./src/public/img/itel-logo.png" alt="Samsung Pay" />
-                    <img src="./src/public/img/vnpay.png" alt="VNPay" />
-                    <img src="./src/public/img/zalopay.png" alt="ZaloPay" />
-                    <img src="./src/public/img/applepay.png" alt="Apple Pay" />
+                    <img src="../../../public/img/visa.png" alt="Visa" />
+                    <img src="../../../public/img/nhattin.png" alt="MasterCard" />
+                    <img src="../../../public/img/masstel.gif" alt="MoMo" />
+                    <img src="../../../public/img/itel-logo.png" alt="Samsung Pay" />
+                    <img src="../../../public/img/vnpay.png" alt="VNPay" />
+                    <img src="../../../public/img/zalopay.png" alt="ZaloPay" />
+                    <img src="../../../public/img/applepay.png" alt="Apple Pay" />
                 </div>
                 <h5 class="mt-3">Nhận tin vắn chuyển</h5>
                 <div>
-                    <img src="./src/public/img/vnpost.png" alt="Vietnam Post" />
+                    <img src="../../../public/img/vnpost.png" alt="Vietnam Post" />
                 </div>
             </div>
 
@@ -62,7 +62,7 @@
                     <a href="#"><i class="bi bi-globe"></i></a>
                 </div>
                 <div class="certification mt-3">
-                    <img src="./src/public/img/logo-bct.png" alt="Certified" />
+                    <img src="../../../public/img/logo-bct.png" alt="Certified" />
                 </div>
             </div>
         </div>
