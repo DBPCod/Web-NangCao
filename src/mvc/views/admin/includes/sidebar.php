@@ -1,6 +1,6 @@
 <div class="col-md-3 col-lg-2 sidebar">
     <div class="text-center mb-4">
-        <img src="./src/public/img/logo.png" alt="VY Food Logo" width="50">
+        <img src="../../../public/img/logo.png" alt="VY Food Logo" width="50">
         <h4>Smart Station</h4>
     </div>
     <nav class="nav flex-column">

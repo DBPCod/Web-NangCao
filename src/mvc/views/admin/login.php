@@ -1,11 +1,11 @@
 <title>SmartStation</title>
-<link rel="shortcut icon" href="./src/public/img/logo.png" type="image/x-icon">
-<link rel="stylesheet" href="./src/public/bootstrap/css/bootstrap.min.css">
-<link rel="stylesheet" href="./src/public/css/adminLogin.css">
+<link rel="shortcut icon" href="../../../public/img/logo.png" type="image/x-icon">
+<link rel="stylesheet" href="../../../public/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href="../../../public/css/adminLogin.css">
 <div class="login-container">
     <!-- Illustration Side (Left) -->
     <div class="illustration-side">
-        <img src="./src/public/img/logo.png" alt="Login Illustration" class="illustration">
+        <img src="../../../public/img/logo.png" alt="Login Illustration" class="illustration">
     </div>
 
     <!-- Form Side (Right) -->

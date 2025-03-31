@@ -3,7 +3,7 @@
     <div class="container">
         <!-- Logo và Slogan -->
         <a class="navbar-brand d-flex align-items-center" href="#">
-            <img src="./src/public/img/logo.png" alt="logo" class="logo me-2" style="height: 40px; width: 40px;" />
+            <img src="../../../public/img/logo.png" alt="logo" class="logo me-2" style="height: 40px; width: 40px;" />
             <span class="logo-text">SMART STATION</span>
         </a>
 

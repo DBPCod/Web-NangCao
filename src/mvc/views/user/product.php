@@ -29,7 +29,7 @@
                 <div class="carousel-item active">
                     <!-- Placeholder for the image -->
                     <img
-                        src="./src/public/img/slider1.jpg"
+                        src="../../../public/img/slider1.jpg"
                         alt="Person with phone"
                         class="carousel-image" />
                 </div>
@@ -37,7 +37,7 @@
                 <!-- Slide 2 (Placeholder) -->
                 <div class="carousel-item">
                     <img
-                        src="./src/public/img/slider2.png"
+                        src="../../../public/img/slider2.png"
                         alt="Person with phone"
                         class="carousel-image" />
                 </div>
@@ -45,7 +45,7 @@
                 <!-- Slide 3 (Placeholder) -->
                 <div class="carousel-item">
                     <img
-                        src="./src/public/img/slider3.png"
+                        src="../../../public/img/slider3.png"
                         alt="Person with phone"
                         class="carousel-image" />
                 </div>
