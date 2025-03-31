@@ -24,11 +24,11 @@ class TaiKhoanController {
                 break;
 
             case 'POST':
-                $newTaiKhoan = $this->model->addTaiKhoan($input);
-                echo json_encode([
-                    "message" => "Thêm tài khoản thành công",
-                    "taiKhoan" => $newTaiKhoan
-                ]);
+                    $newTaiKhoan = $this->model->addTaiKhoan($input);
+                    echo json_encode([
+                        "message" => "Thêm tài khoản thành công",
+                        "taiKhoan" => $newTaiKhoan
+                    ]);
                 break;
 
             case 'PUT':

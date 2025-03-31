@@ -66,23 +66,35 @@ document.addEventListener('DOMContentLoaded', function () {
             e.preventDefault();
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
+            fetch("/src/mvc/controllers/AuthController.php",{
+                method: "POST",
+                headers: {"Content-Type" : "application/json" },
+                body: JSON.stringify({username, password})
+            })
+            .then(response => response.json())
+            .then(data =>{
+                if(data.success){
+                    alert("Đăng nhập thành công!");
+                    // window.location.reload();
+                }
+            })
 
-            if (username && password) {
-                localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('username', username);
-                localStorage.setItem('password', password);
-                localStorage.setItem('fullName', '');
-                localStorage.setItem('phone', '');
-                localStorage.setItem('email', '');
-                localStorage.setItem('address', '');
+            // if (username && password) {
+            //     localStorage.setItem('isLoggedIn', 'true');
+            //     localStorage.setItem('username', username);
+            //     localStorage.setItem('password', password);
+            //     localStorage.setItem('fullName', '');
+            //     localStorage.setItem('phone', '');
+            //     localStorage.setItem('email', '');
+            //     localStorage.setItem('address', '');
 
-                const loginModal = bootstrap.Modal.getInstance(document.getElementById('loginPopup'));
-                loginModal.hide();
+            //     const loginModal = bootstrap.Modal.getInstance(document.getElementById('loginPopup'));
+            //     loginModal.hide();
 
-                checkLoginStatus();
-            } else {
-                alert('Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu!');
-            }
+            //     checkLoginStatus();
+            // } else {
+            //     alert('Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu!');
+            // }
         });
     }
 
