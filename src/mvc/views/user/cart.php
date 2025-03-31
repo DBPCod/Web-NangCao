@@ -98,7 +98,7 @@
                     <div class="form-check">
                         <input class="form-check-input" type="radio" name="addressOption" id="defaultAddress" value="default" checked>
                         <label class="form-check-label" for="defaultAddress">
-                            Sử dụng địa chỉ mặc định
+                            Sử dụng địa chỉ mặc định của bạn: <?php echo $defaultAddress; ?>
                         </label>
                     </div>
                     <div class="form-check mt-2">

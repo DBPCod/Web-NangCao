@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Kiểm tra trạng thái đăng nhập khi tải trang
     checkLoginStatus();
 
-    // Xử lý click vào icon tài khoản (cả desktop và mobile)
+    // Xử lý click vào icon tài khoản trên desktop
     const accountLinkDesktop = document.getElementById('accountDropdownDesktop');
     if (accountLinkDesktop) {
         accountLinkDesktop.addEventListener('click', function (e) {
@@ -12,10 +12,20 @@ document.addEventListener('DOMContentLoaded', function () {
                 const loginModal = new bootstrap.Modal(document.getElementById('loginPopup'));
                 loginModal.show();
             }
-            // Nếu đã đăng nhập, bootstrap dropdown sẽ tự hoạt động
+            // Nếu đã đăng nhập, dropdown sẽ tự hoạt động
         });
     }
 
+    // Xử lý click vào nút đăng nhập trên mobile
+    const mobileLoginLink = document.getElementById('mobileLoginLink');
+    if (mobileLoginLink) {
+        mobileLoginLink.addEventListener('click', function (e) {
+            e.preventDefault();
+            const loginModal = new bootstrap.Modal(document.getElementById('loginPopup'));
+            loginModal.show();
+        });
+    }
+    
     const accountLinkMobile = document.querySelector('.account-icon[data-bs-toggle="offcanvas"]');
     if (accountLinkMobile) {
         accountLinkMobile.addEventListener('click', function (e) {
@@ -27,6 +37,8 @@ document.addEventListener('DOMContentLoaded', function () {
             // Nếu đã đăng nhập, offcanvas sẽ tự hoạt động
         });
     }
+
+    
 
     const defaultAddressRadio = document.getElementById("defaultAddress");
     const otherAddressRadio = document.getElementById("otherAddress");
@@ -89,8 +101,7 @@ document.addEventListener('DOMContentLoaded', function () {
         logoutLinkMobile.addEventListener('click', function (e) {
             e.preventDefault();
             logoutUser();
-            // Đóng offcanvas sau khi đăng xuất
-            const offcanvas = bootstrap.Offcanvas.getInstance(document.getElementById('accountOffcanvas'));
+            const offcanvas = bootstrap.Offcanvas.getInstance(document.getElementById('navbarOffcanvas'));
             if (offcanvas) {
                 offcanvas.hide();
             }
@@ -230,37 +241,33 @@ function checkLoginStatus() {
     const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
     const username = localStorage.getItem('username') || '';
 
-    // Cập nhật text và hành vi cho desktop
+    // Cập nhật giao diện cho desktop
     const accountTextDesktop = document.getElementById('accountTextDesktop');
     const accountDropdownDesktop = document.getElementById('accountDropdownDesktop');
-    
     if (accountTextDesktop && accountDropdownDesktop) {
         if (isLoggedIn) {
             accountTextDesktop.textContent = username || 'Tài khoản';
-            // Cho phép dropdown hoạt động
             accountDropdownDesktop.setAttribute('data-bs-toggle', 'dropdown');
         } else {
             accountTextDesktop.textContent = 'Đăng nhập';
-            // Vô hiệu hóa dropdown, sẽ xử lý click bằng event listener
             accountDropdownDesktop.removeAttribute('data-bs-toggle');
         }
     }
 
-    // Cập nhật text và hành vi cho mobile
-    const accountTextMobile = document.getElementById('accountTextMobile');
-    const mobileAccountLink = accountTextMobile ? accountTextMobile.parentElement : null;
-    
-    if (accountTextMobile && mobileAccountLink) {
+    // Cập nhật giao diện cho mobile
+    const mobileLoginLink = document.getElementById('mobileLoginLink');
+    const navbarToggler = document.getElementById('navbarToggler');
+    if (mobileLoginLink && navbarToggler) {
         if (isLoggedIn) {
-            accountTextMobile.textContent = username || 'Tài khoản';
-            // Cho phép offcanvas hoạt động
-            mobileAccountLink.setAttribute('data-bs-toggle', 'offcanvas');
-            mobileAccountLink.setAttribute('data-bs-target', '#accountOffcanvas');
+            mobileLoginLink.style.display = 'none'; // Ẩn nút đăng nhập
+            navbarToggler.style.display = 'block'; // Hiển thị hamburger
+            navbarToggler.setAttribute('data-bs-toggle', 'offcanvas');
+            navbarToggler.setAttribute('data-bs-target', '#navbarOffcanvas');
         } else {
-            accountTextMobile.textContent = 'Đăng nhập';
-            // Vô hiệu hóa offcanvas, sẽ xử lý click bằng event listener
-            mobileAccountLink.removeAttribute('data-bs-toggle');
-            mobileAccountLink.removeAttribute('data-bs-target');
+            mobileLoginLink.style.display = 'flex'; // Hiển thị nút đăng nhập
+            navbarToggler.style.display = 'none'; // Ẩn hamburger
+            navbarToggler.removeAttribute('data-bs-toggle');
+            navbarToggler.removeAttribute('data-bs-target');
         }
     }
 }
