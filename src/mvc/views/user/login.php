@@ -6,7 +6,8 @@
             <button type="button" class="btn-close custom-close" data-bs-dismiss="modal" aria-label="Close"></button>
             <div class="modal-body">
                 <h5 class="modal-title text-center mb-4">Đăng nhập</h5>
-                <form action="controllers/auth_controller.php" method="POST">
+                
+                <form action="" method="POST">
                     <div class="mb-3">
                         <input type="text" class="form-control custom-input" id="username" name="username" placeholder="Tên đăng nhập" required>
                     </div>
