@@ -73,6 +73,8 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .then(response => response.json())
             .then(data =>{
+                console.log(data);
+                xuliWarning(data.theloai);  
                 if(data.success){
                     alert("Đăng nhập thành công!");
                     // window.location.reload();
@@ -98,6 +100,34 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    function xuliWarning($theloai)
+    {
+        console.log($theloai)
+        if($theloai == "TAIKHOAN")
+        { 
+            document.getElementById('username').classList.add('error');
+            document.getElementById('username-warning').classList.remove('d-none');
+            document.getElementById('username-error').classList.remove('d-none');
+            document.getElementById('username').select();
+        } else {
+            document.getElementById('username').classList.remove('error');
+            document.getElementById('username-warning').classList.add('d-none');
+            document.getElementById('username-error').classList.add('d-none');
+        }
+
+        if ($theloai == "MATKHAU") {
+            document.getElementById('password').classList.add('error');
+            document.getElementById('password-warning').classList.remove('d-none');
+            document.getElementById('password-error').classList.remove('d-none');
+            document.getElementById('password').select();
+        }
+        else
+        {
+            document.getElementById('password').classList.remove('error');
+            document.getElementById('password-warning').classList.add('d-none');
+            document.getElementById('password-error').classList.add('d-none');
+        }
+    }
     // Xử lý đăng xuất - Desktop
     const logoutLinkDesktop = document.getElementById('logoutLinkDesktop');
     if (logoutLinkDesktop) {

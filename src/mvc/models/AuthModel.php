@@ -7,13 +7,23 @@ class AuthModel{
         $this->db = (new DB())->conn;
     }
 
+    //kiem tra tai khoan co ton tai hay khong?
+    public function KiemTraTaiKhoanTonTai($username)
+    {
+        $stmt = $this->db->prepare("SELECT * FROM taikhoan where TaiKhoan = ?");
+        $stmt->bind_param("s",$username);
+        $stmt->execute();
+        $result = $stmt->get_result(); // Lấy kết quả truy vấn
+        return $result->num_rows > 0; 
+    }
+
     public function KiemTraTaiKhoan($username, $password)
     {
-        $stmt = $this->db->prepare('SELECT IdNguoiDung FROM taikhoan WHERE TaiKhoan = ? and MatKhau = ?');
-        $stmt->bind_param("ss",$username,$password);
-        $stmt->execute();
-        $row = $stmt->get_result()->fetch_assoc();
-        return $row ? $row["IdNguoiDung"] : null; 
+            $stmt = $this->db->prepare('SELECT IdNguoiDung FROM taikhoan WHERE TaiKhoan = ? and MatKhau = ?');
+            $stmt->bind_param("ss",$username,$password);
+            $stmt->execute();
+            $row = $stmt->get_result()->fetch_assoc();
+            return $row ? $row["IdNguoiDung"] : null; 
     }
 }
 

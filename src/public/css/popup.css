@@ -139,3 +139,29 @@
     width: 100%;
     margin-bottom: 15px;
 }
+
+
+/*login warning*/
+.position-relative {
+    position: relative;
+}
+
+.warning-icon {
+    position: absolute;
+    right: 10px;
+    top: 32%;
+    transform: translateY(-50%);
+    color: red;
+    font-size: 1.2rem;
+}
+
+.error-message {
+    font-size: 0.85rem; /* Chữ nhỏ hơn */
+    color: #dc3545; /* Màu đỏ của Bootstrap alert-danger */
+    margin-top: 5px; /* Khoảng cách với input */
+    font-weight: 400; /* Không in đậm để trông hiện đại */
+}
+
+.custom-input.error {
+    border-color: red;
+}

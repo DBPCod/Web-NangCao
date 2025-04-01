@@ -21,15 +21,23 @@ require_once '/xampp/htdocs/src/mvc/models/AuthModel.php';
                         $username = $input["username"];
                         $password = $input["password"];
 
-                        $user = $this->model->KiemTraTaiKhoan($username,$password);
-                        if($user)
+                        //kiem tra tai khoan co ton tai hay khong?
+                        if($this->model->KiemTraTaiKhoanTonTai($username))
                         {
-                            echo json_encode(["success" => true, "message" => "Đăng nhập thành công!"]);
+                            $user = $this->model->KiemTraTaiKhoan($username,$password);                            if($user)
+                            {
+                                echo json_encode(["success" => true, "message" => "Đăng nhập thành công!","user" => $user]);
+                            }
+                            else
+                            {   
+                                echo json_encode(["success" => false, "message" => "Mật khẩu sai!","theloai" => "MATKHAU"]);
+                            }
                         }
                         else
                         {
-                            echo json_encode(["success" => false, "message" => "Đăng nhập không thành công!"]);
+                            echo json_encode(["success" => false, "message" => "Sai Tài khoản!","theloai" => "TAIKHOAN"]);
                         }
+                        
                     }
             }
         }
