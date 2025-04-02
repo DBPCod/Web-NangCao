@@ -33,13 +33,11 @@
                 let section = $(this).data("section");
 
                 if (section) {
-                    // Cập nhật URL mà không reload trang
                     let newUrl = `http://localhost/smartstation/src/mvc/views/admin/?page=${section}`;
                     window.history.pushState({
                         section: section
                     }, '', newUrl);
 
-                    // Load nội dung
                     $.ajax({
                         url: "../../../mvc/views/admin/pages/" + section + ".php",
                         type: "GET",
@@ -53,8 +51,11 @@
                 }
             });
 
+            // Toggle sidebar
             $("#sidebarToggle").click(function() {
-                $(".sidebar").toggleClass("show");
+                $(".sidebar").toggleClass("hidden");
+                $(".header").toggleClass("full-width");
+                $(".content-area").toggleClass("full-width");
             });
 
             // Xử lý khi người dùng nhấn back/forward trên trình duyệt
