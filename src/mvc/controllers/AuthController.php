@@ -1,5 +1,5 @@
 <?php
-require_once '/xampp/htdocs/src/mvc/models/AuthModel.php';
+require_once '../models/AuthModel.php';
 
     class AuthController{
         private $model;

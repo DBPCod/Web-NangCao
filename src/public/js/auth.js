@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function () {
             e.preventDefault();
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
-            fetch("/src/mvc/controllers/AuthController.php",{
+            fetch("../../controllers/AuthController.php",{
                 method: "POST",
                 headers: {"Content-Type" : "application/json" },
                 body: JSON.stringify({username, password})

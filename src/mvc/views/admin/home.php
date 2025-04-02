@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +10,7 @@
     <link rel="stylesheet" href="../../../public/css/admin.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 </head>
+
 <body>
     <div class="container-fluid">
         <div class="row">
@@ -24,13 +26,20 @@
     <script src="../../../public/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script>
         $(document).ready(function() {
-            $("#contentArea").load("../../../mvc/views/admin/pages/dashboard.php");
+            $("#contentArea").load("../../../mvc/views/admin/pages/overview.php");
+
             $(".nav-link[data-section]").click(function(e) {
                 e.preventDefault();
-                let page = $(this).data("section");
-                if (page) {
+                let section = $(this).data("section");
+
+                if (section) {
+                    let newUrl = `http://localhost/smartstation/src/mvc/views/admin/?page=${section}`;
+                    window.history.pushState({
+                        section: section
+                    }, '', newUrl);
+
                     $.ajax({
-                        url: "../../../mvc/views/admin/pages/" + page + ".php",
+                        url: "../../../mvc/views/admin/pages/" + section + ".php",
                         type: "GET",
                         success: function(data) {
                             $("#contentArea").html(data);
@@ -41,10 +50,29 @@
                     });
                 }
             });
+
+            // Toggle sidebar
             $("#sidebarToggle").click(function() {
-                $(".sidebar").toggleClass("show");
+                $(".sidebar").toggleClass("hidden");
+                $(".header").toggleClass("full-width");
+                $(".content-area").toggleClass("full-width");
             });
+
+            // Xử lý khi người dùng nhấn back/forward trên trình duyệt
+            window.onpopstate = function(event) {
+                if (event.state && event.state.section) {
+                    $("#contentArea").load("../../../mvc/views/admin/pages/" + event.state.section + ".php");
+                }
+            };
+
+            // Load trang ban đầu từ URL nếu có param
+            const urlParams = new URLSearchParams(window.location.search);
+            const initialPage = urlParams.get('page');
+            if (initialPage) {
+                $("#contentArea").load("../../../mvc/views/admin/pages/" + initialPage + ".php");
+            }
         });
     </script>
 </body>
+
 </html>
