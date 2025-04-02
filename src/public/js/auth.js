@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
     // Kiểm tra trạng thái đăng nhập khi tải trang
-    checkLoginStatus();
+    checkLoginStatus({"success" : false});
 
     // Xử lý click vào icon tài khoản trên desktop
     const accountLinkDesktop = document.getElementById('accountDropdownDesktop');
@@ -73,11 +73,16 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .then(response => response.json())
             .then(data =>{
-                console.log(data);
                 xuliWarning(data.theloai);  
+                console.log(data);
                 if(data.success){
                     alert("Đăng nhập thành công!");
                     // window.location.reload();
+
+                    const loginModal = bootstrap.Modal.getInstance(document.getElementById('loginPopup'));
+                    loginModal.hide();
+
+                    checkLoginStatus(data);
                 }
             })
 
@@ -90,10 +95,7 @@ document.addEventListener('DOMContentLoaded', function () {
             //     localStorage.setItem('email', '');
             //     localStorage.setItem('address', '');
 
-            //     const loginModal = bootstrap.Modal.getInstance(document.getElementById('loginPopup'));
-            //     loginModal.hide();
 
-            //     checkLoginStatus();
             // } else {
             //     alert('Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu!');
             // }
@@ -102,7 +104,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function xuliWarning($theloai)
     {
-        console.log($theloai)
         if($theloai == "TAIKHOAN")
         { 
             document.getElementById('username').classList.add('error');
@@ -133,6 +134,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (logoutLinkDesktop) {
         logoutLinkDesktop.addEventListener('click', function (e) {
             e.preventDefault();
+            console.log("a");
             logoutUser();
         });
     }
@@ -279,7 +281,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // Hàm kiểm tra trạng thái đăng nhập và cập nhật UI
-function checkLoginStatus() {
+function checkLoginStatus(data) {
     const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
     const username = localStorage.getItem('username') || '';
 
@@ -287,8 +289,8 @@ function checkLoginStatus() {
     const accountTextDesktop = document.getElementById('accountTextDesktop');
     const accountDropdownDesktop = document.getElementById('accountDropdownDesktop');
     if (accountTextDesktop && accountDropdownDesktop) {
-        if (isLoggedIn) {
-            accountTextDesktop.textContent = username || 'Tài khoản';
+        if (data.success) {
+            accountTextDesktop.textContent = data.user || 'Tài khoản';
             accountDropdownDesktop.setAttribute('data-bs-toggle', 'dropdown');
         } else {
             accountTextDesktop.textContent = 'Đăng nhập';
@@ -300,7 +302,7 @@ function checkLoginStatus() {
     const mobileLoginLink = document.getElementById('mobileLoginLink');
     const navbarToggler = document.getElementById('navbarToggler');
     if (mobileLoginLink && navbarToggler) {
-        if (isLoggedIn) {
+        if (data.success) {
             mobileLoginLink.style.display = 'none'; // Ẩn nút đăng nhập
             navbarToggler.style.display = 'block'; // Hiển thị hamburger
             navbarToggler.setAttribute('data-bs-toggle', 'offcanvas');
@@ -324,5 +326,5 @@ function logoutUser() {
     localStorage.removeItem('email');
     localStorage.removeItem('address');
     
-    checkLoginStatus();
+    checkLoginStatus({"success" : false});
 }

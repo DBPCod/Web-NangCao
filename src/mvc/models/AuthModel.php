@@ -19,11 +19,14 @@ class AuthModel{
 
     public function KiemTraTaiKhoan($username, $password)
     {
-            $stmt = $this->db->prepare('SELECT IdNguoiDung FROM taikhoan WHERE TaiKhoan = ? and MatKhau = ?');
+            $stmt = $this->db->prepare("SELECT t.idnguoidung, n.hovaten, n.email 
+                FROM taikhoan t 
+                JOIN nguoidung n ON t.idnguoidung = n.idnguoidung 
+                WHERE t.TaiKhoan = ? AND t.MatKhau = ?");
             $stmt->bind_param("ss",$username,$password);
             $stmt->execute();
             $row = $stmt->get_result()->fetch_assoc();
-            return $row ? $row["IdNguoiDung"] : null; 
+            return $row ? $row["hovaten"] : null; 
     }
 }
 

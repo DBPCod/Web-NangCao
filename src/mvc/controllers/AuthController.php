@@ -24,7 +24,8 @@ require_once '/xampp/htdocs/src/mvc/models/AuthModel.php';
                         //kiem tra tai khoan co ton tai hay khong?
                         if($this->model->KiemTraTaiKhoanTonTai($username))
                         {
-                            $user = $this->model->KiemTraTaiKhoan($username,$password);                            if($user)
+                            $user = $this->model->KiemTraTaiKhoan($username,$password);                            
+                            if($user)
                             {
                                 echo json_encode(["success" => true, "message" => "Đăng nhập thành công!","user" => $user]);
                             }
