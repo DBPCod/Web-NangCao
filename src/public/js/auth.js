@@ -1,12 +1,27 @@
+let dataCookie;
 document.addEventListener('DOMContentLoaded', function () {
+
+
+    //kiểm tra tự động đăng nhập
+    autoLogin();
+
     // Kiểm tra trạng thái đăng nhập khi tải trang
-    checkLoginStatus({"success" : false});
+    // checkLoginStatus({"success" : false});
 
     // Xử lý click vào icon tài khoản trên desktop
     const accountLinkDesktop = document.getElementById('accountDropdownDesktop');
     if (accountLinkDesktop) {
         accountLinkDesktop.addEventListener('click', function (e) {
-            if (localStorage.getItem('isLoggedIn') !== 'true') {
+
+            // if (localStorage.getItem('isLoggedIn') !== 'true') {
+                // e.preventDefault();
+                // e.stopPropagation();
+                // const loginModal = new bootstrap.Modal(document.getElementById('loginPopup'));
+                // loginModal.show();
+            // }
+
+            if(!dataCookie.success)
+            {
                 e.preventDefault();
                 e.stopPropagation();
                 const loginModal = new bootstrap.Modal(document.getElementById('loginPopup'));
@@ -59,6 +74,30 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     
 
+    //tự động đăng nhập nếu người dùng lưu tài khoản
+    function autoLogin()
+    {
+        let username = getCookie('username')
+        if(username)
+        {
+            fetch("../../controllers/AuthController.php",{
+            method: "POST",
+            headers: {"Content-Type" : "application/json" },
+            body: JSON.stringify({username})
+            })
+            .then(response => response.json())
+            .then(data =>{
+                dataCookie=data;
+                xuliWarning(data.theloai);  
+                console.log(data);
+                if(data.success){
+                    checkLoginStatus(data);
+                }
+            })
+        }
+        
+    }
+
     // Xử lý form đăng nhập
     const loginForm = document.querySelector('#loginPopup form');
     if (loginForm) {
@@ -66,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function () {
             e.preventDefault();
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
-            fetch("/src/mvc/controllers/AuthController.php",{
+            fetch("../../controllers/AuthController.php",{
                 method: "POST",
                 headers: {"Content-Type" : "application/json" },
                 body: JSON.stringify({username, password})
@@ -78,10 +117,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 if(data.success){
                     alert("Đăng nhập thành công!");
                     // window.location.reload();
-
                     const loginModal = bootstrap.Modal.getInstance(document.getElementById('loginPopup'));
                     loginModal.hide();
-
                     checkLoginStatus(data);
                 }
             })
@@ -100,6 +137,18 @@ document.addEventListener('DOMContentLoaded', function () {
             //     alert('Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu!');
             // }
         });
+    }
+
+    //ham lay cookie
+    function getCookie(name) {
+        let cookies = document.cookie.split('; ');
+        for (let i = 0; i < cookies.length; i++) {
+            let cookie = cookies[i].split('=');
+            if (cookie[0] === name) {
+                return cookie[1];
+            }
+        }
+        return null; // Nếu không tìm thấy cookie
     }
 
     function xuliWarning($theloai)

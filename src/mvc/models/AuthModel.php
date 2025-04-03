@@ -17,6 +17,17 @@ class AuthModel{
         return $result->num_rows > 0; 
     }
 
+    //lay mat khau tu tai khoan
+
+    public function GetMatKhau($username)
+    {
+        $stmt = $this->db->prepare("SELECT MatKhau FROM taikhoan where TaiKhoan = ?");
+        $stmt->bind_param("s",$username);
+        $stmt->execute();
+        $row = $stmt->get_result()->fetch_assoc(); // Lấy kết quả truy vấn
+        return $row ? $row["MatKhau"] : null; 
+    }
+
     public function KiemTraTaiKhoan($username, $password)
     {
             $stmt = $this->db->prepare("SELECT t.idnguoidung, n.hovaten, n.email 

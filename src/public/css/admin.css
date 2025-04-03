@@ -13,6 +13,12 @@
     transition: all 0.3s ease;
     z-index: 1000;
     overflow-y: auto; /* Thêm cuộn dọc nếu nội dung dài */
+    transform: translateX(0);
+}
+
+/* Khi sidebar ẩn */
+.sidebar.hidden {
+    transform: translateX(-100%);
 }
 
 /* Logo và tiêu đề */
@@ -97,6 +103,11 @@
     transition: left 0.3s ease; /* Hiệu ứng mượt khi thay đổi */
 }
 
+/* Khi sidebar ẩn, header full width */
+.header.full-width {
+    left: 0;
+}
+
 /* Content area */
 .content-area {
     padding: 2rem;
@@ -110,6 +121,11 @@
 .content-area h2 {
     color: #218838;
     margin-bottom: 20px;
+}
+
+/* Khi sidebar ẩn, content full width */
+.content-area.full-width {
+    margin-left: 0;
 }
 
 .table {
@@ -140,8 +156,8 @@
     border-radius: 5px;
     padding: 10px 15px;
     font-size: 1.2rem;
-    display: none; /* Ẩn mặc định trên màn hình lớn */
     transition: all 0.3s ease;
+    /* display: none; */
 }
 
 #sidebarToggle:hover {

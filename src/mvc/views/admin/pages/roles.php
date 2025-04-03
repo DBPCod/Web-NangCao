@@ -1,6 +1,6 @@
 <?php include '../includes/header.php'; ?>
 <div class="container-fluid">
-    <h2>Quản lý quyền quản trị</h2>
+    <h2>Quản lý quản trị</h2>
     <table class="table">
         <thead>
             <tr>

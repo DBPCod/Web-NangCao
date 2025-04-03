@@ -1,5 +1,7 @@
 <?php
-require_once '/xampp/htdocs/src/mvc/models/AuthModel.php';
+require_once '../models/AuthModel.php';
+include_once '../models/SessionManager.php';
+include_once '../models/CookieManager.php';
 
     class AuthController{
         private $model;
@@ -28,6 +30,17 @@ require_once '/xampp/htdocs/src/mvc/models/AuthModel.php';
                             if($user)
                             {
                                 echo json_encode(["success" => true, "message" => "Đăng nhập thành công!","user" => $user]);
+                                
+                                //luu vao session
+                                SessionManager::start();
+                                SessionManager::set('user',$user);
+
+                                //luu vao cookie
+                                if(CookieManager::get('username') === null)
+                                {
+                                    CookieManager::set('username',$username,3600 * 24 * 30);
+                                }
+                                
                             }
                             else
                             {   
@@ -39,6 +52,21 @@ require_once '/xampp/htdocs/src/mvc/models/AuthModel.php';
                             echo json_encode(["success" => false, "message" => "Sai Tài khoản!","theloai" => "TAIKHOAN"]);
                         }
                         
+                    }else if(isset($input['username']))
+                    {
+                        $username = $input["username"];
+                        if($this->model->KiemTraTaiKhoanTonTai($username))
+                        {
+                            $password = $this->model->GetMatKhau($username);
+                            $user = $this->model->KiemTraTaiKhoan($username,$password);
+                            if($user)
+                            {
+                                echo json_encode(["success" => true, "message" => "Đăng nhập thành công!","user" => $user]);
+                            }
+                            else{
+                                echo json_encode(["success" => false, "message" => "Mật khẩu sai!","theloai" => "MATKHAU"]);
+                            }
+                        }
                     }
             }
         }
