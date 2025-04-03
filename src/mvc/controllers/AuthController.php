@@ -20,6 +20,7 @@ include_once '../models/CookieManager.php';
                 case 'POST':
                     if(isset($input['username']) && isset($input['password']))
                     {
+                        //xu ly dang nhap thu cong
                         $username = $input["username"];
                         $password = $input["password"];
 
@@ -54,6 +55,7 @@ include_once '../models/CookieManager.php';
                         
                     }else if(isset($input['username']))
                     {
+                        //xu ly dang nhap tu dong
                         $username = $input["username"];
                         if($this->model->KiemTraTaiKhoanTonTai($username))
                         {
@@ -61,12 +63,25 @@ include_once '../models/CookieManager.php';
                             $user = $this->model->KiemTraTaiKhoan($username,$password);
                             if($user)
                             {
+                                //luu vao session
+                                SessionManager::start();
+                                SessionManager::set('user',$user);
+
                                 echo json_encode(["success" => true, "message" => "Đăng nhập thành công!","user" => $user]);
                             }
                             else{
                                 echo json_encode(["success" => false, "message" => "Mật khẩu sai!","theloai" => "MATKHAU"]);
                             }
                         }
+                    }else
+                    {
+                        //lây session đang hoạt động
+                        SessionManager::start();
+                        //hủy session
+                        SessionManager::destroyAll();
+                        //set lại thời gian hết hạn cho cookie
+                        setcookie('username', '', time() - 3600, '/');
+                        echo json_encode(["success" => true, "message" => "Đăng xuất thành công!"]);
                     }
             }
         }

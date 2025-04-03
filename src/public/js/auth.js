@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
     autoLogin();
 
     // Kiểm tra trạng thái đăng nhập khi tải trang
-    // checkLoginStatus({"success" : false});
+    checkLoginStatus({"success" : false});
 
     // Xử lý click vào icon tài khoản trên desktop
     const accountLinkDesktop = document.getElementById('accountDropdownDesktop');
@@ -19,8 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 // const loginModal = new bootstrap.Modal(document.getElementById('loginPopup'));
                 // loginModal.show();
             // }
-
-            if(!dataCookie.success)
+            if(dataCookie === undefined)
             {
                 e.preventDefault();
                 e.stopPropagation();
@@ -115,6 +114,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 xuliWarning(data.theloai);  
                 console.log(data);
                 if(data.success){
+                    dataCookie=data;
                     alert("Đăng nhập thành công!");
                     // window.location.reload();
                     const loginModal = bootstrap.Modal.getInstance(document.getElementById('loginPopup'));
@@ -331,17 +331,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // Hàm kiểm tra trạng thái đăng nhập và cập nhật UI
 function checkLoginStatus(data) {
-    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-    const username = localStorage.getItem('username') || '';
+    // const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    // const username = localStorage.getItem('username') || '';
 
     // Cập nhật giao diện cho desktop
     const accountTextDesktop = document.getElementById('accountTextDesktop');
     const accountDropdownDesktop = document.getElementById('accountDropdownDesktop');
     if (accountTextDesktop && accountDropdownDesktop) {
-        if (data.success) {
+        if (data.success && data.user) {
             accountTextDesktop.textContent = data.user || 'Tài khoản';
             accountDropdownDesktop.setAttribute('data-bs-toggle', 'dropdown');
         } else {
+            console.log("a");
             accountTextDesktop.textContent = 'Đăng nhập';
             accountDropdownDesktop.removeAttribute('data-bs-toggle');
         }
@@ -375,5 +376,21 @@ function logoutUser() {
     localStorage.removeItem('email');
     localStorage.removeItem('address');
     
-    checkLoginStatus({"success" : false});
+    //xử lý sự kiện đăng xuất
+    fetch("../../controllers/AuthController.php",{
+        method: "POST",
+        headers: {"Content-Type" : "application/json" },
+        body: JSON.stringify({})
+    })
+    .then(response => response.json())
+    .then(data =>{
+        console.log(data);
+        if(data.success){
+            //set lai bien de check cookie
+            dataCookie=undefined;
+            alert("Đăng xuất thành công!");
+            // window.location.reload();
+            checkLoginStatus(data);
+        }
+    })
 }
