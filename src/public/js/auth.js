@@ -71,15 +71,27 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    //ham doi ki tu dac biet luu tren cookie thanh @
+    function decodeEmail(encodedEmail) {
+        if (!encodedEmail) return "";
+        
+        if (encodedEmail.includes("%40")) {
+            return encodedEmail.replace(/%40/g, "@");
+        }
+        
+        // Không có %40 thì trả về chuỗi cũ
+        return encodedEmail;
+    }
 
     //tự động đăng nhập nếu người dùng lưu tài khoản
     function autoLogin() {
-        let username = getCookie('username')
+        let username = decodeEmail(getCookie('username'));
+        
         if (username) {
             fetch("../../controllers/AuthController.php", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username })
+                body: JSON.stringify({username})
             })
                 .then(response => response.json())
                 .then(data => {
