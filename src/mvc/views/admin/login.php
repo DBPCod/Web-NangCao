@@ -22,6 +22,7 @@
 
 <head>
     <title>SmartStation</title>
+    <link rel="shortcut icon" href="../../../public//img/logo.png" type="image/x-icon">
     <link rel="stylesheet" href="../../../public/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="../../../public/css/adminLogin.css">
 </head>
