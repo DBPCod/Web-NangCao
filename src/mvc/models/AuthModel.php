@@ -32,14 +32,31 @@ class AuthModel{
 
     public function KiemTraTaiKhoan($username, $password)
     {
-            $stmt = $this->db->prepare("SELECT t.idnguoidung, n.hovaten, n.email 
+        $hahDB = $this->GetMatKhau($username);
+            if(password_verify($password,$hahDB))
+            {
+                $stmt = $this->db->prepare("SELECT t.idnguoidung, n.hovaten, n.email 
                 FROM taikhoan t 
                 JOIN nguoidung n ON t.idnguoidung = n.idnguoidung 
-                WHERE t.TaiKhoan = ? AND t.MatKhau = ?");
-            $stmt->bind_param("ss",$username,$password);
-            $stmt->execute();
-            $row = $stmt->get_result()->fetch_assoc();
-            return $row ? $row["hovaten"] : null; 
+                WHERE t.TaiKhoan = ?");
+                $stmt->bind_param("s",$username);
+                $stmt->execute();
+                $row = $stmt->get_result()->fetch_assoc();
+                return $row ? $row["hovaten"] : null; 
+            }
+    }
+
+    //lay thong tu dang nhap tự động
+    public function GetInfo($username)
+    {
+                $stmt = $this->db->prepare("SELECT t.idnguoidung, n.hovaten, n.email 
+                FROM taikhoan t 
+                JOIN nguoidung n ON t.idnguoidung = n.idnguoidung 
+                WHERE t.TaiKhoan = ?");
+                $stmt->bind_param("s",$username);
+                $stmt->execute();
+                $row = $stmt->get_result()->fetch_assoc();
+                return $row ? $row["hovaten"] : null; 
     }
 
     public function AddAccount($input)
@@ -64,9 +81,10 @@ class AuthModel{
 
         //IdTaiKhoan, TaiKhoan, MatKhau, TrangThai, IdVaiTro, IdNguoiDung
         $taikhoanModel = new TaiKhoanModel();
+
         $data1 = [     
             'TaiKhoan' => $username,           // Tên đăng nhập của tài khoản
-            'MatKhau' => $password,        // Mật khẩu đã được băm (bằng password_hash)
+            'MatKhau' => password_hash($password, PASSWORD_DEFAULT),        // Mật khẩu đã được băm (bằng password_hash)
             'TrangThai' => 1,                  // Trạng thái tài khoản (1 cho active, 0 cho inactive)
             'IdVaiTro' => 3,          // ID vai trò của tài khoản (ví dụ: 1 cho admin, 2 cho user)
             'IdNguoiDung' => $user['IdNguoiDung']     // ID người dùng (liên kết với bảng người dùng)

@@ -70,8 +70,7 @@ include_once '../models/CookieManager.php';
                         $username = $input["username"];
                         if($this->model->KiemTraTaiKhoanTonTai($username))
                         {
-                            $password = $this->model->GetMatKhau($username);
-                            $user = $this->model->KiemTraTaiKhoan($username,$password);
+                            $user = $this->model->GetInfo($username);
                             if($user)
                             {
                                 //luu vao session
