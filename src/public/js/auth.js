@@ -1,12 +1,26 @@
+let dataCookie;
 document.addEventListener('DOMContentLoaded', function () {
+
+
+    //kiểm tra tự động đăng nhập
+    autoLogin();
+
     // Kiểm tra trạng thái đăng nhập khi tải trang
-    checkLoginStatus();
+    checkLoginStatus({"success" : false});
 
     // Xử lý click vào icon tài khoản trên desktop
     const accountLinkDesktop = document.getElementById('accountDropdownDesktop');
     if (accountLinkDesktop) {
         accountLinkDesktop.addEventListener('click', function (e) {
-            if (localStorage.getItem('isLoggedIn') !== 'true') {
+
+            // if (localStorage.getItem('isLoggedIn') !== 'true') {
+                // e.preventDefault();
+                // e.stopPropagation();
+                // const loginModal = new bootstrap.Modal(document.getElementById('loginPopup'));
+                // loginModal.show();
+            // }
+            if(dataCookie === undefined)
+            {
                 e.preventDefault();
                 e.stopPropagation();
                 const loginModal = new bootstrap.Modal(document.getElementById('loginPopup'));
@@ -59,6 +73,30 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     
 
+    //tự động đăng nhập nếu người dùng lưu tài khoản
+    function autoLogin()
+    {
+        let username = getCookie('username')
+        if(username)
+        {
+            fetch("../../controllers/AuthController.php",{
+            method: "POST",
+            headers: {"Content-Type" : "application/json" },
+            body: JSON.stringify({username})
+            })
+            .then(response => response.json())
+            .then(data =>{
+                dataCookie=data;
+                xuliWarning(data.theloai);  
+                console.log(data);
+                if(data.success){
+                    checkLoginStatus(data);
+                }
+            })
+        }
+        
+    }
+
     // Xử lý form đăng nhập
     const loginForm = document.querySelector('#loginPopup form');
     if (loginForm) {
@@ -73,9 +111,15 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .then(response => response.json())
             .then(data =>{
+                xuliWarning(data.theloai);  
+                console.log(data);
                 if(data.success){
+                    dataCookie=data;
                     alert("Đăng nhập thành công!");
                     // window.location.reload();
+                    const loginModal = bootstrap.Modal.getInstance(document.getElementById('loginPopup'));
+                    loginModal.hide();
+                    checkLoginStatus(data);
                 }
             })
 
@@ -88,21 +132,58 @@ document.addEventListener('DOMContentLoaded', function () {
             //     localStorage.setItem('email', '');
             //     localStorage.setItem('address', '');
 
-            //     const loginModal = bootstrap.Modal.getInstance(document.getElementById('loginPopup'));
-            //     loginModal.hide();
 
-            //     checkLoginStatus();
             // } else {
             //     alert('Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu!');
             // }
         });
     }
 
+    //ham lay cookie
+    function getCookie(name) {
+        let cookies = document.cookie.split('; ');
+        for (let i = 0; i < cookies.length; i++) {
+            let cookie = cookies[i].split('=');
+            if (cookie[0] === name) {
+                return cookie[1];
+            }
+        }
+        return null; // Nếu không tìm thấy cookie
+    }
+
+    function xuliWarning($theloai)
+    {
+        if($theloai == "TAIKHOAN")
+        { 
+            document.getElementById('username').classList.add('error');
+            document.getElementById('username-warning').classList.remove('d-none');
+            document.getElementById('username-error').classList.remove('d-none');
+            document.getElementById('username').select();
+        } else {
+            document.getElementById('username').classList.remove('error');
+            document.getElementById('username-warning').classList.add('d-none');
+            document.getElementById('username-error').classList.add('d-none');
+        }
+
+        if ($theloai == "MATKHAU") {
+            document.getElementById('password').classList.add('error');
+            document.getElementById('password-warning').classList.remove('d-none');
+            document.getElementById('password-error').classList.remove('d-none');
+            document.getElementById('password').select();
+        }
+        else
+        {
+            document.getElementById('password').classList.remove('error');
+            document.getElementById('password-warning').classList.add('d-none');
+            document.getElementById('password-error').classList.add('d-none');
+        }
+    }
     // Xử lý đăng xuất - Desktop
     const logoutLinkDesktop = document.getElementById('logoutLinkDesktop');
     if (logoutLinkDesktop) {
         logoutLinkDesktop.addEventListener('click', function (e) {
             e.preventDefault();
+            console.log("a");
             logoutUser();
         });
     }
@@ -132,18 +213,17 @@ document.addEventListener('DOMContentLoaded', function () {
             const email = document.getElementById('email').value;
             const address = document.getElementById('address').value;
 
-            localStorage.setItem('isLoggedIn', 'true');
-            localStorage.setItem('username', username);
-            localStorage.setItem('password', password);
-            localStorage.setItem('fullName', fullName);
-            localStorage.setItem('phone', phone);
-            localStorage.setItem('email', email);
-            localStorage.setItem('address', address);
+            PostSignup(username, password, fullName, phone, email, address);
+            // localStorage.setItem('isLoggedIn', 'true');
+            // localStorage.setItem('username', username);
+            // localStorage.setItem('password', password);
+            // localStorage.setItem('fullName', fullName);
+            // localStorage.setItem('phone', phone);
+            // localStorage.setItem('email', email);
+            // localStorage.setItem('address', address);
 
             const registerModal = bootstrap.Modal.getInstance(document.getElementById('registerPopup'));
             registerModal.hide();
-
-            checkLoginStatus();
         });
     }
 
@@ -248,19 +328,37 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
+
+    // post dang ki tai khoan
+function PostSignup(username, password, fullName, phone, email, address){
+    fetch("../../controllers/AuthController.php",{
+        method: "POST",
+        headers: {"Content-Type" : "application/json" },
+        body: JSON.stringify({username, password, fullName, phone, email, address})
+    })
+    .then(response => response.json())
+    .then(data =>{
+        if(data.success){
+            alert("Đăng kí thành công");
+            checkLoginStatus(data);
+        }
+    })     
+}
+
 // Hàm kiểm tra trạng thái đăng nhập và cập nhật UI
-function checkLoginStatus() {
-    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-    const username = localStorage.getItem('username') || '';
+function checkLoginStatus(data) {
+    // const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    // const username = localStorage.getItem('username') || '';
 
     // Cập nhật giao diện cho desktop
     const accountTextDesktop = document.getElementById('accountTextDesktop');
     const accountDropdownDesktop = document.getElementById('accountDropdownDesktop');
     if (accountTextDesktop && accountDropdownDesktop) {
-        if (isLoggedIn) {
-            accountTextDesktop.textContent = username || 'Tài khoản';
+        if (data.success && data.user) {
+            accountTextDesktop.textContent = data.user || 'Tài khoản';
             accountDropdownDesktop.setAttribute('data-bs-toggle', 'dropdown');
         } else {
+            console.log("a");
             accountTextDesktop.textContent = 'Đăng nhập';
             accountDropdownDesktop.removeAttribute('data-bs-toggle');
         }
@@ -270,7 +368,7 @@ function checkLoginStatus() {
     const mobileLoginLink = document.getElementById('mobileLoginLink');
     const navbarToggler = document.getElementById('navbarToggler');
     if (mobileLoginLink && navbarToggler) {
-        if (isLoggedIn) {
+        if (data.success && data.user) {
             mobileLoginLink.style.display = 'none'; // Ẩn nút đăng nhập
             navbarToggler.style.display = 'block'; // Hiển thị hamburger
             navbarToggler.setAttribute('data-bs-toggle', 'offcanvas');
@@ -294,5 +392,21 @@ function logoutUser() {
     localStorage.removeItem('email');
     localStorage.removeItem('address');
     
-    checkLoginStatus();
+    //xử lý sự kiện đăng xuất
+    fetch("../../controllers/AuthController.php",{
+        method: "POST",
+        headers: {"Content-Type" : "application/json" },
+        body: JSON.stringify({})
+    })
+    .then(response => response.json())
+    .then(data =>{
+        console.log(data);
+        if(data.success){
+            //set lai bien de check cookie
+            dataCookie=undefined;
+            alert("Đăng xuất thành công!");
+            // window.location.reload();
+            checkLoginStatus(data);
+        }
+    })
 }
