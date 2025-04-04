@@ -7,7 +7,7 @@
                 <div class="text-center mb-4">
                     <h5 class="modal-title mt-2">Đăng ký</h5>
                 </div>
-                <form action="controllers/auth_controller.php" method="POST" id="registerForm">
+                <form action="" method="POST" id="registerForm">
                     <div class="mb-3">
                         <input type="text" class="form-control custom-input" id="registerUsername" name="username" placeholder="Tên đăng nhập" required>
                         <div id="usernameError" class="text-danger mt-2" style="display: none;">Tên đăng nhập không được để trống!</div>

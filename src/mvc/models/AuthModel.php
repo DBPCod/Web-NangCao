@@ -1,5 +1,7 @@
 <?php
 include_once '../core/DB.php';
+include_once '../models/NguoiDungModel.php';
+include_once '../models/TaiKhoanModel.php';
 class AuthModel{
     private $db;
 
@@ -38,6 +40,38 @@ class AuthModel{
             $stmt->execute();
             $row = $stmt->get_result()->fetch_assoc();
             return $row ? $row["hovaten"] : null; 
+    }
+
+    public function AddAccount($input)
+    {
+        // Lấy từng giá trị từ mảng $input
+        $username = isset($input['username']) ? $input['username'] : '';
+        $password = isset($input['password']) ? $input['password'] : '';
+        $fullName = isset($input['fullName']) ? $input['fullName'] : '';
+        $phone = isset($input['phone']) ? $input['phone'] : '';
+        $email = isset($input['email']) ? $input['email'] : '';
+        $address = isset($input['address']) ? $input['address'] : '';
+
+        $nguoidungModel = new NguoiDungModel();
+        $data = [
+            'HoVaTen' => $fullName,
+            'Email' => $email,
+            'DiaChi' => $address,
+            'SoDienThoai' => $phone,
+            'TrangThai' => 1  // Trạng thái người dùng (ví dụ: 1 cho active, 0 cho inactive)
+        ];
+        $user = $nguoidungModel->addNguoiDung($data);
+
+        //IdTaiKhoan, TaiKhoan, MatKhau, TrangThai, IdVaiTro, IdNguoiDung
+        $taikhoanModel = new TaiKhoanModel();
+        $data1 = [     
+            'TaiKhoan' => $username,           // Tên đăng nhập của tài khoản
+            'MatKhau' => $password,        // Mật khẩu đã được băm (bằng password_hash)
+            'TrangThai' => 1,                  // Trạng thái tài khoản (1 cho active, 0 cho inactive)
+            'IdVaiTro' => 3,          // ID vai trò của tài khoản (ví dụ: 1 cho admin, 2 cho user)
+            'IdNguoiDung' => $user['IdNguoiDung']     // ID người dùng (liên kết với bảng người dùng)
+        ];
+        return $taikhoanModel->addTaiKhoan($data1);
     }
 }
 

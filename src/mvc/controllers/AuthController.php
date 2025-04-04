@@ -18,7 +18,18 @@ include_once '../models/CookieManager.php';
             switch($method)
             {
                 case 'POST':
-                    if(isset($input['username']) && isset($input['password']))
+                    if(isset($input['username']) && isset($input['password']) && isset($input['fullName']))
+                    {
+                        $account = $this->model->AddAccount($input);
+                        if($account)
+                        {
+                            echo json_encode(["success" => true, "message" => "Tạo tài khoản thành công!","user" => $account]);
+                        }
+                        else
+                        {
+                            echo json_encode(["success" => false, "message" => "Tạo tài khoản thất bại!","theloai" => "SIGNUPFAIL"]);
+                        }
+                    }if(isset($input['username']) && isset($input['password']))
                     {
                         //xu ly dang nhap thu cong
                         $username = $input["username"];
@@ -73,6 +84,7 @@ include_once '../models/CookieManager.php';
                                 echo json_encode(["success" => false, "message" => "Mật khẩu sai!","theloai" => "MATKHAU"]);
                             }
                         }
+                        //username, password, fullName, phone, email, address
                     }else
                     {
                         //lây session đang hoạt động

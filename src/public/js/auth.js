@@ -213,18 +213,17 @@ document.addEventListener('DOMContentLoaded', function () {
             const email = document.getElementById('email').value;
             const address = document.getElementById('address').value;
 
-            localStorage.setItem('isLoggedIn', 'true');
-            localStorage.setItem('username', username);
-            localStorage.setItem('password', password);
-            localStorage.setItem('fullName', fullName);
-            localStorage.setItem('phone', phone);
-            localStorage.setItem('email', email);
-            localStorage.setItem('address', address);
+            PostSignup(username, password, fullName, phone, email, address);
+            // localStorage.setItem('isLoggedIn', 'true');
+            // localStorage.setItem('username', username);
+            // localStorage.setItem('password', password);
+            // localStorage.setItem('fullName', fullName);
+            // localStorage.setItem('phone', phone);
+            // localStorage.setItem('email', email);
+            // localStorage.setItem('address', address);
 
             const registerModal = bootstrap.Modal.getInstance(document.getElementById('registerPopup'));
             registerModal.hide();
-
-            checkLoginStatus();
         });
     }
 
@@ -329,6 +328,23 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
+
+    // post dang ki tai khoan
+function PostSignup(username, password, fullName, phone, email, address){
+    fetch("../../controllers/AuthController.php",{
+        method: "POST",
+        headers: {"Content-Type" : "application/json" },
+        body: JSON.stringify({username, password, fullName, phone, email, address})
+    })
+    .then(response => response.json())
+    .then(data =>{
+        if(data.success){
+            alert("Đăng kí thành công");
+            checkLoginStatus(data);
+        }
+    })     
+}
+
 // Hàm kiểm tra trạng thái đăng nhập và cập nhật UI
 function checkLoginStatus(data) {
     // const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
@@ -352,7 +368,7 @@ function checkLoginStatus(data) {
     const mobileLoginLink = document.getElementById('mobileLoginLink');
     const navbarToggler = document.getElementById('navbarToggler');
     if (mobileLoginLink && navbarToggler) {
-        if (data.success) {
+        if (data.success && data.user) {
             mobileLoginLink.style.display = 'none'; // Ẩn nút đăng nhập
             navbarToggler.style.display = 'block'; // Hiển thị hamburger
             navbarToggler.setAttribute('data-bs-toggle', 'offcanvas');
