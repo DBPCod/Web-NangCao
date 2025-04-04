@@ -23,7 +23,7 @@ include_once '../models/CookieManager.php';
                         $account = $this->model->AddAccount($input);
                         if($account)
                         {
-                            echo json_encode(["success" => true, "message" => "Tạo tài khoản thành công!","user" => $account]);
+                            // echo json_encode(["success" => true, "message" => "Tạo tài khoản thành công!","user" => $account]);
                         }
                         else
                         {
