@@ -2,7 +2,7 @@
 .sidebar {
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    height: 100vh; /* Thay min-height thành height để cố định */
     background-color: #f8f9fa;
     padding: 1.5rem;
     position: fixed;
@@ -11,7 +11,14 @@
     width: 250px;
     box-shadow: 2px 0 5px rgba(0,0,0,0.1);
     transition: all 0.3s ease;
-    z-index: 1000; /* Đảm bảo sidebar nằm trên header */
+    z-index: 1000;
+    overflow-y: auto; /* Thêm cuộn dọc nếu nội dung dài */
+    transform: translateX(0);
+}
+
+/* Khi sidebar ẩn */
+.sidebar.hidden {
+    transform: translateX(-100%);
 }
 
 /* Logo và tiêu đề */
@@ -73,14 +80,11 @@
 
 /* Sidebar footer */
 .sidebar-footer {
-    position: absolute;
-    bottom: 10px;
-    left: 0;
-    width: 100%;
     padding: 0 1.5rem;
     color: #666;
     font-size: 0.85rem;
     text-align: center;
+    margin-top: auto; /* Đẩy footer xuống dưới cùng */
 }
 
 /* Header */
@@ -99,6 +103,11 @@
     transition: left 0.3s ease; /* Hiệu ứng mượt khi thay đổi */
 }
 
+/* Khi sidebar ẩn, header full width */
+.header.full-width {
+    left: 0;
+}
+
 /* Content area */
 .content-area {
     padding: 2rem;
@@ -112,6 +121,11 @@
 .content-area h2 {
     color: #218838;
     margin-bottom: 20px;
+}
+
+/* Khi sidebar ẩn, content full width */
+.content-area.full-width {
+    margin-left: 0;
 }
 
 .table {
@@ -142,8 +156,8 @@
     border-radius: 5px;
     padding: 10px 15px;
     font-size: 1.2rem;
-    display: none; /* Ẩn mặc định trên màn hình lớn */
     transition: all 0.3s ease;
+    /* display: none; */
 }
 
 #sidebarToggle:hover {

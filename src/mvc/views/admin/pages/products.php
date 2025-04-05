@@ -4,22 +4,15 @@
     <table class="table">
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Tên sản phẩm</th>
-                <th>Giá</th>
+                <th>ID Cửa hàng</th>
+                <th>ID Dòng sản phẩm</th>
+                <th>Số lượng</th>
+                <th>Trạng thái</th>
                 <th>Hành động</th>
             </tr>
         </thead>
-        <tbody>
-            <tr>
-                <td>1</td>
-                <td>Máy tính xách tay</td>
-                <td>15,000,000 đ</td>
-                <td>
-                    <button class="btn btn-primary">Sửa</button>
-                    <button class="btn btn-danger">Xóa</button>
-                </td>
-            </tr>
-        </tbody>
+        <tbody id="productTableBody"></tbody>
     </table>
 </div>
+
+<script src="/smartstation/src/public/js/admin/products.js"></script>

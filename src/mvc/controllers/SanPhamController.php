@@ -1,14 +1,17 @@
 <?php
 include_once __DIR__ . '../../models/SanPhamModel.php';
 
-class SanPhamController {
+class SanPhamController
+{
     private $model;
 
-    public function __construct() {
-        $this->model = new SanPhamModel();
+    public function __construct()
+    {
+        $this->model = new SanPhamModel(); // Khởi tạo $model trong constructor
     }
 
-    public function handleRequest() {
+    public function handleRequest()
+    {
         header("Content-Type: application/json");
         $method = $_SERVER["REQUEST_METHOD"];
         $input = json_decode(file_get_contents('php://input'), true);
@@ -25,34 +28,38 @@ class SanPhamController {
 
             case 'POST':
                 $newProduct = $this->model->addProduct($input);
-                
                 echo json_encode([
-                    "message: " => "Them san pham thanh cong",
+                    "message" => "Thêm sản phẩm thành công",
                     "product" => $newProduct
                 ]);
                 break;
 
             case 'PUT':
-                //đổi sang kiểu đọc json
                 $json = file_get_contents("php://input");
                 $_PUT = json_decode($json, true);
-                if($_GET['idCHSP'] && $_GET['idDSP'])
-                {
-                    $result = $this->model->updateProduct($_PUT['IdCHSP'], $_PUT['IdDongSanPham'], $_PUT['SoLuong'], $_PUT['TrangThai']);
+                if (isset($_GET['idCHSP']) && isset($_GET['idDSP'])) {
+                    $result = $this->model->updateProduct($_GET['idCHSP'], $_GET['idDSP'], $_PUT['SoLuong'], $_PUT['TrangThai']);
                     echo json_encode(["message" => $result ? "Cập nhật thành công" : "Cập nhật thất bại"]);
                 }
                 break;
+
             case 'DELETE':
-                if(isset($_GET['idCHSP']) && $_GET['idDSP'])
-                {
-                    $result = $this->model->deleteProduct($_GET['idCHSP'],$_GET['idDSP']);
+                if (isset($_GET['idCHSP']) && isset($_GET['idDSP'])) {
+                    $result = $this->model->deleteProduct($_GET['idCHSP'], $_GET['idDSP']);
                     echo json_encode(["message" => $result ? "Xóa thành công" : "Xóa thất bại"]);
                 }
                 break;
+
             default:
                 echo json_encode(["message" => "Yêu cầu không hợp lệ"]);
         }
     }
+
+    // Thêm getter để truy cập $model từ bên ngoài nếu cần
+    public function getModel()
+    {
+        return $this->model;
+    }
 }
+
 (new SanPhamController())->handleRequest();
-?>

@@ -225,3 +225,34 @@ function handleMouseLeave() {
     const accountDropdown = document.getElementById('accountDropdown');
     accountDropdown.style.display = 'none';
 }
+
+//hiển thị bảng câp nhật thông tin 
+function showTab(tabName) {
+    // Ẩn tất cả tab
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+    });
+
+    // Xóa class active khỏi tất cả nút
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    // Hiển thị tab được chọn
+    const selectedTab = document.getElementById(tabName);
+    if (selectedTab) {
+        selectedTab.classList.add('active');
+    } else {
+        console.error(`Không tìm thấy tab với id: ${tabName}`);
+    }
+
+    // Thêm class active cho nút
+    const selectedBtn = document.querySelector(`button[onclick="showTab('${tabName}')"]`);
+    if (selectedBtn) {
+        selectedBtn.classList.add('active');
+    } else {
+        console.error(`Không tìm thấy nút với onclick: showTab('${tabName}')`);
+    }
+}
+
+

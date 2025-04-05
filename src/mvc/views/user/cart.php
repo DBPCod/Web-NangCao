@@ -11,7 +11,7 @@
                 </div>
                 <div class="cart-items">
                     <div class="cart-item d-flex align-items-center mb-3">
-                        <img src="./src/public/img/ip16_1.png" alt="Product" class="img-thumbnail me-3" style="width: 60px;">
+                        <img src="../../../public/img/ip16_1.png" alt="Product" class="img-thumbnail me-3" style="width: 60px;">
                         <div class="flex-grow-1">
                             <h6 class="mb-1">Tên sản phẩm</h6>
                             <p class="mb-0 text-muted">100.000 VNĐ x 1</p>
@@ -19,7 +19,7 @@
                         <button class="btn btn-sm btn-danger ms-3">Xóa</button>
                     </div>
                     <div class="cart-item d-flex align-items-center mb-3">
-                        <img src="./src/public/img/ip16_1.png" alt="Product" class="img-thumbnail me-3" style="width: 60px;">
+                        <img src="../../../public/img/ip16_1.png" alt="Product" class="img-thumbnail me-3" style="width: 60px;">
                         <div class="flex-grow-1">
                             <h6 class="mb-1">Tên sản phẩm</h6>
                             <p class="mb-0 text-muted">100.000 VNĐ x 1</p>
@@ -27,7 +27,7 @@
                         <button class="btn btn-sm btn-danger ms-3">Xóa</button>
                     </div>
                     <div class="cart-item d-flex align-items-center mb-3">
-                        <img src="./src/public/img/ip16_1.png" alt="Product" class="img-thumbnail me-3" style="width: 60px;">
+                        <img src="../../../public/img/ip16_1.png" alt="Product" class="img-thumbnail me-3" style="width: 60px;">
                         <div class="flex-grow-1">
                             <h6 class="mb-1">Tên sản phẩm</h6>
                             <p class="mb-0 text-muted">100.000 VNĐ x 1</p>
@@ -35,7 +35,7 @@
                         <button class="btn btn-sm btn-danger ms-3">Xóa</button>
                     </div>
                     <div class="cart-item d-flex align-items-center mb-3">
-                        <img src="./src/public/img/ip16_1.png" alt="Product" class="img-thumbnail me-3" style="width: 60px;">
+                        <img src="../../../public/img/ip16_1.png" alt="Product" class="img-thumbnail me-3" style="width: 60px;">
                         <div class="flex-grow-1">
                             <h6 class="mb-1">Tên sản phẩm</h6>
                             <p class="mb-0 text-muted">100.000 VNĐ x 1</p>
@@ -43,7 +43,7 @@
                         <button class="btn btn-sm btn-danger ms-3">Xóa</button>
                     </div>
                     <div class="cart-item d-flex align-items-center mb-3">
-                        <img src="./src/public/img/ip16_1.png" alt="Product" class="img-thumbnail me-3" style="width: 60px;">
+                        <img src="../../../public/img/ip16_1.png" alt="Product" class="img-thumbnail me-3" style="width: 60px;">
                         <div class="flex-grow-1">
                             <h6 class="mb-1">Tên sản phẩm</h6>
                             <p class="mb-0 text-muted">100.000 VNĐ x 1</p>
@@ -51,7 +51,7 @@
                         <button class="btn btn-sm btn-danger ms-3">Xóa</button>
                     </div>
                     <div class="cart-item d-flex align-items-center mb-3">
-                        <img src="./src/public/img/ip16_1.png" alt="Product" class="img-thumbnail me-3" style="width: 60px;">
+                        <img src="../../../public/img/ip16_1.png" alt="Product" class="img-thumbnail me-3" style="width: 60px;">
                         <div class="flex-grow-1">
                             <h6 class="mb-1">Tên sản phẩm</h6>
                             <p class="mb-0 text-muted">100.000 VNĐ x 1</p>
@@ -59,7 +59,7 @@
                         <button class="btn btn-sm btn-danger ms-3">Xóa</button>
                     </div>
                     <div class="cart-item d-flex align-items-center mb-3">
-                        <img src="./src/public/img/ip16_1.png" alt="Product" class="img-thumbnail me-3" style="width: 60px;">
+                        <img src="../../../public/img/ip16_1.png" alt="Product" class="img-thumbnail me-3" style="width: 60px;">
                         <div class="flex-grow-1">
                             <h6 class="mb-1">Tên sản phẩm</h6>
                             <p class="mb-0 text-muted">100.000 VNĐ x 1</p>
@@ -67,7 +67,7 @@
                         <button class="btn btn-sm btn-danger ms-3">Xóa</button>
                     </div>
                     <div class="cart-item d-flex align-items-center mb-3">
-                        <img src="./src/public/img/ip16_1.png" alt="Product" class="img-thumbnail me-3" style="width: 60px;">
+                        <img src="../../../public/img/ip16_1.png" alt="Product" class="img-thumbnail me-3" style="width: 60px;">
                         <div class="flex-grow-1">
                             <h6 class="mb-1">Tên sản phẩm</h6>
                             <p class="mb-0 text-muted">100.000 VNĐ x 1</p>
@@ -75,7 +75,7 @@
                         <button class="btn btn-sm btn-danger ms-3">Xóa</button>
                     </div>
                     <div class="cart-item d-flex align-items-center mb-3">
-                        <img src="./src/public/img/ip16_1.png" alt="Product" class="img-thumbnail me-3" style="width: 60px;">
+                        <img src="../../../public/img/ip16_1.png" alt="Product" class="img-thumbnail me-3" style="width: 60px;">
                         <div class="flex-grow-1">
                             <h6 class="mb-1">Tên sản phẩm</h6>
                             <p class="mb-0 text-muted">100.000 VNĐ x 1</p>
@@ -83,7 +83,7 @@
                         <button class="btn btn-sm btn-danger ms-3">Xóa</button>
                     </div>
                     <div class="cart-item d-flex align-items-center mb-3">
-                        <img src="./src/public/img/ip16_1.png" alt="Product" class="img-thumbnail me-3" style="width: 60px;">
+                        <img src="../../../public/img/ip16_1.png" alt="Product" class="img-thumbnail me-3" style="width: 60px;">
                         <div class="flex-grow-1">
                             <h6 class="mb-1">Tên sản phẩm</h6>
                             <p class="mb-0 text-muted">100.000 VNĐ x 1</p>
@@ -98,7 +98,7 @@
                     <div class="form-check">
                         <input class="form-check-input" type="radio" name="addressOption" id="defaultAddress" value="default" checked>
                         <label class="form-check-label" for="defaultAddress">
-                            Sử dụng địa chỉ mặc định
+                            Sử dụng địa chỉ mặc định của bạn: <?php echo $defaultAddress; ?>
                         </label>
                     </div>
                     <div class="form-check mt-2">

@@ -38,7 +38,7 @@ class NguoiDungController {
 
                 if (isset($_GET['idNguoiDung'])) {
                     $result = $this->model->updateNguoiDung($_GET['idNguoiDung'], $_PUT);
-                    echo json_encode(["message" => $result ? "Cập nhật thành công" : "Cập nhật thất bại"]);
+                    echo json_encode(["success" => $result,"message" => $result ? "Cập nhật thành công" : "Cập nhật thất bại"]);
                 } else {
                     echo json_encode(["message" => "Thiếu idNguoiDung"]);
                 }
