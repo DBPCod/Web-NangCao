@@ -21,11 +21,11 @@
         </a>
         <div class="collapse ms-3" id="productMenu">
             <a class="nav-link" href="#" data-section="products">Danh sách sản phẩm</a>
-            <a class="nav-link" href="#" data-section="promotions">Khuyến mãi</a>
-            <a class="nav-link" href="#" data-section="warranty">Bảo hành</a>
             <a class="nav-link" href="#" data-section="productLine">Dòng sản phẩm</a>
             <a class="nav-link" href="#" data-section="productConfig">Cấu hình sản phẩm</a>
             <a class="nav-link" href="#" data-section="brand">Thương hiệu</a>
+            <a class="nav-link" href="#" data-section="promotions">Khuyến mãi</a>
+            <a class="nav-link" href="#" data-section="warranty">Bảo hành</a>
         </div>
 
         <!-- Quản lý phiếu nhâp -->
