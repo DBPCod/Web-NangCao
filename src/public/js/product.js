@@ -1,7 +1,7 @@
 $(document).ready(function () {
     function loadProducts(page) {
         $.ajax({
-            url: "./src/public/product.json", // Đường dẫn file JSON
+            url: "./src/public/product.jsonjson", // Đường dẫn file JSON
             method: "GET",
             dataType: "json",
             success: function (data) {
