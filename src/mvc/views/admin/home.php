@@ -8,10 +8,13 @@
     <link rel="shortcut icon" href="../../../public/img/logo.png" type="image/x-icon">
     <link rel="stylesheet" href="../../../public/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="../../../public/css/admin.css">
+    <link rel="stylesheet" href="../../../public/toast_message/main.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css" integrity="sha512-1sCRPdkRXhBV2PBLUdRb4tMg1w2YPf37qatUFeS7zlBy7jJI8Lf4VHwWfZZfpXtYSLy85pkm9GaYVYMfw5BC1A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 
 <body>
+    <div id="toast" class="toast-container"></div>
     <div class="container-fluid">
         <div class="row">
             <?php include '../../../mvc/views/admin/includes/sidebar.php'; ?>
@@ -24,6 +27,7 @@
 
     <script src="../../../public/js/jquery.js"></script>
     <script src="../../../public/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="../../../public/toast_message/main.js"></script>
     <script>
         $(document).ready(function() {
             $("#contentArea").load("../../../mvc/views/admin/pages/overview.php");
@@ -43,6 +47,10 @@
                         type: "GET",
                         success: function(data) {
                             $("#contentArea").html(data);
+                            // Gọi hàm loadProducts nếu section là products
+                            if (section === 'products' && typeof loadProducts === 'function') {
+                                loadProducts();
+                            }
                         },
                         error: function() {
                             $("#contentArea").html("<p class='text-danger'>Không thể tải trang!</p>");

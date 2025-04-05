@@ -1,5 +1,5 @@
 <?php
-include "../../../config.php";
+include "config.php";
 // include "./config.php";
 //db_name, db_user, ... đã được cấu hình trong config.php
 class DB{

@@ -12,9 +12,9 @@
     border-radius: 2px;
     border-left: 4px solid;
     box-shadow: 0 5px 8px rgba(0, 0, 0, 0.08);
-    padding: 20px 0;
+    padding: 50px 0;
     min-width: 280px;
-    max-width: 450px;
+    max-width: 400px;
     height: 80px;
 }
 
