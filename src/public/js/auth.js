@@ -71,15 +71,26 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    //ham doi ki tu dac biet luu tren cookie thanh @
+    function decodeEmail(encodedEmail) {
+        if (!encodedEmail) return "";
+        
+        if (encodedEmail.includes("%40")) {
+            return encodedEmail.replace(/%40/g, "@");
+        }
+        
+        // Không có %40 thì trả về chuỗi cũ
+        return encodedEmail;
+    }
 
     //tự động đăng nhập nếu người dùng lưu tài khoản
     function autoLogin() {
-        let username = getCookie('username')
+        let username = decodeEmail(getCookie('username'));
         if (username) {
             fetch("../../controllers/AuthController.php", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username })
+                body: JSON.stringify({username})
             })
                 .then(response => response.json())
                 .then(data => {
@@ -152,7 +163,6 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(data =>{
                 xuliWarning(data.theloai);  
                 console.log(data);
-                console.log('kiem tra toaast')
                 if(data.success){
                     dataCookie=data;
                     toast({
@@ -257,33 +267,38 @@ document.addEventListener('DOMContentLoaded', function () {
     // Xử lý form cập nhật thông tin
     const updateProfileForm = document.querySelector('#updateProfileForm');
     if (updateProfileForm) {
+        let cookie = getCookie('username');
         const updateProfileModal = document.getElementById('updateProfile');
         updateProfileModal.addEventListener('show.bs.modal', function () {
-            document.getElementById('updateUsername').value = localStorage.getItem('username') || '';
-            document.getElementById('updateFullName').value = localStorage.getItem('fullName') || '';
-            document.getElementById('updatePhone').value = localStorage.getItem('phone') || '';
-            document.getElementById('updateEmail').value = localStorage.getItem('email') || '';
-            document.getElementById('updateAddress').value = localStorage.getItem('address') || '';
+            SetInfor(cookie);
+            // document.getElementById('updateUsername').value = localStorage.getItem('username') || '';
+            // document.getElementById('updateFullName').value = localStorage.getItem('fullName') || '';
+            // document.getElementById('updatePhone').value = localStorage.getItem('phone') || '';
+            // document.getElementById('updateEmail').value = localStorage.getItem('email') || '';
+            // document.getElementById('updateAddress').value = localStorage.getItem('address') || '';
         });
 
         updateProfileForm.addEventListener('submit', function (e) {
             e.preventDefault();
-            const currentPassword = document.getElementById('currentPassword').value;
-            const storedPassword = localStorage.getItem('password');
+            console.log(e);
             const fullName = document.getElementById('updateFullName').value;
             const phone = document.getElementById('updatePhone').value;
             const email = document.getElementById('updateEmail').value;
             const address = document.getElementById('updateAddress').value;
-            const newPassword = document.getElementById('updatePassword').value;
-            const confirmPassword = document.getElementById('updateConfirmPassword').value;
+            const newPassword = document.getElementById('updatePassword');
+            const confirmPassword = document.getElementById('updateConfirmPassword');
+            // if(CheckPass(taikhoan, currentPassword.value))
+            // {
+            //     // console.log(CheckPass(taikhoan, currentPassword.value));
+            //     document.getElementById('currentPasswordError').style.display = 'none';
+            //     console.log('aaa');
+            // }
+            // else {
+            //     document.getElementById('currentPasswordError').style.display = 'block';
+            //     console.log("b");
+            // }
 
-            if (currentPassword !== storedPassword) {
-                document.getElementById('currentPasswordError').style.display = 'block';
-                return;
-            } else {
-                document.getElementById('currentPasswordError').style.display = 'none';
-            }
-
+            CheckPass();
             if (newPassword && newPassword.length < 8) {
                 document.getElementById('updatePasswordLengthError').style.display = 'block';
                 return;
@@ -291,25 +306,150 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.getElementById('updatePasswordLengthError').style.display = 'none';
             }
 
-            if (newPassword && newPassword !== confirmPassword) {
+            if (newPassword && newPassword.value !== confirmPassword.value) {
                 document.getElementById('updatePasswordMatchError').style.display = 'block';
                 return;
             } else {
                 document.getElementById('updatePasswordMatchError').style.display = 'none';
             }
-
-            localStorage.setItem('fullName', fullName);
-            localStorage.setItem('phone', phone);
-            localStorage.setItem('email', email);
-            localStorage.setItem('address', address);
-            if (newPassword) {
-                localStorage.setItem('password', newPassword);
+            if(newPassword.value)
+            {
+                let taiKhoan = decodeEmail(getCookie('username'));
+                UpdatePass(newPassword.value,taiKhoan);
+                newPassword.innerText='';
+                confirmPassword.innerText='';
+            }else
+            {
+                UpdateInfor(fullName, phone, email , address);
             }
-
-            alert('Cập nhật thông tin thành công!');
+            
             const updateModal = bootstrap.Modal.getInstance(document.getElementById('updateProfile'));
             updateModal.hide();
         });
+    }
+
+    //reset popup thong tin
+    function ResetPopupInfo()
+    {
+        const newPassword = document.getElementById('updatePassword');
+        const confirmPassword = document.getElementById('updateConfirmPassword');
+        const currentPassword = document.getElementById('currentPassword');
+        newPassword.value = '';
+        confirmPassword.value = '';
+        currentPassword.value = '';
+
+        showTab('info');
+        // xoa cac element ben doi mat khau
+        const selectedBtn = document.querySelector(`button[onclick="showTab('info')"]`);
+        selectedBtn.classList.add('active');
+    }
+
+    //update mật khẩu
+    function UpdatePass(MatKhau,taiKhoan)
+    {
+        fetch(`../../controllers/TaiKhoanController.php?taikhoan=${taiKhoan}`,{
+            method: "PUT",
+            headers: {"Content-Type" : "application/json" },
+            body: JSON.stringify({MatKhau,TrangThai: 1})
+        })
+        .then(response => response.json())
+        .then(data =>{
+            console.log(data);
+            if(data.success){
+                
+                toast({
+                    title: 'Thành công',
+                    message: 'Cập nhật thành công!',
+                    type: 'success',
+                    duration: 3000
+                });
+                ResetPopupInfo()
+
+            } else {
+                toast({
+                    title: 'Lỗi',
+                    message: 'Cập nhật thất bại, vui lòng thử lại!',
+                    type: 'error',
+                    duration: 3000
+                });
+            }
+        }) 
+    }
+
+
+    //get mật khẩu từ tài khoản
+    function CheckPass()
+    {
+        // document.getElementById('updateFullName').value ="";
+        // document.getElementById('updatePhone').value="";
+        // document.getElementById('updateEmail').value="";
+        // document.getElementById('updateAddress').value="";
+        const currentPassword = document.getElementById('currentPassword');
+        const taikhoan = decodeEmail(getCookie('username'));
+        const matkhau = currentPassword.value;
+        fetch(`../../controllers/TaiKhoanController.php`,{
+            method: "POST",
+            headers: {"Content-Type" : "application/json" },
+            body: JSON.stringify({taikhoan,matkhau})
+        })
+        .then(response => response.json())
+        .then(data =>{
+            
+            if(data.success)
+            {
+                // console.log(CheckPass(taikhoan, currentPassword.value));
+                document.getElementById('currentPasswordError').style.display = 'none';
+            }
+            else {
+                document.getElementById('currentPasswordError').style.display = 'block';
+                currentPassword.select();
+            }
+        })  
+    }
+
+    //update thong tin khach hang
+    function UpdateInfor(HoVaTen, SoDienThoai, Email , DiaChi)
+    {
+        fetch(`../../controllers/NguoiDungController.php?idNguoiDung=${dataCookie.user.idnguoidung}`,{
+            method: "PUT",
+            headers: {"Content-Type" : "application/json" },
+            body: JSON.stringify({HoVaTen, SoDienThoai, Email , DiaChi,TrangThai: 1})
+        })
+        .then(response => response.json())
+        .then(data =>{
+            if(data.success){
+                
+                toast({
+                    title: 'Thành công',
+                    message: 'Cập nhật thành công!',
+                    type: 'success',
+                    duration: 3000
+                });
+                document.getElementById('accountTextDesktop').innerText = HoVaTen;
+
+
+            } else {
+                toast({
+                    title: 'Lỗi',
+                    message: 'Cập nhật thất bại, vui lòng thử lại!',
+                    type: 'error',
+                    duration: 3000
+                });
+            }
+        }) 
+    }
+
+    //get thông tin khách hàng
+    function SetInfor()
+    {
+        fetch(`../../controllers/NguoiDungController.php?idNguoiDung=${dataCookie.user.idnguoidung}`)
+        .then(response => response.json())
+        .then(data =>{
+            document.getElementById('updateFullName').value = data.HoVaTen || '';
+            document.getElementById('updatePhone').value = data.SoDienThoai || '';
+            document.getElementById('updateEmail').value = data.Email || '';
+            document.getElementById('updateAddress').value = data.DiaChi || '';
+        })     
     }
 
     // Xử lý modal lịch sử mua hàng
@@ -394,7 +534,7 @@ function checkLoginStatus(data) {
     const accountDropdownDesktop = document.getElementById('accountDropdownDesktop');
     if (accountTextDesktop && accountDropdownDesktop) {
         if (data.success && data.user) {
-            accountTextDesktop.textContent = data.user || 'Tài khoản';
+            accountTextDesktop.textContent = data.user.hovaten || 'Tài khoản';
             accountDropdownDesktop.setAttribute('data-bs-toggle', 'dropdown');
         } else {
             console.log("a");

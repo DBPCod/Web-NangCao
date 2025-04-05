@@ -15,9 +15,9 @@ class TaiKhoanModel {
     }
 
     // Lấy tài khoản theo IdTaiKhoan
-    public function getTaiKhoanById($idTaiKhoan) {
-        $stmt = $this->db->prepare("SELECT * FROM TaiKhoan WHERE IdTaiKhoan = ?");
-        $stmt->bind_param("i", $idTaiKhoan);
+    public function getTaiKhoanById($taiKhoan) {
+        $stmt = $this->db->prepare("SELECT * FROM TaiKhoan WHERE taiKhoan = ?");
+        $stmt->bind_param("s", $taiKhoan);
         $stmt->execute();
         return $stmt->get_result()->fetch_assoc();
     }
@@ -38,16 +38,14 @@ class TaiKhoanModel {
     }
 
     // Cập nhật tài khoản
-    public function updateTaiKhoan($idTaiKhoan, $data) {
-        $stmt = $this->db->prepare("UPDATE TaiKhoan SET TaiKhoan = ?, MatKhau = ?, TrangThai = ?, IdVaiTro = ?, IdNguoiDung = ? WHERE IdTaiKhoan = ?");
+    public function updateTaiKhoan($taiKhoan, $data) {
+        $hashedPassword = password_hash($data['MatKhau'], PASSWORD_DEFAULT);
+        $stmt = $this->db->prepare("UPDATE TaiKhoan SET MatKhau = ?, TrangThai = ? WHERE TaiKhoan = ?");
         $stmt->bind_param(
-            "ssiiii",
-            $data['TaiKhoan'],
-            $data['MatKhau'],
+            "sis",
+            $hashedPassword,
             $data['TrangThai'],
-            $data['IdVaiTro'],
-            $data['IdNguoiDung'],
-            $idTaiKhoan
+            $taiKhoan
         );
         return $stmt->execute();
     }
@@ -57,6 +55,15 @@ class TaiKhoanModel {
         $stmt = $this->db->prepare("UPDATE TaiKhoan SET TrangThai = 0 WHERE IdTaiKhoan = ?");
         $stmt->bind_param("i", $idTaiKhoan);
         return $stmt->execute();
+    }
+
+    //check mật khẩu
+    public function GetPass($input)
+    {
+        $stmt = $this->db->prepare("SELECT * FROM TaiKhoan WHERE taiKhoan = ?");
+        $stmt->bind_param("s", $input["taikhoan"]);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_assoc();
     }
 }
 ?>

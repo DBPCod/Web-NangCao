@@ -94,7 +94,9 @@ include_once '../models/CookieManager.php';
                         setcookie('username', '', time() - 3600, '/');
                         echo json_encode(["success" => true, "message" => "Đăng xuất thành công!"]);
                     }
+                    break;
             }
+            
         }
     }
 

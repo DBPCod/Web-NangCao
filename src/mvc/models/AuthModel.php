@@ -42,7 +42,7 @@ class AuthModel{
                 $stmt->bind_param("s",$username);
                 $stmt->execute();
                 $row = $stmt->get_result()->fetch_assoc();
-                return $row ? $row["hovaten"] : null; 
+                return $row; 
             }
     }
 
@@ -56,7 +56,7 @@ class AuthModel{
                 $stmt->bind_param("s",$username);
                 $stmt->execute();
                 $row = $stmt->get_result()->fetch_assoc();
-                return $row ? $row["hovaten"] : null; 
+                return $row; 
     }
 
     public function AddAccount($input)
