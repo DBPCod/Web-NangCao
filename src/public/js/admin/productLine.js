@@ -37,14 +37,51 @@ function loadProductLines() {
   function deleteProductLine(idDSP) {
     if (confirm("Bạn có chắc muốn ngừng hoạt động dòng sản phẩm này?")) {
       fetch(`/smartstation/src/mvc/controllers/DongSanPhamController.php?idDSP=${idDSP}`, {
-        method: "DELETE",
+        method: "GET", // Lấy thông tin dòng sản phẩm trước
       })
         .then((response) => response.json())
-        .then((data) => {
-          alert(data.message); // Hiển thị thông báo từ server
-          loadProductLines(); // Tải lại danh sách sau khi xóa
+        .then((productLine) => {
+          if (productLine.SoLuong === 0) {
+            if (productLine.TrangThai == 1) {
+              // Cho phép ngừng hoạt động: Số lượng = 0 và đang hoạt động
+              return fetch(`/smartstation/src/mvc/controllers/DongSanPhamController.php?idDSP=${idDSP}`, {
+                method: "DELETE",
+              });
+            } else {
+              // Dòng sản phẩm đã ngừng hoạt động
+              toast({
+                title: "Lỗi",
+                message: "Dòng sản phẩm không còn hoạt động. Ngừng hoạt động thất bại.",
+                type: "error",
+                duration: 3000,
+              });
+              throw new Error("Dòng sản phẩm không còn hoạt động.");
+            }
+          } else {
+            // Số lượng > 0
+            toast({
+              title: "Cảnh báo",
+              message: "Chỉ được ngừng hoạt động dòng sản phẩm khi số lượng bằng 0",
+              type: "warning",
+              duration: 3000,
+            });
+            throw new Error("Chỉ được ngừng hoạt động khi số lượng bằng 0");
+          }
         })
-        .catch((error) => console.error("Delete error:", error));
+        .then((response) => response.json())
+        .then((data) => {
+          toast({
+            title: "Thành công",
+            message: data.message,
+            type: "success",
+            duration: 3000,
+          });
+          loadProductLines(); // Tải lại danh sách
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          // Các lỗi đã hiển thị toast ở trên nên không cần hiện lại
+        });
     }
   }
   
