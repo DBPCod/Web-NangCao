@@ -164,7 +164,6 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(data =>{
                 xuliWarning(data.theloai);  
                 console.log(data);
-                console.log('kiem tra toaast')
                 if(data.success){
                     dataCookie=data;
                     toast({
@@ -269,13 +268,15 @@ document.addEventListener('DOMContentLoaded', function () {
     // Xử lý form cập nhật thông tin
     const updateProfileForm = document.querySelector('#updateProfileForm');
     if (updateProfileForm) {
+        let cookie = getCookie('username');
         const updateProfileModal = document.getElementById('updateProfile');
         updateProfileModal.addEventListener('show.bs.modal', function () {
-            document.getElementById('updateUsername').value = localStorage.getItem('username') || '';
-            document.getElementById('updateFullName').value = localStorage.getItem('fullName') || '';
-            document.getElementById('updatePhone').value = localStorage.getItem('phone') || '';
-            document.getElementById('updateEmail').value = localStorage.getItem('email') || '';
-            document.getElementById('updateAddress').value = localStorage.getItem('address') || '';
+            setInfor(cookie);
+            // document.getElementById('updateUsername').value = localStorage.getItem('username') || '';
+            // document.getElementById('updateFullName').value = localStorage.getItem('fullName') || '';
+            // document.getElementById('updatePhone').value = localStorage.getItem('phone') || '';
+            // document.getElementById('updateEmail').value = localStorage.getItem('email') || '';
+            // document.getElementById('updateAddress').value = localStorage.getItem('address') || '';
         });
 
         updateProfileForm.addEventListener('submit', function (e) {
@@ -322,6 +323,20 @@ document.addEventListener('DOMContentLoaded', function () {
             const updateModal = bootstrap.Modal.getInstance(document.getElementById('updateProfile'));
             updateModal.hide();
         });
+    }
+
+    //get thông tin khách hàng
+    function setInfor()
+    {
+        console.log(dataCookie.user.idnguoidung);
+        fetch(`../../controllers/NguoiDungController.php?idNguoiDung=${dataCookie.user.idnguoidung}`)
+        .then(response => response.json())
+        .then(data =>{
+            document.getElementById('updateFullName').value = data.HoVaTen || '';
+            document.getElementById('updatePhone').value = data.SoDienThoai || '';
+            document.getElementById('updateEmail').value = data.Email || '';
+            document.getElementById('updateAddress').value = data.DiaChi || '';
+        })     
     }
 
     // Xử lý modal lịch sử mua hàng
@@ -406,7 +421,7 @@ function checkLoginStatus(data) {
     const accountDropdownDesktop = document.getElementById('accountDropdownDesktop');
     if (accountTextDesktop && accountDropdownDesktop) {
         if (data.success && data.user) {
-            accountTextDesktop.textContent = data.user || 'Tài khoản';
+            accountTextDesktop.textContent = data.user.hovaten || 'Tài khoản';
             accountDropdownDesktop.setAttribute('data-bs-toggle', 'dropdown');
         } else {
             console.log("a");
