@@ -1,5 +1,5 @@
 function loadProductLines() {
-    fetch("/smartstation/src/mvc/controllers/ProductLineController.php", {
+    fetch("/smartstation/src/mvc/controllers/DongSanPhamController.php", {
       method: "GET",
     })
       .then((response) => {
@@ -30,13 +30,13 @@ function loadProductLines() {
       .catch((error) => console.error("Fetch error:", error));
   }
   
-  function editProductLine(id) {
-    window.location.href = `edit_productline.php?id=${id}`;
+  function editProductLine(idDSP) {
+    window.location.href = `edit_productline.php?idDSP=${idDSP}`;
   }
   
-  function deleteProductLine(id) {
-    if (confirm("Bạn có chắc muốn xóa dòng sản phẩm này?")) {
-      fetch(`/smartstation/src/mvc/controllers/ProductLineController.php?id=${id}`, {
+  function deleteProductLine(idDSP) {
+    if (confirm("Bạn có chắc muốn ngừng hoạt động dòng sản phẩm này?")) {
+      fetch(`/smartstation/src/mvc/controllers/DongSanPhamController.php?idDSP=${idDSP}`, {
         method: "DELETE",
       })
         .then((response) => response.json())
