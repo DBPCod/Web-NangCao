@@ -271,7 +271,7 @@ document.addEventListener('DOMContentLoaded', function () {
         let cookie = getCookie('username');
         const updateProfileModal = document.getElementById('updateProfile');
         updateProfileModal.addEventListener('show.bs.modal', function () {
-            setInfor(cookie);
+            SetInfor(cookie);
             // document.getElementById('updateUsername').value = localStorage.getItem('username') || '';
             // document.getElementById('updateFullName').value = localStorage.getItem('fullName') || '';
             // document.getElementById('updatePhone').value = localStorage.getItem('phone') || '';
@@ -281,54 +281,73 @@ document.addEventListener('DOMContentLoaded', function () {
 
         updateProfileForm.addEventListener('submit', function (e) {
             e.preventDefault();
-            const currentPassword = document.getElementById('currentPassword').value;
-            const storedPassword = localStorage.getItem('password');
             const fullName = document.getElementById('updateFullName').value;
             const phone = document.getElementById('updatePhone').value;
             const email = document.getElementById('updateEmail').value;
             const address = document.getElementById('updateAddress').value;
-            const newPassword = document.getElementById('updatePassword').value;
-            const confirmPassword = document.getElementById('updateConfirmPassword').value;
 
-            if (currentPassword !== storedPassword) {
-                document.getElementById('currentPasswordError').style.display = 'block';
-                return;
-            } else {
-                document.getElementById('currentPasswordError').style.display = 'none';
-            }
+            // if (currentPassword !== storedPassword) {
+            //     document.getElementById('currentPasswordError').style.display = 'block';
+            //     return;
+            // } else {
+            //     document.getElementById('currentPasswordError').style.display = 'none';
+            // }
 
-            if (newPassword && newPassword.length < 8) {
-                document.getElementById('updatePasswordLengthError').style.display = 'block';
-                return;
-            } else {
-                document.getElementById('updatePasswordLengthError').style.display = 'none';
-            }
+            // if (newPassword && newPassword.length < 8) {
+            //     document.getElementById('updatePasswordLengthError').style.display = 'block';
+            //     return;
+            // } else {
+            //     document.getElementById('updatePasswordLengthError').style.display = 'none';
+            // }
 
-            if (newPassword && newPassword !== confirmPassword) {
-                document.getElementById('updatePasswordMatchError').style.display = 'block';
-                return;
-            } else {
-                document.getElementById('updatePasswordMatchError').style.display = 'none';
-            }
-
-            localStorage.setItem('fullName', fullName);
-            localStorage.setItem('phone', phone);
-            localStorage.setItem('email', email);
-            localStorage.setItem('address', address);
-            if (newPassword) {
-                localStorage.setItem('password', newPassword);
-            }
-
-            alert('Cập nhật thông tin thành công!');
+            // if (newPassword && newPassword !== confirmPassword) {
+            //     document.getElementById('updatePasswordMatchError').style.display = 'block';
+            //     return;
+            // } else {
+            //     document.getElementById('updatePasswordMatchError').style.display = 'none';
+            // }
+            UpdateInfor(fullName, phone, email , address);
             const updateModal = bootstrap.Modal.getInstance(document.getElementById('updateProfile'));
             updateModal.hide();
         });
     }
 
-    //get thông tin khách hàng
-    function setInfor()
+    //update thong tin khach hang
+    function UpdateInfor(HoVaTen, SoDienThoai, Email , DiaChi)
     {
-        console.log(dataCookie.user.idnguoidung);
+        fetch(`../../controllers/NguoiDungController.php?idNguoiDung=${dataCookie.user.idnguoidung}`,{
+            method: "PUT",
+            headers: {"Content-Type" : "application/json" },
+            body: JSON.stringify({HoVaTen, SoDienThoai, Email , DiaChi,TrangThai: 1})
+        })
+        .then(response => response.json())
+        .then(data =>{
+            console.log(data);
+            if(data.success){
+                
+                toast({
+                    title: 'Thành công',
+                    message: 'Cập nhật thành công!',
+                    type: 'success',
+                    duration: 3000
+                });
+                document.getElementById('accountTextDesktop').innerText = HoVaTen;
+
+
+            } else {
+                toast({
+                    title: 'Lỗi',
+                    message: 'Cập nhật thất bại, vui lòng thử lại!',
+                    type: 'error',
+                    duration: 3000
+                });
+            }
+        }) 
+    }
+
+    //get thông tin khách hàng
+    function SetInfor()
+    {
         fetch(`../../controllers/NguoiDungController.php?idNguoiDung=${dataCookie.user.idnguoidung}`)
         .then(response => response.json())
         .then(data =>{

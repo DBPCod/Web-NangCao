@@ -240,10 +240,8 @@ function showTab(tabName) {
 
     // Hiển thị tab được chọn
     const selectedTab = document.getElementById(tabName);
-    console.log(selectedTab)
     if (selectedTab) {
         selectedTab.classList.add('active');
-        // selectedTab.style.display="block";
     } else {
         console.error(`Không tìm thấy tab với id: ${tabName}`);
     }
