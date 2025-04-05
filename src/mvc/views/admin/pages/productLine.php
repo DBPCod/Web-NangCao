@@ -6,10 +6,13 @@
             <tr>
                 <th>ID Dòng sản phẩm</th>
                 <th>Số lượng</th>
-                <th>Thương hiệu</th>
+                <th>ID Thương hiệu</th>
+                <th>Trạng thái</th>
                 <th>Hành động</th>
             </tr>
         </thead>
         <tbody id="productLineTableBody"></tbody>
     </table>
 </div>
+
+<script src="/smartstation/src/public/js/admin/productline.js"></script>
