@@ -75,11 +75,11 @@ function deleteProduct(idCHSP, idDSP) {
             // ❌ Số lượng lớn hơn 0
             toast({
               title: "Cảnh báo",
-              message: "Chỉ được xóa sản phẩm khi số lượng bằng 0",
+              message: "Chỉ được xóa sản phẩm khi số lượng = 0",
               type: "warning",
               duration: 3000,
             });
-            throw new Error("Chỉ được xóa sản phẩm khi số lượng bằng 0");
+            throw new Error("Chỉ được xóa sản phẩm khi số lượng = 0");
           }
         })
         .then((response) => response.json())

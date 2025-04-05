@@ -1,14 +1,17 @@
-<?php 
+<?php
 include_once __DIR__ . '../../models/DongSanPhamModel.php';
 
-class DongSanPhamController {
+class DongSanPhamController
+{
     private $model;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->model = new DongSanPhamModel();
     }
 
-    public function handleRequest() {
+    public function handleRequest()
+    {
         header("Content-Type: application/json");
         $method = $_SERVER["REQUEST_METHOD"];
         $input = json_decode(file_get_contents('php://input'), true);
@@ -25,7 +28,7 @@ class DongSanPhamController {
 
             case 'POST':
                 $newDongSanPham = $this->model->addDongSanPham($input);
-                
+
                 echo json_encode([
                     "message" => "Thêm dòng sản phẩm thành công",
                     "dongSanPham" => $newDongSanPham
@@ -52,7 +55,11 @@ class DongSanPhamController {
                 echo json_encode(["message" => "Yêu cầu không hợp lệ"]);
         }
     }
+
+    public function getModel()
+    {
+        return $this->model;
+    }
 }
 
 (new DongSanPhamController())->handleRequest();
-?>
