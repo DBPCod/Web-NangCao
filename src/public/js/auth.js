@@ -86,7 +86,6 @@ document.addEventListener('DOMContentLoaded', function () {
     //tự động đăng nhập nếu người dùng lưu tài khoản
     function autoLogin() {
         let username = decodeEmail(getCookie('username'));
-        
         if (username) {
             fetch("../../controllers/AuthController.php", {
                 method: "POST",
@@ -281,35 +280,131 @@ document.addEventListener('DOMContentLoaded', function () {
 
         updateProfileForm.addEventListener('submit', function (e) {
             e.preventDefault();
+            console.log(e);
             const fullName = document.getElementById('updateFullName').value;
             const phone = document.getElementById('updatePhone').value;
             const email = document.getElementById('updateEmail').value;
             const address = document.getElementById('updateAddress').value;
-
-            // if (currentPassword !== storedPassword) {
-            //     document.getElementById('currentPasswordError').style.display = 'block';
-            //     return;
-            // } else {
+            const newPassword = document.getElementById('updatePassword');
+            const confirmPassword = document.getElementById('updateConfirmPassword');
+            // if(CheckPass(taikhoan, currentPassword.value))
+            // {
+            //     // console.log(CheckPass(taikhoan, currentPassword.value));
             //     document.getElementById('currentPasswordError').style.display = 'none';
+            //     console.log('aaa');
+            // }
+            // else {
+            //     document.getElementById('currentPasswordError').style.display = 'block';
+            //     console.log("b");
             // }
 
-            // if (newPassword && newPassword.length < 8) {
-            //     document.getElementById('updatePasswordLengthError').style.display = 'block';
-            //     return;
-            // } else {
-            //     document.getElementById('updatePasswordLengthError').style.display = 'none';
-            // }
+            CheckPass();
+            if (newPassword && newPassword.length < 8) {
+                document.getElementById('updatePasswordLengthError').style.display = 'block';
+                return;
+            } else {
+                document.getElementById('updatePasswordLengthError').style.display = 'none';
+            }
 
-            // if (newPassword && newPassword !== confirmPassword) {
-            //     document.getElementById('updatePasswordMatchError').style.display = 'block';
-            //     return;
-            // } else {
-            //     document.getElementById('updatePasswordMatchError').style.display = 'none';
-            // }
-            UpdateInfor(fullName, phone, email , address);
+            if (newPassword && newPassword.value !== confirmPassword.value) {
+                document.getElementById('updatePasswordMatchError').style.display = 'block';
+                return;
+            } else {
+                document.getElementById('updatePasswordMatchError').style.display = 'none';
+            }
+            if(newPassword.value)
+            {
+                let taiKhoan = decodeEmail(getCookie('username'));
+                UpdatePass(newPassword.value,taiKhoan);
+                newPassword.innerText='';
+                confirmPassword.innerText='';
+            }else
+            {
+                UpdateInfor(fullName, phone, email , address);
+            }
+            
             const updateModal = bootstrap.Modal.getInstance(document.getElementById('updateProfile'));
             updateModal.hide();
         });
+    }
+
+    //reset popup thong tin
+    function ResetPopupInfo()
+    {
+        const newPassword = document.getElementById('updatePassword');
+        const confirmPassword = document.getElementById('updateConfirmPassword');
+        const currentPassword = document.getElementById('currentPassword');
+        newPassword.value = '';
+        confirmPassword.value = '';
+        currentPassword.value = '';
+
+        showTab('info');
+        // xoa cac element ben doi mat khau
+        const selectedBtn = document.querySelector(`button[onclick="showTab('info')"]`);
+        selectedBtn.classList.add('active');
+    }
+
+    //update mật khẩu
+    function UpdatePass(MatKhau,taiKhoan)
+    {
+        fetch(`../../controllers/TaiKhoanController.php?taikhoan=${taiKhoan}`,{
+            method: "PUT",
+            headers: {"Content-Type" : "application/json" },
+            body: JSON.stringify({MatKhau,TrangThai: 1})
+        })
+        .then(response => response.json())
+        .then(data =>{
+            console.log(data);
+            if(data.success){
+                
+                toast({
+                    title: 'Thành công',
+                    message: 'Cập nhật thành công!',
+                    type: 'success',
+                    duration: 3000
+                });
+                ResetPopupInfo()
+
+            } else {
+                toast({
+                    title: 'Lỗi',
+                    message: 'Cập nhật thất bại, vui lòng thử lại!',
+                    type: 'error',
+                    duration: 3000
+                });
+            }
+        }) 
+    }
+
+
+    //get mật khẩu từ tài khoản
+    function CheckPass()
+    {
+        // document.getElementById('updateFullName').value ="";
+        // document.getElementById('updatePhone').value="";
+        // document.getElementById('updateEmail').value="";
+        // document.getElementById('updateAddress').value="";
+        const currentPassword = document.getElementById('currentPassword');
+        const taikhoan = decodeEmail(getCookie('username'));
+        const matkhau = currentPassword.value;
+        fetch(`../../controllers/TaiKhoanController.php`,{
+            method: "POST",
+            headers: {"Content-Type" : "application/json" },
+            body: JSON.stringify({taikhoan,matkhau})
+        })
+        .then(response => response.json())
+        .then(data =>{
+            
+            if(data.success)
+            {
+                // console.log(CheckPass(taikhoan, currentPassword.value));
+                document.getElementById('currentPasswordError').style.display = 'none';
+            }
+            else {
+                document.getElementById('currentPasswordError').style.display = 'block';
+                currentPassword.select();
+            }
+        })  
     }
 
     //update thong tin khach hang
@@ -322,7 +417,6 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(response => response.json())
         .then(data =>{
-            console.log(data);
             if(data.success){
                 
                 toast({
