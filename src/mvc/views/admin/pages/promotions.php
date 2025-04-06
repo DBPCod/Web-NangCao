@@ -4,22 +4,16 @@
     <table class="table">
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Tên khuyến mãi</th>
-                <th>Mô tả</th>
+                <th>ID Khuyến mãi</th>
+                <th>Ngày bắt đầu</th>
+                <th>Ngày kết thúc</th>
+                <th>Phần trăm giảm</th>
+                <th>Trạng thái</th>
                 <th>Hành động</th>
             </tr>
         </thead>
-        <tbody>
-            <tr>
-                <td>1</td>
-                <td>Giảm 20%</td>
-                <td>Cho đơn hàng trên 1 triệu</td>
-                <td>
-                    <button class="btn btn-primary">Sửa</button>
-                    <button class="btn btn-danger">Xóa</button>
-                </td>
-            </tr>
-        </tbody>
+        <tbody id="promotionTableBody"></tbody>
     </table>
 </div>
+
+<script src="/smartstation/src/public/js/admin/promotion.js"></script>
