@@ -18,3 +18,5 @@
         <tbody id="productConfigTableBody"></tbody>
     </table>
 </div>
+
+<script src="/smartstation/src/public/js/admin/productConfig.js"></script>
