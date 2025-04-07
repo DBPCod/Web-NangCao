@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th4 04, 2025 lúc 05:27 AM
+-- Thời gian đã tạo: Th4 07, 2025 lúc 10:29 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -308,7 +308,8 @@ INSERT INTO `nguoidung` (`IdNguoiDung`, `HoVaTen`, `Email`, `DiaChi`, `SoDienTho
 (6, 'Đinh Bá Phong', 'zxczxc@gmail.com', 'zxczxczxc', '0932788919', 1),
 (7, 'phong đẹp', 'zxczxc@gmail.com', 'zxczxcc', '0932788999', 1),
 (8, 'phong đepxxx', 'zxczxc@gmail.com', 'zxczxczxc', '0932788999', 1),
-(9, 'Đinh Bá Phong', 'phongba@imail.edu.vn', 'zxczxcc', '0932788999', 1);
+(9, 'Đinh Bá Phong', 'phongba@imail.edu.vn', 'zxczxcc', '0932788999', 1),
+(10, 'Đinh Bá Phong', 'dinhbaphong123@gmail.com', 'Đồng nai', '0932788999', 1);
 
 -- --------------------------------------------------------
 
@@ -403,6 +404,7 @@ CREATE TABLE `sanpham` (
   `IdCHSP` int(11) NOT NULL,
   `IdDongSanPham` varchar(20) NOT NULL,
   `SoLuong` int(11) NOT NULL,
+  `Gia` double NOT NULL,
   `TrangThai` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -410,13 +412,13 @@ CREATE TABLE `sanpham` (
 -- Đang đổ dữ liệu cho bảng `sanpham`
 --
 
-INSERT INTO `sanpham` (`IdCHSP`, `IdDongSanPham`, `SoLuong`, `TrangThai`) VALUES
-(1, 'IP7', 5, 1),
-(2, 'IP8', 4, 1),
-(3, 'SS10', 3, 1),
-(4, 'XM12', 2, 1),
-(5, 'IP7', 10, 0),
-(5, 'OP5', 1, 1);
+INSERT INTO `sanpham` (`IdCHSP`, `IdDongSanPham`, `SoLuong`, `Gia`, `TrangThai`) VALUES
+(1, 'IP7', 5, 0, 1),
+(2, 'IP8', 4, 0, 1),
+(3, 'SS10', 3, 0, 1),
+(4, 'XM12', 2, 0, 1),
+(5, 'IP7', 10, 0, 0),
+(5, 'OP5', 1, 0, 1);
 
 -- --------------------------------------------------------
 
@@ -482,7 +484,8 @@ INSERT INTO `taikhoan` (`IdTaiKhoan`, `TaiKhoan`, `MatKhau`, `TrangThai`, `IdVai
 (7, 'phongba2004', '01092004', 1, 3, 6),
 (8, 'phongdeptrai', '01092004', 1, 3, 7),
 (9, 'baphong', '01092004', 1, 3, 8),
-(10, 'phongba2005', '$2y$10$1/4b5LfsrGxMpfqKGIZKI.kHCt0S/TL0Wy7IK3SjYWBhphNCSqwwi', 1, 3, 9);
+(10, 'phongba2005', '$2y$10$1/4b5LfsrGxMpfqKGIZKI.kHCt0S/TL0Wy7IK3SjYWBhphNCSqwwi', 1, 3, 9),
+(11, 'dinhbaphong123@gmail.com', '$2y$10$3zljGqX/AMy2S3rJV0vzZ.h8zcdwhuqVzsB8k60x9QtwaAtVIm38m', 1, 3, 10);
 
 -- --------------------------------------------------------
 
@@ -743,7 +746,7 @@ ALTER TABLE `khuyenmai`
 -- AUTO_INCREMENT cho bảng `nguoidung`
 --
 ALTER TABLE `nguoidung`
-  MODIFY `IdNguoiDung` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `IdNguoiDung` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT cho bảng `nhacungcap`
@@ -773,7 +776,7 @@ ALTER TABLE `sanpham`
 -- AUTO_INCREMENT cho bảng `taikhoan`
 --
 ALTER TABLE `taikhoan`
-  MODIFY `IdTaiKhoan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `IdTaiKhoan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT cho bảng `thuonghieu`
