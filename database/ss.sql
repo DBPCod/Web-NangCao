@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th4 07, 2025 lúc 10:29 AM
+-- Thời gian đã tạo: Th4 07, 2025 lúc 10:38 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -213,6 +213,7 @@ INSERT INTO `ctquyen` (`IdQuyen`, `IdVaiTro`) VALUES
 
 CREATE TABLE `dongsanpham` (
   `IdDongSanPham` varchar(20) NOT NULL,
+  `TenDong` varchar(20) NOT NULL,
   `SoLuong` int(11) NOT NULL,
   `IdThuongHieu` int(11) DEFAULT NULL,
   `TrangThai` tinyint(1) DEFAULT NULL
@@ -222,12 +223,12 @@ CREATE TABLE `dongsanpham` (
 -- Đang đổ dữ liệu cho bảng `dongsanpham`
 --
 
-INSERT INTO `dongsanpham` (`IdDongSanPham`, `SoLuong`, `IdThuongHieu`, `TrangThai`) VALUES
-('IP7', 5, 1, 1),
-('IP8', 4, 1, 1),
-('OP5', 1, 4, 0),
-('SS10', 3, 2, 1),
-('XM12', 2, 3, 1);
+INSERT INTO `dongsanpham` (`IdDongSanPham`, `TenDong`, `SoLuong`, `IdThuongHieu`, `TrangThai`) VALUES
+('IP7', 'iPhone 7', 5, 1, 1),
+('IP8', 'iPhone 8 ', 4, 1, 1),
+('OP5', 'OPPO', 1, 4, 0),
+('SS10', 'Samsung 10', 3, 2, 1),
+('XM12', 'Xiaomi 12', 2, 3, 1);
 
 -- --------------------------------------------------------
 
