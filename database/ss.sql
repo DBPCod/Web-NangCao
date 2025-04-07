@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th4 07, 2025 lúc 10:38 AM
+-- Thời gian đã tạo: Th4 07, 2025 lúc 10:44 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -29,7 +29,7 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `anh` (
   `IdAnh` int(11) NOT NULL,
-  `Anh` varchar(255) DEFAULT NULL,
+  `Anh` mediumblob DEFAULT NULL,
   `IdCHSP` int(11) DEFAULT NULL,
   `IdDongSanPham` varchar(20) DEFAULT NULL,
   `TrangThai` tinyint(1) DEFAULT NULL
@@ -40,11 +40,11 @@ CREATE TABLE `anh` (
 --
 
 INSERT INTO `anh` (`IdAnh`, `Anh`, `IdCHSP`, `IdDongSanPham`, `TrangThai`) VALUES
-(1, 'ip7_black.jpg', 1, 'IP7', 1),
-(2, 'ip8_white.jpg', 2, 'IP8', 1),
-(3, 'ss10_green.jpg', 3, 'SS10', 1),
-(4, 'xm12_red.jpg', 4, 'XM12', 1),
-(5, 'op5_gold.jpg', 5, 'OP5', 0);
+(1, 0x6970375f626c61636b2e6a7067, 1, 'IP7', 1),
+(2, 0x6970385f77686974652e6a7067, 2, 'IP8', 1),
+(3, 0x737331305f677265656e2e6a7067, 3, 'SS10', 1),
+(4, 0x786d31325f7265642e6a7067, 4, 'XM12', 1),
+(5, 0x6f70355f676f6c642e6a7067, 5, 'OP5', 0);
 
 -- --------------------------------------------------------
 
