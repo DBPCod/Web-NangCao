@@ -4,22 +4,17 @@
     <table class="table">
         <thead>
             <tr>
-                <th>ID</th>
+                <th>ID Nhà cung cấp</th>
                 <th>Tên nhà cung cấp</th>
+                <th>Địa chỉ</th>
+                <th>Số điện thoại</th>
                 <th>Email</th>
+                <th>Trạng thái</th>
                 <th>Hành động</th>
             </tr>
         </thead>
-        <tbody>
-            <tr>
-                <td>1</td>
-                <td>Nguyễn Văn A</td>
-                <td>nva@example.com</td>
-                <td>
-                    <button class="btn btn-primary">Sửa</button>
-                    <button class="btn btn-danger">Xóa</button>
-                </td>
-            </tr>
-        </tbody>
+        <tbody id="providerTableBody"></tbody>
     </table>
 </div>
+
+<script src="/smartstation/src/public/js/admin/provider.js"></script>
