@@ -102,3 +102,10 @@ body {
         padding: 0.5rem; /* Giảm padding */
     }
 }
+
+
+.text-danger {
+    color: #dc3545;
+    font-size: 14px;
+    text-align: center;
+}
