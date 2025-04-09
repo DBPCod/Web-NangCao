@@ -4,8 +4,8 @@
     <table class="table">
         <thead>
             <tr>
-                <th>ID Cửa hàng</th>
-                <th>ID Dòng sản phẩm</th>
+                <th>ID Cấu hình</th>
+                <th>ID Dòng</th>
                 <th>Số lượng</th>
                 <th>Trạng thái</th>
                 <th>Hành động</th>

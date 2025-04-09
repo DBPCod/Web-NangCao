@@ -1,5 +1,6 @@
 <?php
-include_once '../core/DB.php';
+include_once __DIR__ . '../../core/DB.php';
+// include_once '../core/DB.php';
 class DongSanPhamModel {
     private $db;
 
@@ -35,7 +36,7 @@ class DongSanPhamModel {
     public function deleteDongSanPham($idDongSanPham) {
         $stmt = $this->db->prepare("UPDATE dongsanpham SET TrangThai = ? WHERE IdDongSanPham = ?");
         $TrangThai = 0;
-        $stmt->bind_param("bs", $TrangThai, $idDongSanPham);
+        $stmt->bind_param("is", $TrangThai, $idDongSanPham); // sua tu bs thanh is 
         return $stmt->execute();
     }
 }
