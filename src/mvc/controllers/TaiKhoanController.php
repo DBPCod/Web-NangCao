@@ -17,6 +17,8 @@ class TaiKhoanController {
             case 'GET':
                 if (isset($_GET['taikhoan'])) {
                     $data = $this->model->getTaiKhoanById($_GET['taikhoan']);
+                }else if (isset($_GET['idNguoiDung'])) {
+                    $data = $this->model->getTaiKhoanByIdUser($_GET['idNguoiDung']);
                 } else {
                     $data = $this->model->getAllTaiKhoan();
                 }

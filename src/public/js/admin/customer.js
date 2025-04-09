@@ -1,4 +1,5 @@
 
+
     // Hàm để lấy và render danh sách người dùng
     function fetchAndRenderUsers() {
         fetch("/smartstation/src/mvc/controllers/NguoiDungController.php", {
@@ -26,34 +27,53 @@
     // Hàm để render dữ liệu vào bảng
     function renderUsers(users) {
         const tbody = document.querySelector("tbody");
-        tbody.innerHTML = ""; // Xóa nội dung cũ
-
+        tbody.innerHTML = "";
+    
         if (users.length === 0) {
             tbody.innerHTML = '<tr><td colspan="9" class="text-center">Không có khách hàng nào.</td></tr>';
             return;
         }
-
-        users.forEach((user) => {
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
-                <td>${user.IdNguoiDung}</td>
-                <td>${user.HoVaTen}</td>
-                <td>${user.Email}</td>
-                <td>${user.DiaChi || "Chưa có"}</td>
-                <td>${user.SoDienThoai || "Chưa có"}</td>
-                <td>${user.TrangThai === 1 ? "Đang hoạt động" : "Ngừng hoạt động"}</td>
-                <td>${user.TaiKhoan || "Chưa có"}</td> <!-- Giả sử có liên kết với bảng taikhoan -->
-                <td>${user.MatKhau || "Chưa có"}</td> <!-- Giả sử có liên kết với bảng taikhoan -->
-                <td>
-                    <button class="btn btn-danger btn-delete" data-id="${user.IdNguoiDung}">Xóa</button>
-                </td>
-            `;
-            tbody.appendChild(tr);
+    
+        // Tạo một mảng các Promise
+        const userPromises = users.map((user) => {
+            return fetch(`/smartstation/src/mvc/controllers/TaiKhoanController.php?idNguoiDung=${user.IdNguoiDung}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    return {
+                        ...user,
+                        TaiKhoan: data.TaiKhoan || "Chưa có",
+                    };
+                })
+                .catch(() => ({
+                    ...user,
+                    TaiKhoan: "Lỗi khi lấy tài khoản",
+                }));
         });
-
-        // Gắn sự kiện cho nút Sửa và Xóa
-        attachEventListeners();
+    
+        // Chờ tất cả fetch hoàn tất
+        Promise.all(userPromises).then((usersWithAccount) => {
+            usersWithAccount.forEach((user) => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${user.IdNguoiDung}</td>
+                    <td>${user.HoVaTen}</td>
+                    <td>${user.Email}</td>
+                    <td>${user.DiaChi || "Chưa có"}</td>
+                    <td>${user.SoDienThoai || "Chưa có"}</td>
+                    <td>${user.TrangThai == 1 ? "Đang hoạt động" : "Ngừng hoạt động"}</td>
+                    <td>${user.TaiKhoan}</td>
+                    <td>
+                        <button class="btn btn-danger btn-delete" data-id="${user.IdNguoiDung}">Xóa</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+    
+            // Gắn sự kiện sau khi render
+            attachEventListeners();
+        });
     }
+    
 
     // Hàm gắn sự kiện cho các nút
     function attachEventListeners() {
@@ -69,6 +89,7 @@
         // Sự kiện nút Xóa
         document.querySelectorAll(".btn-delete").forEach((button) => {
             button.addEventListener("click", function () {
+                console.log("a");
                 const id = this.getAttribute("data-id");
                 if (confirm("Bạn có chắc muốn xóa khách hàng này?")) {
                     deleteUser(id);
@@ -100,6 +121,7 @@
                 alert("Đã xảy ra lỗi khi xóa khách hàng.");
             });
     }
+
 
     // Gọi hàm để tải danh sách người dùng khi trang được tải
     fetchAndRenderUsers();
