@@ -48,7 +48,7 @@ $(document).ready(function () {
         loadProducts(page);
     });
 
-    // Xử lý nút Previous và Next
+    // // Xử lý nút Previous và Next
     $(".pagination").on("click", ".prev-page, .next-page", function (e) {
         e.preventDefault();
         let page = parseInt($(this).data("page"));
@@ -66,13 +66,33 @@ $(document).ready(function () {
         $("#modalProductDiscount").text(product.discount);
         $("#modalProductPoints").text(product.points);
         // Điền thông số kỹ thuật
-        $("#modalProductRam").text(product.ram || "N/A");
         $("#modalProductRom").text(product.rom || "N/A");
         $("#modalProductManHinh").text(product.manHinh || "N/A");
         $("#modalProductPin").text(product.pin || "N/A");
-        $("#modalProductMauSac").text(product.mauSac || "N/A");
         $("#modalProductCamera").text(product.camera || "N/A");
         $("#modalProductTrangThai").text(product.trangThai ? "Còn hàng" : "Hết hàng");
+
+        // Tạo button chọn RAM
+        let ramHTML = "";
+        if (product.ramOptions && Array.isArray(product.ramOptions)) {
+            product.ramOptions.forEach(function (ram) {
+                ramHTML += `<button type="button" class="btn btn-outline-secondary btn-sm me-1 btn-ram">${ram}</button>`;
+            });
+        } else {
+            ramHTML = `<span>${product.ram || "N/A"}</span>`;
+        }
+        $("#modalProductRam").html(ramHTML);
+
+        // Tạo button chọn màu sắc
+        let colorHTML = "";
+        if (product.colorOptions && Array.isArray(product.colorOptions)) {
+            product.colorOptions.forEach(function (color) {
+                colorHTML += `<button type="button" class="btn btn-outline-secondary btn-sm me-1 btn-color data-color="${color}">${color}</button>`;
+            });
+        } else {
+            colorHTML = `<span>${product.mauSac || "N/A"}</span>`;
+        }
+        $("#modalProductMauSac").html(colorHTML);
 
         // Điền ảnh vào thumbnail gallery
         let thumbnailHTML = "";
@@ -92,16 +112,40 @@ $(document).ready(function () {
 
         // Thêm active class cho thumbnail đầu tiên
         $(".thumbnail-image").first().addClass("active");
+
+        // Xủ lý chọn nút ram
+        $(document).off("click", ".btn-ram").on("click", ".btn-ram", function () {
+            $(".btn-ram").removeClass("active");
+            $(this).addClass("active");
+            //  Lưu giá trị đã chọn nếu cần
+            product.selectedRam = $(this).text();
+        });
+    
+        // Xử lý chọn nút màu
+        $(document).off("click", ".btn-color").on("click", ".btn-color", function () {
+            $(".btn-color").removeClass("active");
+            $(this).addClass("active");
+            //  Lưu giá trị đã chọn nếu cần
+            product.selectedColor = $(this).text();
+        });
     });
 
     // Xử lý khi click vào thumbnail để thay đổi ảnh chính
     $("#productModal").on("click", ".thumbnail-image", function () {
         let imgSrc = $(this).attr("src");
+        let index = $(this).data("index")
         $("#modalProductImage").attr("src", imgSrc); // Thay đổi ảnh chính
         // Xóa class active từ tất cả thumbnail và thêm vào thumbnail được click
         $(".thumbnail-image").removeClass("active");
         $(this).addClass("active");
+        //Click ảnh màu gì thì button cũng tương ứng màu đó
+        $(".btn-color").removeClass("active");
+        $(".btn-color").eq(index).addClass("active");
     });
+
+    
+    
+
 });
 
 

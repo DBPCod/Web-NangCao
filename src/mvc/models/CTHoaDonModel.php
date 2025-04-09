@@ -27,11 +27,11 @@ class CTHoaDonModel {
         return $this->getCTHoaDonById($data['IdHoaDon'], $data['Imei']);
     }
 
-    public function updateCTHoaDon($idHoaDon, $imei, $giaTien, $soLuong) {
-        $stmt = $this->db->prepare("UPDATE cthoadon SET GiaTien = ?, SoLuong = ? WHERE IdHoaDon = ? AND Imei = ?");
-        $stmt->bind_param("diis", $giaTien, $soLuong, $idHoaDon, $imei);
-        return $stmt->execute();
-    }
+    // public function updateCTHoaDon($idHoaDon, $imei, $giaTien, $soLuong) {
+    //     $stmt = $this->db->prepare("UPDATE cthoadon SET GiaTien = ?, SoLuong = ? WHERE IdHoaDon = ? AND Imei = ?");
+    //     $stmt->bind_param("diis", $giaTien, $soLuong, $idHoaDon, $imei);
+    //     return $stmt->execute();
+    // }
 
     public function deleteCTHoaDon($idHoaDon, $imei) {
         $stmt = $this->db->prepare("DELETE FROM cthoadon WHERE IdHoaDon = ? AND Imei = ?");

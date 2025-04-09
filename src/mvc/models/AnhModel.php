@@ -1,5 +1,6 @@
 <?php
 include_once '../core/DB.php';
+
 class AnhModel {
     private $db;
 
