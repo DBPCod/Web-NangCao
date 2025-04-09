@@ -9,7 +9,7 @@ class BaohanhModel {
     }
 
     public function getAllWarranties() {
-        $result = $this->db->query("SELECT * FROM baohanh");
+        $result = $this->db->query("SELECT * FROM baohanh where trangthai != 0");
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
