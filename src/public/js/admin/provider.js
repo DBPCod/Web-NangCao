@@ -1,3 +1,49 @@
+// Hàm toast từ code của bạn
+function toast({ title = '', message = '', type = 'info', duration = 3000 }) {
+  const main = document.getElementById('toast');
+  if (main) {
+      const toast = document.createElement('div');
+
+      // Tự động xóa sau duration + thời gian fade out
+      const autoRemoveId = setTimeout(() => {
+          main.removeChild(toast);
+      }, duration + 1500); // Tăng thêm 1500ms để khớp với fadeOut mới
+
+      // Xóa khi click
+      toast.onclick = function (e) {
+          if (e.target.closest('.toast__close')) {
+              main.removeChild(toast);
+              clearTimeout(autoRemoveId);
+          }
+      };
+
+      const icons = {
+          success: 'fa-solid fa-circle-check',
+          info: 'fa-solid fa-circle-info',
+          warning: 'fa-solid fa-circle-exclamation',
+          error: 'fa-solid fa-circle-exclamation'
+      };
+      const icon = icons[type];
+      const delay = (duration / 1000).toFixed(2); // Thời gian chờ trước khi fade out (giây)
+
+      toast.classList.add('toast', `toast--${type}`);
+      toast.style.animation = `appear ease-in-out 0.5s, fadeOut ease-in-out 1.5s ${delay}s forwards`;
+      toast.innerHTML = `
+          <div class="toast__icon">
+              <i class="${icon}"></i>
+          </div>
+          <div class="toast__body">
+              <h3 class="toast__title">${title}</h3>
+              <p class="toast__message">${message}</p>
+          </div>
+          <div class="toast__close">   
+              <i class="fa-solid fa-xmark"></i>
+          </div>
+      `;
+      main.appendChild(toast);
+  }
+}
+
 // Load danh sách nhà cung cấp
 function loadProviders() {
   fetch("/smartstation/src/mvc/controllers/NhaCungCapController.php", {
@@ -30,13 +76,21 @@ function loadProviders() {
               });
           }
       })
-      .catch((error) => console.error("Fetch error:", error));
+      .catch((error) => {
+          console.error("Fetch error:", error);
+          toast({
+              title: "Lỗi",
+              message: "Không thể tải danh sách nhà cung cấp",
+              type: "error",
+              duration: 3000,
+          });
+      });
 }
 
 // Mở modal để thêm nhà cung cấp
 function openAddModal() {
   document.getElementById("providerModalLabel").innerText = "Thêm nhà cung cấp";
-  document.getElementById("providerForm").reset(); // Reset form
+  document.getElementById("providerForm").reset();
   document.getElementById("saveProviderBtn").setAttribute("data-action", "add");
 }
 
@@ -45,7 +99,10 @@ function openEditModal(idProvider) {
   fetch(`/smartstation/src/mvc/controllers/NhaCungCapController.php?idNCC=${idProvider}`, {
       method: "GET",
   })
-      .then((response) => response.json())
+      .then((response) => {
+          if (!response.ok) throw new Error("Network error: " + response.status);
+          return response.json();
+      })
       .then((provider) => {
           document.getElementById("providerModalLabel").innerText = "Sửa nhà cung cấp";
           document.getElementById("tenNCC").value = provider.TenNCC;
@@ -57,7 +114,15 @@ function openEditModal(idProvider) {
           document.getElementById("saveProviderBtn").setAttribute("data-id", idProvider);
           new bootstrap.Modal(document.getElementById("providerModal")).show();
       })
-      .catch((error) => console.error("Error fetching provider:", error));
+      .catch((error) => {
+          console.error("Error fetching provider:", error);
+          toast({
+              title: "Lỗi",
+              message: "Không thể tải thông tin nhà cung cấp",
+              type: "error",
+              duration: 3000,
+          });
+      });
 }
 
 // Xử lý lưu (thêm hoặc sửa)
@@ -87,7 +152,10 @@ document.getElementById("saveProviderBtn").addEventListener("click", function ()
       },
       body: JSON.stringify(formData),
   })
-      .then((response) => response.json())
+      .then((response) => {
+          if (!response.ok) throw new Error("Network error: " + response.status);
+          return response.json();
+      })
       .then((data) => {
           toast({
               title: "Thành công",
@@ -115,7 +183,10 @@ function deleteProvider(idProvider) {
       fetch(`/smartstation/src/mvc/controllers/NhaCungCapController.php?idNCC=${idProvider}`, {
           method: "DELETE",
       })
-          .then((response) => response.json())
+          .then((response) => {
+              if (!response.ok) throw new Error("Network error: " + response.status);
+              return response.json();
+          })
           .then((data) => {
               toast({
                   title: "Thành công",
@@ -135,11 +206,6 @@ function deleteProvider(idProvider) {
               });
           });
   }
-}
-
-// Hàm toast (giả định bạn đã có sẵn hoặc cần thêm thư viện toast)
-function toast({ title, message, type, duration }) {
-  console.log(`${title}: ${message}`); // Thay bằng logic hiển thị toast nếu có
 }
 
 // Gọi khi script được tải
