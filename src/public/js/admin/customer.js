@@ -85,7 +85,7 @@ function attachEventListeners() {
             const action = newStatus === 0 ? "khóa" : "mở khóa";
 
             // if (confirm(`Bạn có chắc muốn ${action} khách hàng này?`)) {
-                toggleUserLock(id, newStatus, this);
+            toggleUserLock(id, newStatus, this);
             // }
         });
     });

@@ -157,7 +157,7 @@ function submitEditBrand() {
             loadBrands();
             toast({
                 title: "Thành công",
-                message: "Sửa thành công",
+                message: "Cập nhật thành công",
                 type: "success",
                 duration: 3000,
             });

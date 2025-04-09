@@ -67,11 +67,11 @@ document.addEventListener('DOMContentLoaded', function () {
     //ham doi ki tu dac biet luu tren cookie thanh @
     function decodeEmail(encodedEmail) {
         if (!encodedEmail) return "";
-        
+
         if (encodedEmail.includes("%40")) {
             return encodedEmail.replace(/%40/g, "@");
         }
-        
+
         // Không có %40 thì trả về chuỗi cũ
         return encodedEmail;
     }
@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', function () {
             fetch("../../controllers/AuthController.php", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({username})
+                body: JSON.stringify({ username })
             })
                 .then(response => response.json())
                 .then(data => {
@@ -147,28 +147,28 @@ document.addEventListener('DOMContentLoaded', function () {
             e.preventDefault();
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
-            fetch("../../controllers/AuthController.php",{
+            fetch("../../controllers/AuthController.php", {
                 method: "POST",
-                headers: {"Content-Type" : "application/json" },
-                body: JSON.stringify({username, password})
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password })
             })
-            .then(response => response.json())
-            .then(data =>{
-                xuliWarning(data.theloai);  
-                console.log(data);
-                if(data.success){
-                    dataCookie=data;
-                    toast({
-                        title: 'Thành công',
-                        message: 'Đăng nhập thành công!',
-                        type: 'success',
-                        duration: 3000
-                    });
-                    const loginModal = bootstrap.Modal.getInstance(document.getElementById('loginPopup'));
-                    loginModal.hide();
-                    checkLoginStatus(data);
-                }
-            })
+                .then(response => response.json())
+                .then(data => {
+                    xuliWarning(data.theloai);
+                    console.log(data);
+                    if (data.success) {
+                        dataCookie = data;
+                        toast({
+                            title: 'Thành công',
+                            message: 'Đăng nhập thành công!',
+                            type: 'success',
+                            duration: 3000
+                        });
+                        const loginModal = bootstrap.Modal.getInstance(document.getElementById('loginPopup'));
+                        loginModal.hide();
+                        checkLoginStatus(data);
+                    }
+                })
         });
     }
 
@@ -305,25 +305,22 @@ document.addEventListener('DOMContentLoaded', function () {
             } else {
                 document.getElementById('updatePasswordMatchError').style.display = 'none';
             }
-            if(newPassword.value)
-            {
+            if (newPassword.value) {
                 let taiKhoan = decodeEmail(getCookie('username'));
-                UpdatePass(newPassword.value,taiKhoan);
-                newPassword.innerText='';
-                confirmPassword.innerText='';
-            }else
-            {
-                UpdateInfor(fullName, phone, email , address);
+                UpdatePass(newPassword.value, taiKhoan);
+                newPassword.innerText = '';
+                confirmPassword.innerText = '';
+            } else {
+                UpdateInfor(fullName, phone, email, address);
             }
-            
+
             const updateModal = bootstrap.Modal.getInstance(document.getElementById('updateProfile'));
             updateModal.hide();
         });
     }
 
     //reset popup thong tin
-    function ResetPopupInfo()
-    {
+    function ResetPopupInfo() {
         const newPassword = document.getElementById('updatePassword');
         const confirmPassword = document.getElementById('updateConfirmPassword');
         const currentPassword = document.getElementById('currentPassword');
@@ -338,41 +335,39 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     //update mật khẩu
-    function UpdatePass(MatKhau,taiKhoan)
-    {
-        fetch(`../../controllers/TaiKhoanController.php?taikhoan=${taiKhoan}`,{
+    function UpdatePass(MatKhau, taiKhoan) {
+        fetch(`../../controllers/TaiKhoanController.php?taikhoan=${taiKhoan}`, {
             method: "PUT",
-            headers: {"Content-Type" : "application/json" },
-            body: JSON.stringify({MatKhau,TrangThai: 1})
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ MatKhau, TrangThai: 1 })
         })
-        .then(response => response.json())
-        .then(data =>{
-            console.log(data);
-            if(data.success){
-                
-                toast({
-                    title: 'Thành công',
-                    message: 'Cập nhật thành công!',
-                    type: 'success',
-                    duration: 3000
-                });
-                ResetPopupInfo()
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                if (data.success) {
 
-            } else {
-                toast({
-                    title: 'Lỗi',
-                    message: 'Cập nhật thất bại, vui lòng thử lại!',
-                    type: 'error',
-                    duration: 3000
-                });
-            }
-        }) 
+                    toast({
+                        title: 'Thành công',
+                        message: 'Cập nhật thành công!',
+                        type: 'success',
+                        duration: 3000
+                    });
+                    ResetPopupInfo()
+
+                } else {
+                    toast({
+                        title: 'Lỗi',
+                        message: 'Cập nhật thất bại, vui lòng thử lại!',
+                        type: 'error',
+                        duration: 3000
+                    });
+                }
+            })
     }
 
 
     //get mật khẩu từ tài khoản
-    function CheckPass()
-    {
+    function CheckPass() {
         // document.getElementById('updateFullName').value ="";
         // document.getElementById('updatePhone').value="";
         // document.getElementById('updateEmail').value="";
@@ -380,69 +375,66 @@ document.addEventListener('DOMContentLoaded', function () {
         const currentPassword = document.getElementById('currentPassword');
         const taikhoan = decodeEmail(getCookie('username'));
         const matkhau = currentPassword.value;
-        fetch(`../../controllers/TaiKhoanController.php`,{
+        fetch(`../../controllers/TaiKhoanController.php`, {
             method: "POST",
-            headers: {"Content-Type" : "application/json" },
-            body: JSON.stringify({taikhoan,matkhau})
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ taikhoan, matkhau })
         })
-        .then(response => response.json())
-        .then(data =>{
-            
-            if(data.success)
-            {
-                // console.log(CheckPass(taikhoan, currentPassword.value));
-                document.getElementById('currentPasswordError').style.display = 'none';
-            }
-            else {
-                document.getElementById('currentPasswordError').style.display = 'block';
-                currentPassword.select();
-            }
-        })  
+            .then(response => response.json())
+            .then(data => {
+
+                if (data.success) {
+                    // console.log(CheckPass(taikhoan, currentPassword.value));
+                    document.getElementById('currentPasswordError').style.display = 'none';
+                }
+                else {
+                    document.getElementById('currentPasswordError').style.display = 'block';
+                    currentPassword.select();
+                }
+            })
     }
 
     //update thong tin khach hang
-    function UpdateInfor(HoVaTen, SoDienThoai, Email , DiaChi)
-    {
-        fetch(`../../controllers/NguoiDungController.php?idNguoiDung=${dataCookie.user.idnguoidung}`,{
+    function UpdateInfor(HoVaTen, SoDienThoai, Email, DiaChi) {
+        fetch(`../../controllers/NguoiDungController.php?idNguoiDung=${dataCookie.user.idnguoidung}`, {
             method: "PUT",
-            headers: {"Content-Type" : "application/json" },
-            body: JSON.stringify({HoVaTen, SoDienThoai, Email , DiaChi,TrangThai: 1})
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ HoVaTen, SoDienThoai, Email, DiaChi, TrangThai: 1 })
         })
-        .then(response => response.json())
-        .then(data =>{
-            if(data.success){
-                
-                toast({
-                    title: 'Thành công',
-                    message: 'Cập nhật thành công!',
-                    type: 'success',
-                    duration: 3000
-                });
-                document.getElementById('accountTextDesktop').innerText = HoVaTen;
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+
+                    toast({
+                        title: 'Thành công',
+                        message: 'Cập nhật thành công!',
+                        type: 'success',
+                        duration: 3000
+                    });
+                    document.getElementById('accountTextDesktop').innerText = HoVaTen;
 
 
-            } else {
-                toast({
-                    title: 'Lỗi',
-                    message: 'Cập nhật thất bại, vui lòng thử lại!',
-                    type: 'error',
-                    duration: 3000
-                });
-            }
-        }) 
+                } else {
+                    toast({
+                        title: 'Lỗi',
+                        message: 'Cập nhật thất bại, vui lòng thử lại!',
+                        type: 'error',
+                        duration: 3000
+                    });
+                }
+            })
     }
 
     //get thông tin khách hàng
-    function SetInfor()
-    {
+    function SetInfor() {
         fetch(`../../controllers/NguoiDungController.php?idNguoiDung=${dataCookie.user.idnguoidung}`)
-        .then(response => response.json())
-        .then(data =>{
-            document.getElementById('updateFullName').value = data.HoVaTen || '';
-            document.getElementById('updatePhone').value = data.SoDienThoai || '';
-            document.getElementById('updateEmail').value = data.Email || '';
-            document.getElementById('updateAddress').value = data.DiaChi || '';
-        })     
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('updateFullName').value = data.HoVaTen || '';
+                document.getElementById('updatePhone').value = data.SoDienThoai || '';
+                document.getElementById('updateEmail').value = data.Email || '';
+                document.getElementById('updateAddress').value = data.DiaChi || '';
+            })
     }
 
     // Xử lý modal lịch sử mua hàng
@@ -490,31 +482,31 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 // post dang ki tai khoan
-function PostSignup(username, password, fullName, phone, email, address){
-    fetch("../../controllers/AuthController.php",{
+function PostSignup(username, password, fullName, phone, email, address) {
+    fetch("../../controllers/AuthController.php", {
         method: "POST",
-        headers: {"Content-Type" : "application/json" },
-        body: JSON.stringify({username, password, fullName, phone, email, address})
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password, fullName, phone, email, address })
     })
-    .then(response => response.json())
-    .then(data =>{
-        if(data.success){
-            toast({
-                title: 'Thành công',
-                message: 'Đăng ký tài khoản thành công!',
-                type: 'success',
-                duration: 3000
-            });
-            checkLoginStatus(data);
-        } else {
-            toast({
-                title: 'Lỗi',
-                message: 'Đăng ký thất bại, vui lòng thử lại!',
-                type: 'error',
-                duration: 3000
-            });
-        }
-    })     
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                toast({
+                    title: 'Thành công',
+                    message: 'Đăng ký tài khoản thành công!',
+                    type: 'success',
+                    duration: 3000
+                });
+                checkLoginStatus(data);
+            } else {
+                toast({
+                    title: 'Lỗi',
+                    message: 'Đăng ký thất bại, vui lòng thử lại!',
+                    type: 'error',
+                    duration: 3000
+                });
+            }
+        })
 }
 
 // Hàm kiểm tra trạng thái đăng nhập và cập nhật UI
@@ -563,31 +555,31 @@ function logoutUser() {
     localStorage.removeItem('phone');
     localStorage.removeItem('email');
     localStorage.removeItem('address');
-    
-    fetch("../../controllers/AuthController.php",{
+
+    fetch("../../controllers/AuthController.php", {
         method: "POST",
-        headers: {"Content-Type" : "application/json" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({})
     })
-    .then(response => response.json())
-    .then(data =>{
-        console.log(data);
-        if(data.success){
-            dataCookie=undefined;
-            toast({
-                title: 'Thành công',
-                message: 'Đăng xuất thành công!',
-                type: 'success',
-                duration: 3000
-            });
-            checkLoginStatus(data);
-        } else {
-            toast({
-                title: 'Lỗi',
-                message: 'Đăng xuất thất bại, vui lòng thử lại!',
-                type: 'error',
-                duration: 3000
-            });
-        }
-    })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            if (data.success) {
+                dataCookie = undefined;
+                toast({
+                    title: 'Thành công',
+                    message: 'Đăng xuất thành công!',
+                    type: 'success',
+                    duration: 3000
+                });
+                checkLoginStatus(data);
+            } else {
+                toast({
+                    title: 'Lỗi',
+                    message: 'Đăng xuất thất bại, vui lòng thử lại!',
+                    type: 'error',
+                    duration: 3000
+                });
+            }
+        })
 }
