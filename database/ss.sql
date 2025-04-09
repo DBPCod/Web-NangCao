@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th4 07, 2025 lúc 10:44 AM
+-- Thời gian đã tạo: Th4 08, 2025 lúc 05:52 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
--- Phiên bản PHP: 8.2.12
+-- Phiên bản PHP: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -485,7 +485,7 @@ INSERT INTO `taikhoan` (`IdTaiKhoan`, `TaiKhoan`, `MatKhau`, `TrangThai`, `IdVai
 (7, 'phongba2004', '01092004', 1, 3, 6),
 (8, 'phongdeptrai', '01092004', 1, 3, 7),
 (9, 'baphong', '01092004', 1, 3, 8),
-(10, 'phongba2005', '$2y$10$1/4b5LfsrGxMpfqKGIZKI.kHCt0S/TL0Wy7IK3SjYWBhphNCSqwwi', 1, 3, 9),
+(10, 'phongba2005', '$2y$10$6v8b/6u64w7VOBhvNg1NLe401aYxWvcvwotuDn0bvfQ4Z4FgStnTW', 1, 3, 9),
 (11, 'dinhbaphong123@gmail.com', '$2y$10$3zljGqX/AMy2S3rJV0vzZ.h8zcdwhuqVzsB8k60x9QtwaAtVIm38m', 1, 3, 10);
 
 -- --------------------------------------------------------
