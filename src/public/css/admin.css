@@ -1,0 +1,210 @@
+/* Sidebar */
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* Thay min-height thành height để cố định */
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 250px;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    overflow-y: auto; /* Thêm cuộn dọc nếu nội dung dài */
+    transform: translateX(0);
+}
+
+/* Khi sidebar ẩn */
+.sidebar.hidden {
+    transform: translateX(-100%);
+}
+
+/* Logo và tiêu đề */
+.sidebar .text-center {
+    padding-bottom: 2rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.sidebar h4 {
+    margin-top: 0.5rem;
+    color: #218838;
+    font-weight: 600;
+}
+
+/* Nav links */
+.sidebar .nav-link {
+    color: #333;
+    padding: 0.75rem 1rem;
+    border-radius: 5px;
+    margin: 0.25rem 0;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+.sidebar .nav {
+    flex-grow: 1;
+}
+
+/* Hover và active state */
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+    background-color: #218838;
+    color: white;
+    transform: translateX(5px);
+}
+
+/* Dropdown menu */
+.sidebar .collapse {
+    background-color: #f1f3f5;
+    padding: 0.5rem 0;
+    border-radius: 5px;
+}
+
+.sidebar .collapse .nav-link {
+    padding: 0.5rem 1rem;
+    font-size: 0.95rem;
+}
+
+/* Icon chevron */
+.sidebar .bi-chevron-down {
+    margin-left: auto;
+    transition: transform 0.3s ease;
+}
+
+/* Xoay icon khi dropdown mở */
+.sidebar .nav-link[aria-expanded="true"] .bi-chevron-down {
+    transform: rotate(180deg);
+}
+
+/* Sidebar footer */
+.sidebar-footer {
+    padding: 0 1.5rem;
+    color: #666;
+    font-size: 0.85rem;
+    text-align: center;
+    margin-top: auto; /* Đẩy footer xuống dưới cùng */
+}
+
+/* Header */
+.header {
+    background-color: #218838;
+    color: white;
+    padding: 1.5rem;
+    text-align: center;
+    font-size: 1.5rem;
+    position: fixed;
+    top: 0;
+    left: 250px; /* Đẩy header sang phải để không đè sidebar */
+    right: 0;
+    z-index: 900; /* Nằm dưới sidebar */
+    margin: 0;
+    transition: left 0.3s ease; /* Hiệu ứng mượt khi thay đổi */
+}
+
+/* Khi sidebar ẩn, header full width */
+.header.full-width {
+    left: 0;
+}
+
+/* Content area */
+.content-area {
+    padding: 2rem;
+    margin-left: 250px; /* Đồng bộ với sidebar */
+    margin-top: 70px; /* Khoảng cách để không bị header đè */
+    min-height: calc(100vh - 70px);
+    background-color: #fff;
+    transition: margin-left 0.3s ease; /* Hiệu ứng mượt */
+}
+
+.content-area h2 {
+    color: #218838;
+    margin-bottom: 20px;
+}
+
+/* Khi sidebar ẩn, content full width */
+.content-area.full-width {
+    margin-left: 0;
+}
+
+.table {
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.table thead th {
+    background-color: #218838;
+    color: white;
+}
+
+.chart-container {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+}
+
+/* Nút toggle sidebar */
+#sidebarToggle {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 1100; /* Nằm trên cả sidebar và header */
+    background-color: #218838;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    /* display: none; */
+}
+
+#sidebarToggle:hover {
+    background-color: #1a6d2e; /* Màu tối hơn khi hover */
+}
+
+/* Responsive design */
+@media (max-width: 991px) {
+    .sidebar {
+        width: 200px;
+    }
+    
+    .header {
+        left: 200px; /* Đồng bộ với sidebar */
+    }
+    
+    .content-area {
+        margin-left: 200px;
+    }
+}
+
+@media (max-width: 767px) {
+    .sidebar {
+        width: 250px;
+        transform: translateX(-100%); /* Ẩn sidebar mặc định */
+    }
+    
+    .sidebar.show {
+        transform: translateX(0); /* Hiện sidebar khi có class .show */
+    }
+    
+    .header {
+        left: 0; /* Header full width trên mobile */
+        font-size: 1rem;
+        text-align: end;
+    }
+    
+    .content-area {
+        margin-left: 0; /* Nội dung full width khi sidebar ẩn */
+    }
+    
+    #sidebarToggle {
+        display: block; /* Hiện nút toggle trên mobile */
+    }
+}
+
+
+.btn.btn-danger.btn-toggle-lock {
+    width: 5.5rem !important;
+}

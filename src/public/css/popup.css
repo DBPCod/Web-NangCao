@@ -1,0 +1,167 @@
+/* src/public/css/popup.css */
+
+/* Tùy chỉnh modal */
+.modal {
+    z-index: 1060;
+}
+
+/* Tùy chỉnh backdrop */
+.modal-backdrop {
+    z-index: 1050;
+    opacity: 0.3 !important; /* Làm backdrop mờ nhẹ hơn */
+}
+
+/* Tùy chỉnh modal-content */
+.custom-modal {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* Tùy chỉnh nút đóng */
+.custom-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 1.2rem;
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+    z-index: 1065;
+}
+
+.custom-close:hover {
+    opacity: 1;
+}
+
+/* Tùy chỉnh modal-body */
+.modal-body {
+    padding: 30px;
+}
+
+/* Tùy chỉnh tiêu đề */
+.modal-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333;    
+}
+
+/* Tùy chỉnh input */
+.custom-input {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 0.95rem;
+    transition: border-color 0.3s ease;
+}
+
+.custom-input:focus {
+    border-color: #007bff;
+    box-shadow: none;
+}
+
+/* Tùy chỉnh nút */
+.custom-btn {
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 1rem;
+    font-weight: 500;
+    background-color: #00AA00;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+.custom-btn:hover {
+    background-color: #138a13;
+}
+
+/* Định dạng cart-item trong giỏ hàng */
+.cart-item {
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 10px;
+}
+
+.cart-item:last-child {
+    border-bottom: none;
+}
+
+.cart-item .btn-danger {
+    font-size: 0.8rem;
+    padding: 2px 8px;
+}
+
+.cart-items {
+    max-height: 300px; /* Giới hạn chiều cao tối đa cho danh sách sản phẩm */
+    overflow-y: auto; /* Bật thanh cuộn dọc */
+    padding: 15px;
+    margin-bottom: 20px; /* Khoảng cách với phần tổng cộng và nút thanh toán */
+}
+
+/* Tùy chỉnh thanh cuộn cho Webkit */
+.cart-items::-webkit-scrollbar {
+    width: 8px; /* Chiều rộng thanh cuộn */
+}
+
+.cart-items::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Màu nền của track */
+    border-radius: 4px; /* Bo góc track */
+}
+
+.cart-items::-webkit-scrollbar-thumb {
+    background: #888; /* Màu của thumb (phần kéo) */
+    border-radius: 4px; /* Bo góc thumb */
+}
+
+.cart-items::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Màu khi hover */
+}
+
+/* Đảm bảo hamburger và nút đăng nhập căn chỉnh tốt trên mobile */
+.navbar-toggler,
+#mobileLoginLink {
+    display: none; /* Ẩn mặc định, JS sẽ điều khiển */
+}
+
+#mobileLoginLink {
+    align-items: center;
+    text-decoration: none;
+    color: #6c757d;
+}
+
+#mobileLoginLink:hover {
+    color: #28a745;
+}
+
+/* Thanh tìm kiếm trong offcanvas */
+.offcanvas-body .search-bar {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+
+/*login warning*/
+.position-relative {
+    position: relative;
+}
+
+.warning-icon {
+    position: absolute;
+    right: 10px;
+    top: 32%;
+    transform: translateY(-50%);
+    color: red;
+    font-size: 1.2rem;
+}
+
+.error-message {
+    font-size: 0.85rem; /* Chữ nhỏ hơn */
+    color: #dc3545; /* Màu đỏ của Bootstrap alert-danger */
+    margin-top: 5px; /* Khoảng cách với input */
+    font-weight: 400; /* Không in đậm để trông hiện đại */
+}
+
+.custom-input.error {
+    border-color: red;
+}
