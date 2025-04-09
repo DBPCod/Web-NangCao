@@ -203,3 +203,8 @@
         display: block; /* Hiện nút toggle trên mobile */
     }
 }
+
+
+.btn.btn-danger.btn-toggle-lock {
+    width: 5.5rem !important;
+}
