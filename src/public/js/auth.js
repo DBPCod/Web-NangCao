@@ -12,13 +12,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const accountLinkDesktop = document.getElementById('accountDropdownDesktop');
     if (accountLinkDesktop) {
         accountLinkDesktop.addEventListener('click', function (e) {
-
-            // if (localStorage.getItem('isLoggedIn') !== 'true') {
-            // e.preventDefault();
-            // e.stopPropagation();
-            // const loginModal = new bootstrap.Modal(document.getElementById('loginPopup'));
-            // loginModal.show();
-            // }
             if (dataCookie === undefined) {
                 e.preventDefault();
                 e.stopPropagation();

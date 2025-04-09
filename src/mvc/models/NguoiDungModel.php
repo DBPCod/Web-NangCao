@@ -10,7 +10,7 @@ class NguoiDungModel {
 
     // Lấy tất cả người dùng
     public function getAllNguoiDung() {
-        $result = $this->db->query("SELECT * FROM nguoidung");
+        $result = $this->db->query("SELECT * FROM nguoidung where TrangThai != 0");
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 

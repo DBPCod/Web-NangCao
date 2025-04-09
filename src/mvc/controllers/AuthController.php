@@ -42,7 +42,6 @@ include_once '../models/CookieManager.php';
                             if($user)
                             {
                                 echo json_encode(["success" => true, "message" => "Đăng nhập thành công!","user" => $user]);
-                                
                                 //luu vao session
                                 SessionManager::start();
                                 SessionManager::set('user',$user);

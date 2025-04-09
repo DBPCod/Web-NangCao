@@ -11,15 +11,6 @@
                     <th>Hành động</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>Nguyễn Văn A</td>
-                    <td>1,500,000 đ</td>
-                    <td>
-                        <button class="btn btn-primary">Xem</button>
-                    </td>
-                </tr>
-            </tbody>
+            <tbody id="grnTableBody"></tbody>
         </table>
     </div>
