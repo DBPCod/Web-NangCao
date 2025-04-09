@@ -123,26 +123,6 @@ INSERT INTO `cthoadon` (`IdHoaDon`, `GiaTien`, `SoLuong`, `Imei`) VALUES
 
 -- --------------------------------------------------------
 
---
--- Cấu trúc bảng cho bảng `ctkhuyenmai`
---
-
-CREATE TABLE `ctkhuyenmai` (
-  `IdKhuyenMai` int(11) NOT NULL,
-  `IdCHSP` int(11) NOT NULL,
-  `IdDongSanPham` varchar(20) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Đang đổ dữ liệu cho bảng `ctkhuyenmai`
---
-
-INSERT INTO `ctkhuyenmai` (`IdKhuyenMai`, `IdCHSP`, `IdDongSanPham`) VALUES
-(1, 1, 'IP7'),
-(2, 2, 'IP8'),
-(3, 3, 'SS10'),
-(4, 4, 'XM12'),
-(5, 5, 'OP5');
 
 -- --------------------------------------------------------
 
@@ -585,13 +565,6 @@ ALTER TABLE `cthoadon`
   ADD PRIMARY KEY (`IdHoaDon`,`Imei`),
   ADD KEY `Imei` (`Imei`);
 
---
--- Chỉ mục cho bảng `ctkhuyenmai`
---
-ALTER TABLE `ctkhuyenmai`
-  ADD PRIMARY KEY (`IdKhuyenMai`,`IdCHSP`,`IdDongSanPham`),
-  ADD KEY `IdCHSP` (`IdCHSP`),
-  ADD KEY `IdDongSanPham` (`IdDongSanPham`);
 
 --
 -- Chỉ mục cho bảng `ctphieunhap`
@@ -726,12 +699,6 @@ ALTER TABLE `cthoadon`
   MODIFY `IdHoaDon` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT cho bảng `ctkhuyenmai`
---
-ALTER TABLE `ctkhuyenmai`
-  MODIFY `IdKhuyenMai` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
---
 -- AUTO_INCREMENT cho bảng `hoadon`
 --
 ALTER TABLE `hoadon`
@@ -803,13 +770,6 @@ ALTER TABLE `cthoadon`
   ADD CONSTRAINT `cthoadon_ibfk_1` FOREIGN KEY (`IdHoaDon`) REFERENCES `hoadon` (`IdHoaDon`),
   ADD CONSTRAINT `cthoadon_ibfk_2` FOREIGN KEY (`Imei`) REFERENCES `sanphamchitiet` (`Imei`);
 
---
--- Các ràng buộc cho bảng `ctkhuyenmai`
---
-ALTER TABLE `ctkhuyenmai`
-  ADD CONSTRAINT `ctkhuyenmai_ibfk_1` FOREIGN KEY (`IdKhuyenMai`) REFERENCES `khuyenmai` (`IdKhuyenMai`),
-  ADD CONSTRAINT `ctkhuyenmai_ibfk_2` FOREIGN KEY (`IdCHSP`) REFERENCES `sanpham` (`IdCHSP`),
-  ADD CONSTRAINT `ctkhuyenmai_ibfk_3` FOREIGN KEY (`IdDongSanPham`) REFERENCES `sanpham` (`IdDongSanPham`);
 
 --
 -- Các ràng buộc cho bảng `ctphieunhap`
@@ -872,3 +832,34 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+
+--
+-- Cấu trúc bảng cho bảng `ctkhuyenmai`
+--
+CREATE TABLE `ctkhuyenmai` (
+  `IdKhuyenMai` int(11) NOT NULL,
+  `IdDongSanPham` varchar(20) NOT NULL,
+  PRIMARY KEY (`IdKhuyenMai`, `IdDongSanPham`),
+  KEY `IdDongSanPham` (`IdDongSanPham`),
+  CONSTRAINT `ctkhuyenmai_ibfk_1` FOREIGN KEY (`IdKhuyenMai`) REFERENCES `khuyenmai` (`IdKhuyenMai`),
+  CONSTRAINT `ctkhuyenmai_ibfk_2` FOREIGN KEY (`IdDongSanPham`) REFERENCES `dongsanpham` (`IdDongSanPham`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `ctkhuyenmai`
+--
+
+--
+-- AUTO_INCREMENT cho bảng `ctkhuyenmai`
+--
+ALTER TABLE `ctkhuyenmai`
+  MODIFY `IdKhuyenMai` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+
+INSERT INTO `ctkhuyenmai` (`IdKhuyenMai`, `IdDongSanPham`) VALUES
+(1, 'IP7'),
+(2, 'IP8'),
+(3, 'SS10'),
+(4, 'XM12'),
+(5, 'OP5');
