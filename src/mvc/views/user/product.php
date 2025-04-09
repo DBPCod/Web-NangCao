@@ -245,11 +245,19 @@
                                         <p id="modalProductPoints" class="product-points"></p>
                                         <!-- Thông số kỹ thuật -->
                                         <div class="product-specs-details">
-                                            <p><strong>RAM:</strong> <span id="modalProductRam"></span></p>
+                                            <!-- RAM chọn -->
+                                            <p><strong>RAM:</strong>
+                                                <span id="modalProductRam" class="d-inline-flex gap-2"></span>
+                                            </p>
+                                            <!-- <p><strong>RAM:</strong> <span id="modalProductRam"></span></p> -->
                                             <p><strong>ROM:</strong> <span id="modalProductRom"></span></p>
                                             <p><strong>Màn hình:</strong> <span id="modalProductManHinh"></span></p>
                                             <p><strong>Pin:</strong> <span id="modalProductPin"></span></p>
-                                            <p><strong>Màu sắc:</strong> <span id="modalProductMauSac"></span></p>
+                                            <!-- <p><strong>Màu sắc:</strong> <span id="modalProductMauSac"></span></p> -->
+                                             <!-- Màu sắc chọn -->
+                                            <p><strong>Màu sắc:</strong>
+                                                <span id="modalProductMauSac" class="d-inline-flex gap-2"></span>
+                                            </p>
                                             <p><strong>Camera:</strong> <span id="modalProductCamera"></span></p>
                                             <p><strong>Trạng thái:</strong> <span id="modalProductTrangThai"></span></p>
                                         </div>
