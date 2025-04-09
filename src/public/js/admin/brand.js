@@ -20,10 +20,21 @@ function submitAddBrand() {
       .then((data) => {
           document.getElementById("addBrandForm").reset();
           bootstrap.Modal.getInstance(document.getElementById("addBrandModal")).hide();
+          toast({
+            title: "Thành công",
+            message: data.message,
+            type: "success",
+            duration: 3000,
+          });
           loadBrands();
       })
       .catch((error) => {
-          console.error("Error:", error);
+        toast({
+            title: "Lỗi",
+            message: "Thêm thất bại",
+            type: "error",
+            duration: 3000,
+          });
           alert("Thêm thương hiệu thất bại");
       });
 }
@@ -42,9 +53,21 @@ function deleteBrand(idThuongHieu) {
               return response.json();
           })
           .then((data) => {
+                toast({
+                title: "Thành công",
+                message: "Xóa thành công",
+                type: "success",
+                duration: 3000,
+              });
               loadBrands();
           })
           .catch((error) => {
+            toast({
+                title: "Lỗi",
+                message: "Xóa thất bại.",
+                type: "error",
+                duration: 3000,
+              });
               console.error("Error:", error);
           });
   }
