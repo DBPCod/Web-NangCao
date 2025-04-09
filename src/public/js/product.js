@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <img src="${product.image}" alt="${product.name}">
                                 <div class="product-name">${product.name}</div>
                                 <div class="product-specs">RAM: ${product.ram} - ROM: ${product.rom}</div>
-                                <div class="product-price">Liên hệ</div>
+                                <div class="product-price">${product.gia}</div>
                             </div>
                         </div>`;
                 });
@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.querySelector('#modalProductImage').alt = product.name;
                 document.querySelector('#modalProductName').textContent = product.name;
                 document.querySelector('#modalProductSpecs').textContent = `RAM: ${product.ram} - ROM: ${product.rom}`;
-                document.querySelector('#modalProductPrice').innerHTML = 'Liên hệ';
+                document.querySelector('#modalProductPrice').innerHTML = product.gia;
                 document.querySelector('#modalProductDiscount').textContent = '';
                 document.querySelector('#modalProductPoints').textContent = '';
                 

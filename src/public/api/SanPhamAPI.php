@@ -14,7 +14,7 @@ class SanPhamAPI {
         $this->sanPhamModel = new SanPhamModel();
     }
 
-    public function getProducts($page = 1, $limit = 9) {
+    public function getProducts($page = 1, $limit = 6) {
         $offset = ($page - 1) * $limit;
         
         // Lấy danh sách cấu hình sản phẩm
@@ -38,8 +38,9 @@ class SanPhamAPI {
                 'mauSac' => $cauHinh['MauSac'],
                 'camera' => $cauHinh['Camera'],
                 'trangThai' => $cauHinh['TrangThai'],
+                'gia' => $sanPham['Gia'],
                 'soLuong' => $sanPham ? $sanPham['SoLuong'] : 0,
-                'image' => "/smartstation/src/public/img/ip16_1.png" // Điều chỉnh đường dẫn ảnh
+                'image' => "/smartstation/src/public/img/ip16_4.png" // Điều chỉnh đường dẫn ảnh
             ];
         }, $cauHinhs);
 
