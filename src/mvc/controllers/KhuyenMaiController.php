@@ -15,7 +15,9 @@ class KhuyenMaiController {
 
         switch ($method) {
             case 'GET':
-                if (isset($_GET['idKhuyenMai'])) {
+                if (isset($_GET['idKhuyenMai']) && isset($_GET['action']) && $_GET['action'] === 'getProductLines') {
+                    $data = $this->model->getProductLinesByPromotion($_GET['idKhuyenMai']);
+                } elseif (isset($_GET['idKhuyenMai'])) {
                     $data = $this->model->getKhuyenMaiById($_GET['idKhuyenMai']);
                 } else {
                     $data = $this->model->getAllKhuyenMai();
@@ -27,7 +29,7 @@ class KhuyenMaiController {
                 $newKhuyenMai = $this->model->addKhuyenMai($input);
                 echo json_encode([
                     "message" => "Thêm khuyến mãi thành công",
-                    "khuyenmai" => $newKhuyenMai
+                    "khuyenmai" => $newKhuyenMai // Trả về thông tin khuyến mãi, bao gồm IdKhuyenMai
                 ]);
                 break;
 
@@ -45,14 +47,14 @@ class KhuyenMaiController {
                     echo json_encode(["message" => $result ? "Cập nhật thành công" : "Cập nhật thất bại"]);
                 }
                 break;
-            
+
             case 'DELETE':
                 if (isset($_GET['idKhuyenMai'])) {
                     $result = $this->model->deleteKhuyenMai($_GET['idKhuyenMai']);
                     echo json_encode(["message" => $result ? "Xóa thành công" : "Xóa thất bại"]);
                 }
                 break;
-            
+
             default:
                 echo json_encode(["message" => "Yêu cầu không hợp lệ"]);
         }
@@ -60,4 +62,4 @@ class KhuyenMaiController {
 }
 
 (new KhuyenMaiController())->handleRequest();
-?>
+?>  
