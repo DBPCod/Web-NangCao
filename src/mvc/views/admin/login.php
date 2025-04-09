@@ -82,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <!-- Thêm jQuery để xử lý AJAX -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="../../../public/js/jquery.js"></script>
     <script>
         $(document).ready(function() {
             $('#adminLoginForm').on('submit', function(e) {
