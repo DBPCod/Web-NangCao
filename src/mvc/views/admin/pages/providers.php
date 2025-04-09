@@ -31,10 +31,6 @@
             <div class="modal-body">
                 <form id="providerForm">
                     <div class="mb-3">
-                        <label for="idProvider" class="form-label">ID Nhà cung cấp</label>
-                        <input type="number" class="form-control" id="idProvider" name="IdNCC" required>
-                    </div>
-                    <div class="mb-3">
                         <label for="tenNCC" class="form-label">Tên nhà cung cấp</label>
                         <input type="text" class="form-control" id="tenNCC" name="TenNCC" required>
                     </div>
