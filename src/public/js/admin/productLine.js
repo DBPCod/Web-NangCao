@@ -1,89 +1,142 @@
 function loadProductLines() {
-    fetch("/smartstation/src/mvc/controllers/DongSanPhamController.php", {
+  fetch("/smartstation/src/mvc/controllers/DongSanPhamController.php", {
       method: "GET",
-    })
+  })
       .then((response) => {
-        if (!response.ok) throw new Error("Network error: " + response.status);
-        return response.json();
+          if (!response.ok) throw new Error("Network error: " + response.status);
+          return response.json();
       })
       .then((productLines) => {
-        const tbody = document.getElementById("productLineTableBody");
-        tbody.innerHTML = "";
-        if (!productLines || productLines.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="5">Không có dòng sản phẩm nào</td></tr>';
-        } else {
-          productLines.forEach((productLine) => {
-            tbody.innerHTML += `
-              <tr>
-                <td>${productLine.IdDongSanPham}</td>
-                <td>${productLine.SoLuong}</td>
-                <td>${productLine.IdThuongHieu || "Không có"}</td>
-                <td>${productLine.TrangThai == 1 ? "Hoạt động" : "Ngừng hoạt động"}</td>
-                <td>
-                  <button class="btn btn-primary" onclick="editProductLine('${productLine.IdDongSanPham}')">Sửa</button>
-                  <button class="btn btn-danger" onclick="deleteProductLine('${productLine.IdDongSanPham}')">Xóa</button>
-                </td>
-              </tr>`;
-          });
-        }
+          const tbody = document.getElementById("productLineTableBody");
+          tbody.innerHTML = "";
+          if (!productLines || productLines.length === 0) {
+              tbody.innerHTML = '<tr><td colspan="6">Không có dòng sản phẩm nào</td></tr>';
+          } else {
+              productLines.forEach((productLine) => {
+                  tbody.innerHTML += `
+                      <tr>
+                          <td>${productLine.IdDongSanPham}</td>
+                          <td>${productLine.TenDong}</td>
+                          <td>${productLine.SoLuong}</td>
+                          <td>${productLine.IdThuongHieu || "Không có"}</td>
+                          <td>${productLine.TrangThai == 1 ? "Hoạt động" : "Ngừng hoạt động"}</td>
+                          <td>
+                              <button class="btn btn-primary" onclick="openEditModal('${productLine.IdDongSanPham}')">Sửa</button>
+                              <button class="btn btn-danger" onclick="deleteProductLine('${productLine.IdDongSanPham}')">Xóa</button>
+                          </td>
+                      </tr>`;
+              });
+          }
       })
       .catch((error) => console.error("Fetch error:", error));
-  }
-  
-  function editProductLine(idDSP) {
-    window.location.href = `edit_productline.php?idDSP=${idDSP}`;
-  }
-  
-  function deleteProductLine(idDSP) {
-    if (confirm("Bạn có chắc muốn ngừng hoạt động dòng sản phẩm này?")) {
-      fetch(`/smartstation/src/mvc/controllers/DongSanPhamController.php?idDSP=${idDSP}`, {
-        method: "GET", // Lấy thông tin dòng sản phẩm trước
+}
+
+function openAddModal() {
+  document.getElementById("productLineModalLabel").innerText = "Thêm dòng sản phẩm";
+  document.getElementById("productLineForm").reset();
+  document.getElementById("idDongSanPham").disabled = false;
+}
+
+function openEditModal(idDSP) {
+  fetch(`/smartstation/src/mvc/controllers/DongSanPhamController.php?idDSP=${idDSP}`, {
+      method: "GET",
+  })
+      .then((response) => response.json())
+      .then((productLine) => {
+          document.getElementById("productLineModalLabel").innerText = "Sửa dòng sản phẩm";
+          document.getElementById("idDongSanPham").value = productLine.IdDongSanPham;
+          document.getElementById("idDongSanPham").disabled = true; // Không cho sửa ID
+          document.getElementById("tenDong").value = productLine.TenDong;
+          document.getElementById("soLuong").value = productLine.SoLuong;
+          document.getElementById("idThuongHieu").value = productLine.IdThuongHieu || "";
+          document.getElementById("trangThai").value = productLine.TrangThai;
+          new bootstrap.Modal(document.getElementById("productLineModal")).show();
       })
-        .then((response) => response.json())
-        .then((productLine) => {
-          if (productLine.SoLuong === 0) {
-            if (productLine.TrangThai == 1) {
-              // Cho phép ngừng hoạt động: Số lượng = 0 và đang hoạt động
-              return fetch(`/smartstation/src/mvc/controllers/DongSanPhamController.php?idDSP=${idDSP}`, {
-                method: "DELETE",
-              });
-            } else {
-              // Dòng sản phẩm đã ngừng hoạt động
-              toast({
-                title: "Lỗi",
-                message: "Dòng sản phẩm không còn hoạt động. Ngừng hoạt động thất bại.",
-                type: "error",
-                duration: 3000,
-              });
-              throw new Error("Dòng sản phẩm không còn hoạt động.");
-            }
-          } else {
-            // Số lượng > 0
-            toast({
-              title: "Cảnh báo",
-              message: "Chỉ được ngừng hoạt động dòng sản phẩm khi số lượng bằng 0",
-              type: "warning",
-              duration: 3000,
-            });
-            throw new Error("Chỉ được ngừng hoạt động khi số lượng bằng 0");
-          }
-        })
-        .then((response) => response.json())
-        .then((data) => {
+      .catch((error) => console.error("Fetch error:", error));
+}
+
+function saveProductLine() {
+  const idDSP = document.getElementById("idDongSanPham").value;
+  const data = {
+      IdDongSanPham: idDSP,
+      TenDong: document.getElementById("tenDong").value,
+      SoLuong: parseInt(document.getElementById("soLuong").value),
+      IdThuongHieu: document.getElementById("idThuongHieu").value ? parseInt(document.getElementById("idThuongHieu").value) : null,
+      TrangThai: parseInt(document.getElementById("trangThai").value),
+  };
+
+  const method = document.getElementById("idDongSanPham").disabled ? "PUT" : "POST";
+  const url = method === "PUT" 
+      ? `/smartstation/src/mvc/controllers/DongSanPhamController.php?idDSP=${idDSP}` 
+      : "/smartstation/src/mvc/controllers/DongSanPhamController.php";
+
+  fetch(url, {
+      method: method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+  })
+      .then((response) => response.json())
+      .then((result) => {
           toast({
-            title: "Thành công",
-            message: data.message,
-            type: "success",
-            duration: 3000,
+              title: "Thành công",
+              message: result.message,
+              type: "success",
+              duration: 3000,
           });
-          loadProductLines(); // Tải lại danh sách
-        })
-        .catch((error) => {
+          bootstrap.Modal.getInstance(document.getElementById("productLineModal")).hide();
+          loadProductLines();
+      })
+      .catch((error) => {
           console.error("Error:", error);
-          // Các lỗi đã hiển thị toast ở trên nên không cần hiện lại
-        });
-    }
+          toast({
+              title: "Lỗi",
+              message: "Đã xảy ra lỗi khi lưu dòng sản phẩm",
+              type: "error",
+              duration: 3000,
+          });
+      });
+}
+
+function deleteProductLine(idDSP) {
+  if (confirm("Bạn có chắc muốn ngừng hoạt động dòng sản phẩm này?")) {
+      fetch(`/smartstation/src/mvc/controllers/DongSanPhamController.php?idDSP=${idDSP}`, {
+          method: "GET",
+      })
+          .then((response) => response.json())
+          .then((productLine) => {
+              if (productLine.SoLuong === 0) {
+                  if (productLine.TrangThai == 1) {
+                      return fetch(`/smartstation/src/mvc/controllers/DongSanPhamController.php?idDSP=${idDSP}`, {
+                          method: "DELETE",
+                      });
+                  } else {
+                      throw new Error("Dòng sản phẩm không còn hoạt động.");
+                  }
+              } else {
+                  throw new Error("Chỉ được ngừng hoạt động khi số lượng bằng 0");
+              }
+          })
+          .then((response) => response.json())
+          .then((data) => {
+              toast({
+                  title: "Thành công",
+                  message: data.message,
+                  type: "success",
+                  duration: 3000,
+              });
+              loadProductLines();
+          })
+          .catch((error) => {
+              console.error("Error:", error);
+              toast({
+                  title: error.message.includes("số lượng") ? "Cảnh báo" : "Lỗi",
+                  message: error.message,
+                  type: error.message.includes("số lượng") ? "warning" : "error",
+                  duration: 3000,
+              });
+          });
   }
-  
-  // Gọi khi script được tải
-  loadProductLines();
+}
+
+// Gọi khi script được tải
+loadProductLines();

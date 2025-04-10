@@ -8,6 +8,7 @@
         <thead>
             <tr>
                 <th>ID Dòng sản phẩm</th>
+                <th>Tên dòng</th>
                 <th>Số lượng</th>
                 <th>ID Thương hiệu</th>
                 <th>Trạng thái</th>
@@ -18,7 +19,7 @@
     </table>
 </div>
 
-<!-- Modal -->
+<!-- Modal để thêm/sửa dòng sản phẩm -->
 <div class="modal fade" id="productLineModal" tabindex="-1" aria-labelledby="productLineModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -30,19 +31,23 @@
                 <form id="productLineForm">
                     <div class="mb-3">
                         <label for="idDongSanPham" class="form-label">ID Dòng sản phẩm</label>
-                        <input type="text" class="form-control" id="idDongSanPham" name="IdDongSanPham" required>
+                        <input type="text" class="form-control" id="idDongSanPham" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="tenDong" class="form-label">Tên dòng</label>
+                        <input type="text" class="form-control" id="tenDong" required>
                     </div>
                     <div class="mb-3">
                         <label for="soLuong" class="form-label">Số lượng</label>
-                        <input type="number" class="form-control" id="soLuong" name="SoLuong" required>
+                        <input type="number" class="form-control" id="soLuong" required>
                     </div>
                     <div class="mb-3">
                         <label for="idThuongHieu" class="form-label">ID Thương hiệu</label>
-                        <input type="text" class="form-control" id="idThuongHieu" name="IdThuongHieu">
+                        <input type="number" class="form-control" id="idThuongHieu">
                     </div>
                     <div class="mb-3">
                         <label for="trangThai" class="form-label">Trạng thái</label>
-                        <select class="form-select" id="trangThai" name="TrangThai" required>
+                        <select class="form-control" id="trangThai" required>
                             <option value="1">Hoạt động</option>
                             <option value="0">Ngừng hoạt động</option>
                         </select>
@@ -51,7 +56,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                <button type="button" class="btn btn-primary" id="saveProductLineBtn">Lưu</button>
+                <button type="button" class="btn btn-primary" onclick="saveProductLine()">Lưu</button>
             </div>
         </div>
     </div>
