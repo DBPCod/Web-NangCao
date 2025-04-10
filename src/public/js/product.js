@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.querySelector('#modalProductPin').textContent = product.pin || 'N/A';
                 document.querySelector('#modalProductMauSac').textContent = product.mauSac || 'N/A';
                 document.querySelector('#modalProductCamera').textContent = product.camera || 'N/A';
-                document.querySelector('#modalProductTrangThai').textContent = product.trangThai ? 'Còn hàng' : 'Hết hàng';
+                document.querySelector('#modalProductTrangThai').textContent = product.trangThai === "1" ? 'Còn hàng' : 'Hết hàng';
 
                 // Xử lý thumbnail gallery
                 const thumbnailHTML = `
