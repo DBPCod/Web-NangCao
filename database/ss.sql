@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th4 07, 2025 lúc 10:44 AM
+-- Thời gian đã tạo: Th4 08, 2025 lúc 05:52 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
--- Phiên bản PHP: 8.2.12
+-- Phiên bản PHP: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -123,26 +123,6 @@ INSERT INTO `cthoadon` (`IdHoaDon`, `GiaTien`, `SoLuong`, `Imei`) VALUES
 
 -- --------------------------------------------------------
 
---
--- Cấu trúc bảng cho bảng `ctkhuyenmai`
---
-
-CREATE TABLE `ctkhuyenmai` (
-  `IdKhuyenMai` int(11) NOT NULL,
-  `IdCHSP` int(11) NOT NULL,
-  `IdDongSanPham` varchar(20) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Đang đổ dữ liệu cho bảng `ctkhuyenmai`
---
-
-INSERT INTO `ctkhuyenmai` (`IdKhuyenMai`, `IdCHSP`, `IdDongSanPham`) VALUES
-(1, 1, 'IP7'),
-(2, 2, 'IP8'),
-(3, 3, 'SS10'),
-(4, 4, 'XM12'),
-(5, 5, 'OP5');
 
 -- --------------------------------------------------------
 
@@ -485,7 +465,7 @@ INSERT INTO `taikhoan` (`IdTaiKhoan`, `TaiKhoan`, `MatKhau`, `TrangThai`, `IdVai
 (7, 'phongba2004', '01092004', 1, 3, 6),
 (8, 'phongdeptrai', '01092004', 1, 3, 7),
 (9, 'baphong', '01092004', 1, 3, 8),
-(10, 'phongba2005', '$2y$10$1/4b5LfsrGxMpfqKGIZKI.kHCt0S/TL0Wy7IK3SjYWBhphNCSqwwi', 1, 3, 9),
+(10, 'phongba2005', '$2y$10$6v8b/6u64w7VOBhvNg1NLe401aYxWvcvwotuDn0bvfQ4Z4FgStnTW', 1, 3, 9),
 (11, 'dinhbaphong123@gmail.com', '$2y$10$3zljGqX/AMy2S3rJV0vzZ.h8zcdwhuqVzsB8k60x9QtwaAtVIm38m', 1, 3, 10);
 
 -- --------------------------------------------------------
@@ -585,13 +565,6 @@ ALTER TABLE `cthoadon`
   ADD PRIMARY KEY (`IdHoaDon`,`Imei`),
   ADD KEY `Imei` (`Imei`);
 
---
--- Chỉ mục cho bảng `ctkhuyenmai`
---
-ALTER TABLE `ctkhuyenmai`
-  ADD PRIMARY KEY (`IdKhuyenMai`,`IdCHSP`,`IdDongSanPham`),
-  ADD KEY `IdCHSP` (`IdCHSP`),
-  ADD KEY `IdDongSanPham` (`IdDongSanPham`);
 
 --
 -- Chỉ mục cho bảng `ctphieunhap`
@@ -726,12 +699,6 @@ ALTER TABLE `cthoadon`
   MODIFY `IdHoaDon` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT cho bảng `ctkhuyenmai`
---
-ALTER TABLE `ctkhuyenmai`
-  MODIFY `IdKhuyenMai` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
---
 -- AUTO_INCREMENT cho bảng `hoadon`
 --
 ALTER TABLE `hoadon`
@@ -803,13 +770,6 @@ ALTER TABLE `cthoadon`
   ADD CONSTRAINT `cthoadon_ibfk_1` FOREIGN KEY (`IdHoaDon`) REFERENCES `hoadon` (`IdHoaDon`),
   ADD CONSTRAINT `cthoadon_ibfk_2` FOREIGN KEY (`Imei`) REFERENCES `sanphamchitiet` (`Imei`);
 
---
--- Các ràng buộc cho bảng `ctkhuyenmai`
---
-ALTER TABLE `ctkhuyenmai`
-  ADD CONSTRAINT `ctkhuyenmai_ibfk_1` FOREIGN KEY (`IdKhuyenMai`) REFERENCES `khuyenmai` (`IdKhuyenMai`),
-  ADD CONSTRAINT `ctkhuyenmai_ibfk_2` FOREIGN KEY (`IdCHSP`) REFERENCES `sanpham` (`IdCHSP`),
-  ADD CONSTRAINT `ctkhuyenmai_ibfk_3` FOREIGN KEY (`IdDongSanPham`) REFERENCES `sanpham` (`IdDongSanPham`);
 
 --
 -- Các ràng buộc cho bảng `ctphieunhap`
@@ -872,3 +832,34 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+
+--
+-- Cấu trúc bảng cho bảng `ctkhuyenmai`
+--
+CREATE TABLE `ctkhuyenmai` (
+  `IdKhuyenMai` int(11) NOT NULL,
+  `IdDongSanPham` varchar(20) NOT NULL,
+  PRIMARY KEY (`IdKhuyenMai`, `IdDongSanPham`),
+  KEY `IdDongSanPham` (`IdDongSanPham`),
+  CONSTRAINT `ctkhuyenmai_ibfk_1` FOREIGN KEY (`IdKhuyenMai`) REFERENCES `khuyenmai` (`IdKhuyenMai`),
+  CONSTRAINT `ctkhuyenmai_ibfk_2` FOREIGN KEY (`IdDongSanPham`) REFERENCES `dongsanpham` (`IdDongSanPham`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `ctkhuyenmai`
+--
+
+--
+-- AUTO_INCREMENT cho bảng `ctkhuyenmai`
+--
+ALTER TABLE `ctkhuyenmai`
+  MODIFY `IdKhuyenMai` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+
+INSERT INTO `ctkhuyenmai` (`IdKhuyenMai`, `IdDongSanPham`) VALUES
+(1, 'IP7'),
+(2, 'IP8'),
+(3, 'SS10'),
+(4, 'XM12'),
+(5, 'OP5');

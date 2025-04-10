@@ -11,7 +11,6 @@
                 <th>Số điện thoại</th>
                 <th>Trạng thái</th>
                 <th>Tài khoản</th>
-                <th>Mật khẩu</th>
                 <th>Hành động</th>
             </tr>
         </thead>
@@ -26,7 +25,6 @@
                 <td>sieunhan123</td>
                 <td>123siu123</td>
                 <td>
-                    <button class="btn btn-primary">Sửa</button>
                     <button class="btn btn-danger">Xóa</button>
                 </td>
             </tr>

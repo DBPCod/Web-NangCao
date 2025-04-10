@@ -15,8 +15,8 @@ class CTKhuyenmaiController {
 
         switch ($method) {
             case 'GET':
-                if (isset($_GET['idKhuyenMai']) && isset($_GET['idCHSP']) && isset($_GET['idDSP'])) {
-                    $data = $this->model->getCTKhuyenMaiById($_GET['idKhuyenMai'], $_GET['idCHSP'], $_GET['idDSP']);
+                if (isset($_GET['idKhuyenMai']) && isset($_GET['idDSP'])) {
+                    $data = $this->model->getCTKhuyenMaiById($_GET['idKhuyenMai'], $_GET['idDSP']);
                 } else {
                     $data = $this->model->getAllCTKhuyenMai();
                 }

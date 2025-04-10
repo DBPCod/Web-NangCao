@@ -32,13 +32,26 @@ class NguoiDungController {
                 break;
 
             case 'PUT':
-                // Đọc dữ liệu JSON từ input
-                $json = file_get_contents("php://input");
-                $_PUT = json_decode($json, true);
-
                 if (isset($_GET['idNguoiDung'])) {
-                    $result = $this->model->updateNguoiDung($_GET['idNguoiDung'], $_PUT);
-                    echo json_encode(["success" => $result,"message" => $result ? "Cập nhật thành công" : "Cập nhật thất bại"]);
+                    $idNguoiDung = $_GET['idNguoiDung'];
+                    $currentUser = $this->model->getNguoiDungById($idNguoiDung);
+                    if ($currentUser) {
+                        // Chỉ cập nhật các trường được gửi, giữ nguyên các trường không gửi
+                        $data = [
+                            'HoVaTen' => $input['HoVaTen'] ?? $currentUser['HoVaTen'],
+                            'Email' => $input['Email'] ?? $currentUser['Email'],
+                            'DiaChi' => $input['DiaChi'] ?? $currentUser['DiaChi'],
+                            'SoDienThoai' => $input['SoDienThoai'] ?? $currentUser['SoDienThoai'],
+                            'TrangThai' => $input['TrangThai'] ?? $currentUser['TrangThai'],
+                        ];
+                        $result = $this->model->updateNguoiDung($idNguoiDung, $input); // Truyền trực tiếp $input
+                        echo json_encode([
+                            "success" => $result,
+                            "message" => $result ? "Cập nhật thành công" : "Cập nhật thất bại"
+                        ]);
+                    } else {
+                        echo json_encode(["message" => "Không tìm thấy người dùng"]);
+                    }
                 } else {
                     echo json_encode(["message" => "Thiếu idNguoiDung"]);
                 }
@@ -59,6 +72,5 @@ class NguoiDungController {
     }
 }
 
-// Khởi tạo và xử lý yêu cầu
 (new NguoiDungController())->handleRequest();
 ?>

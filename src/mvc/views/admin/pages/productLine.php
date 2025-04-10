@@ -15,4 +15,4 @@
     </table>
 </div>
 
-<script src="/smartstation/src/public/js/admin/productLine.js"></script>
+<script src="/smartstation/src/public/js/admin/productLine.js"></script>    

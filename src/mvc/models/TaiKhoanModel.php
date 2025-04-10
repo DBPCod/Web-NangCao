@@ -14,6 +14,15 @@ class TaiKhoanModel {
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
+    //lấy tài khoản theo idnguoidung
+    public function getTaiKhoanByIdUser($idNguoiDung)
+    {
+        $stmt = $this->db->prepare("SELECT * FROM TaiKhoan WHERE IdNguoiDung = ?");
+        $stmt->bind_param("i", $idNguoiDung);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_assoc();
+    }
+
     // Lấy tài khoản theo IdTaiKhoan
     public function getTaiKhoanById($taiKhoan) {
         $stmt = $this->db->prepare("SELECT * FROM TaiKhoan WHERE taiKhoan = ?");

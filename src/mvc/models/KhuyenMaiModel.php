@@ -9,7 +9,7 @@ class KhuyenMaiModel {
     }
 
     public function getAllKhuyenMai() {
-        $result = $this->db->query("SELECT * FROM khuyenmai");
+        $result = $this->db->query("SELECT * FROM khuyenmai WHERE trangthai != 0");
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
@@ -21,10 +21,11 @@ class KhuyenMaiModel {
     }
 
     public function addKhuyenMai($data) {
-        $stmt = $this->db->prepare("INSERT INTO khuyenmai (IdKhuyenMai, NgayBatDau, NgayKetThuc, PhanTramGiam, TrangThai) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("issii", $data['IdKhuyenMai'], $data['NgayBatDau'], $data['NgayKetThuc'], $data['PhanTramGiam'], $data['TrangThai']);
+        $stmt = $this->db->prepare("INSERT INTO khuyenmai (NgayBatDau, NgayKetThuc, PhanTramGiam, TrangThai) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("ssii", $data['NgayBatDau'], $data['NgayKetThuc'], $data['PhanTramGiam'], $data['TrangThai']);
         $stmt->execute();
-        return $this->getKhuyenMaiById($data['IdKhuyenMai']);
+        $newId = $this->db->insert_id; // Lấy ID vừa tạo
+        return $this->getKhuyenMaiById($newId); // Trả về thông tin khuyến mãi vừa thêm
     }
 
     public function updateKhuyenMai($idKhuyenMai, $ngayBatDau, $ngayKetThuc, $phanTramGiam, $trangThai) {
@@ -38,5 +39,17 @@ class KhuyenMaiModel {
         $stmt->bind_param("i", $idKhuyenMai);
         return $stmt->execute();
     }
-} 
+
+    public function getProductLinesByPromotion($idKhuyenMai) {
+        $stmt = $this->db->prepare("
+            SELECT dsp.TenDong 
+            FROM ctkhuyenmai ctkm 
+            JOIN dongsanpham dsp ON ctkm.IdDongSanPham = dsp.IdDongSanPham 
+            WHERE ctkm.IdKhuyenMai = ?
+        ");
+        $stmt->bind_param("i", $idKhuyenMai);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+}
 ?>

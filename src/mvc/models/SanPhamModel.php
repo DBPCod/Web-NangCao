@@ -36,9 +36,9 @@ class SanPhamModel {
     }
 
     // public function deleteProduct($idCHSP, $idDSP) {
-    //     $stmt = $this->db->prepare("DELETE FROM sanpham WHERE IdCHSP = ? and IdDongSanPham= ?");
-    //     $stmt->bind_param("is", $idCHSP, $idDSP);
-    //     return $stmt->execute();
+    //      $stmt = $this->db->prepare("DELETE FROM sanpham WHERE IdCHSP = ? and IdDongSanPham= ?");
+    //      $stmt->bind_param("is", $idCHSP, $idDSP);
+    //      return $stmt->execute();
     // }
 
     public function deleteProduct($idCHSP, $idDSP) {
