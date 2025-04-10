@@ -19,30 +19,26 @@
 </div>
 
 <!-- Modal -->
-<div class="modal fade" id="providerModal" tabindex="-1" aria-labelledby="providerModalLabel" aria-hidden="true">
+<div class="modal fade" id="productLineModal" tabindex="-1" aria-labelledby="productLineModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="providerModalLabel">Thêm nhà cung cấp</h5>
+                <h5 class="modal-title" id="productLineModalLabel">Thêm dòng sản phẩm</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="providerForm">
+                <form id="productLineForm">
                     <div class="mb-3">
-                        <label for="tenNCC" class="form-label">Tên nhà cung cấp</label>
-                        <input type="text" class="form-control" id="tenNCC" name="TenNCC" required>
+                        <label for="idDongSanPham" class="form-label">ID Dòng sản phẩm</label>
+                        <input type="text" class="form-control" id="idDongSanPham" name="IdDongSanPham" required>
                     </div>
                     <div class="mb-3">
-                        <label for="diaChi" class="form-label">Địa chỉ</label>
-                        <input type="text" class="form-control" id="diaChi" name="DiaChi" required>
+                        <label for="soLuong" class="form-label">Số lượng</label>
+                        <input type="number" class="form-control" id="soLuong" name="SoLuong" required>
                     </div>
                     <div class="mb-3">
-                        <label for="soDienThoai" class="form-label">Số điện thoại</label>
-                        <input type="text" class="form-control" id="soDienThoai" name="SoDienThoai" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="email" name="Email" required>
+                        <label for="idThuongHieu" class="form-label">ID Thương hiệu</label>
+                        <input type="text" class="form-control" id="idThuongHieu" name="IdThuongHieu">
                     </div>
                     <div class="mb-3">
                         <label for="trangThai" class="form-label">Trạng thái</label>
@@ -55,10 +51,10 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                <button type="button" class="btn btn-primary" id="saveProviderBtn">Lưu</button>
+                <button type="button" class="btn btn-primary" id="saveProductLineBtn">Lưu</button>
             </div>
         </div>
     </div>
 </div>
 
-<script src="/smartstation/src/public/js/admin/productLine.js"></script>    
+<script src="/smartstation/src/public/js/admin/productLine.js"></script>
