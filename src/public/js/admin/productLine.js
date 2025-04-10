@@ -1,3 +1,30 @@
+// Hàm lấy danh sách thương hiệu và điền vào dropdown
+function loadBrands() {
+  fetch("/smartstation/src/mvc/controllers/ThuongHieuController.php", {
+      method: "GET",
+  })
+      .then((response) => {
+          if (!response.ok) throw new Error("Network error: " + response.status);
+          return response.json();
+      })
+      .then((brands) => {
+          const select = document.getElementById("idThuongHieu");
+          select.innerHTML = '<option value="">Chọn thương hiệu</option>'; // Reset dropdown
+          brands.forEach((brand) => {
+              select.innerHTML += `<option value="${brand.IdThuongHieu}">${brand.TenThuongHieu}</option>`;
+          });
+      })
+      .catch((error) => {
+          console.error("Error loading brands:", error);
+          toast({
+              title: "Lỗi",
+              message: "Không thể tải danh sách thương hiệu",
+              type: "error",
+              duration: 3000,
+          });
+      });
+}
+
 function loadProductLines() {
   fetch("/smartstation/src/mvc/controllers/DongSanPhamController.php", {
       method: "GET",
@@ -35,20 +62,30 @@ function openAddModal() {
   document.getElementById("productLineModalLabel").innerText = "Thêm dòng sản phẩm";
   document.getElementById("productLineForm").reset();
   document.getElementById("idDongSanPham").disabled = false;
+  const thuongHieuSelect = document.getElementById("idThuongHieu");
+  thuongHieuSelect.disabled = false; // Đảm bảo dropdown luôn bật khi thêm mới
+  loadBrands(); // Tải danh sách thương hiệu
 }
 
 function openEditModal(idDSP) {
   fetch(`/smartstation/src/mvc/controllers/DongSanPhamController.php?idDSP=${idDSP}`, {
       method: "GET",
   })
-      .then((response) => response.json())
+      .then((response) => {
+          if (!response.ok) throw new Error("Network error: " + response.status);
+          return response.json();
+      })
       .then((productLine) => {
           document.getElementById("productLineModalLabel").innerText = "Sửa dòng sản phẩm";
           document.getElementById("idDongSanPham").value = productLine.IdDongSanPham;
-          document.getElementById("idDongSanPham").disabled = true; // Không cho sửa ID
+          document.getElementById("idDongSanPham").disabled = true;
           document.getElementById("tenDong").value = productLine.TenDong;
           document.getElementById("soLuong").value = productLine.SoLuong;
-          document.getElementById("idThuongHieu").value = productLine.IdThuongHieu || "";
+          loadBrands();
+          setTimeout(() => {
+              document.getElementById("idThuongHieu").value = productLine.IdThuongHieu || "";
+              document.getElementById("idThuongHieu").disabled = true; // Khóa dropdown khi sửa
+          }, 100);
           document.getElementById("trangThai").value = productLine.TrangThai;
           new bootstrap.Modal(document.getElementById("productLineModal")).show();
       })
@@ -75,7 +112,10 @@ function saveProductLine() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
   })
-      .then((response) => response.json())
+      .then((response) => {
+          if (!response.ok) throw new Error("Network error: " + response.status);
+          return response.json();
+      })
       .then((result) => {
           toast({
               title: "Thành công",

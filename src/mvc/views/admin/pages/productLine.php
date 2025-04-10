@@ -42,8 +42,11 @@
                         <input type="number" class="form-control" id="soLuong" required>
                     </div>
                     <div class="mb-3">
-                        <label for="idThuongHieu" class="form-label">ID Thương hiệu</label>
-                        <input type="number" class="form-control" id="idThuongHieu">
+                        <label for="idThuongHieu" class="form-label">Thương hiệu</label>
+                        <select class="form-control" id="idThuongHieu">
+                            <option value="">Chọn thương hiệu</option>
+                            <!-- Options sẽ được thêm bằng JavaScript -->
+                        </select>
                     </div>
                     <div class="mb-3">
                         <label for="trangThai" class="form-label">Trạng thái</label>
