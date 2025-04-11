@@ -5,9 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SmartStation</title>
-    <!-- Bootstrap CSS -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<!-- Bootstrap JS -->
 
     <link rel="shortcut icon" href="../../../public/img/logo.png" type="image/x-icon">
     <link rel="stylesheet" href="../../../public/bootstrap/css/bootstrap.min.css">
@@ -65,9 +62,14 @@
 
             // Toggle sidebar
             $("#sidebarToggle").click(function() {
-                $(".sidebar").toggleClass("hidden");
-                $(".header").toggleClass("full-width");
-                $(".content-area").toggleClass("full-width");
+                console.log('Toggle clicked');
+                if ($(window).width() <= 767) {
+                    $(".sidebar").toggleClass("show");
+                } else {
+                    $(".sidebar").toggleClass("hidden");
+                    $(".header").toggleClass("full-width");
+                    $(".content-area").toggleClass("full-width");
+                }
             });
 
             // Xử lý khi người dùng nhấn back/forward trên trình duyệt
