@@ -28,7 +28,6 @@ class DongSanPhamController
 
             case 'POST':
                 $newDongSanPham = $this->model->addDongSanPham($input);
-
                 echo json_encode([
                     "message" => "Thêm dòng sản phẩm thành công",
                     "dongSanPham" => $newDongSanPham
@@ -36,10 +35,14 @@ class DongSanPhamController
                 break;
 
             case 'PUT':
-                $json = file_get_contents("php://input");
-                $_PUT = json_decode($json, true);
                 if (isset($_GET['idDSP'])) {
-                    $result = $this->model->updateDongSanPham($_GET['idDSP'], $_PUT['SoLuong'], $_PUT['IdThuongHieu'], $_PUT['TrangThai']);
+                    $result = $this->model->updateDongSanPham(
+                        $_GET['idDSP'],
+                        $input['TenDong'],
+                        $input['SoLuong'],
+                        $input['IdThuongHieu'],
+                        $input['TrangThai']
+                    );
                     echo json_encode(["message" => $result ? "Cập nhật thành công" : "Cập nhật thất bại"]);
                 }
                 break;
@@ -63,3 +66,4 @@ class DongSanPhamController
 }
 
 (new DongSanPhamController())->handleRequest();
+?>
