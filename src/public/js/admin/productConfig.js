@@ -23,7 +23,6 @@ function loadProductConfigs() {
                           <td>${config.Pin || "Không có"}</td>
                           <td>${config.MauSac || "Không có"}</td>
                           <td>${config.Camera || "Không có"}</td>
-                          <td>${config.TrangThai == 1 ? "Hoạt động" : "Ngừng hoạt động"}</td>
                           <td>
                               <button class="btn btn-primary" onclick="openEditModal(${config.IdCHSP})">Sửa</button>
                               <button class="btn btn-danger" onclick="deleteProductConfig(${config.IdCHSP})">Xóa</button>
@@ -61,7 +60,6 @@ function openEditModal(idCHSP) {
           document.getElementById("pin").value = config.Pin ? parseFloat(config.Pin.replace("mAh", "")) : "";
           document.getElementById("mauSac").value = config.MauSac || "";
           document.getElementById("camera").value = config.Camera ? parseFloat(config.Camera.replace("MP", "")) : "";
-          document.getElementById("trangThai").value = config.TrangThai;
           // Lưu idCHSP vào dataset
           document.getElementById("productConfigForm").dataset.idCHSP = idCHSP;
           new bootstrap.Modal(document.getElementById("productConfigModal")).show();
@@ -87,7 +85,7 @@ function saveProductConfig() {
       Pin: document.getElementById("pin").value ? `${document.getElementById("pin").value}mAh` : null,
       MauSac: document.getElementById("mauSac").value || null,
       Camera: document.getElementById("camera").value ? `${document.getElementById("camera").value}MP` : null,
-      TrangThai: parseInt(document.getElementById("trangThai").value),
+      TrangThai: 1,
   };
 
   const method = idCHSP ? "PUT" : "POST";
