@@ -32,6 +32,7 @@ class ThuongHieuController {
                     ]);
                 } else {
                     echo json_encode(["message" => "Thiếu dữ liệu đầu vào"]);
+                    http_response_code(400);
                 }
                 break;
 
@@ -44,20 +45,28 @@ class ThuongHieuController {
                     echo json_encode(["message" => $result ? "Cập nhật thành công" : "Cập nhật thất bại"]);
                 } else {
                     echo json_encode(["message" => "Thiếu dữ liệu hoặc ID không hợp lệ"]);
+                    http_response_code(400);
                 }
                 break;
 
             case 'DELETE':
                 if (isset($_GET['idThuongHieu'])) {
+                    if ($this->model->isThuongHieuInUse($_GET['idThuongHieu'])) {
+                        echo json_encode(["message" => "Không thể xóa thương hiệu vì đang được sử dụng trong dòng sản phẩm"]);
+                        http_response_code(400);
+                        return;
+                    }
                     $result = $this->model->deleteThuongHieu($_GET['idThuongHieu']);
                     echo json_encode(["message" => $result ? "Xóa thành công" : "Xóa thất bại"]);
                 } else {
                     echo json_encode(["message" => "ID không hợp lệ"]);
+                    http_response_code(400);
                 }
                 break;
 
             default:
                 echo json_encode(["message" => "Yêu cầu không hợp lệ"]);
+                http_response_code(405);
                 break;
         }
     }

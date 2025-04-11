@@ -9,7 +9,6 @@
             <tr>
                 <th>ID Thương hiệu</th>
                 <th>Tên thương hiệu</th>
-                <th>Trạng thái</th>
                 <th>Hành động</th>
             </tr>
         </thead>
