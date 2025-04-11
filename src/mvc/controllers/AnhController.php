@@ -20,7 +20,7 @@ class AnhController {
                     if ($data && isset($data['Anh'])) {
                         $data['Anh'] = base64_encode($data['Anh']); // Mã hóa base64
                     }
-                } elseif (isset($_GET['idCHSP']) && isset($_GET['idDSP'])) {
+                } else if (isset($_GET['idCHSP']) && isset($_GET['idDSP'])) {
                     $data = $this->model->getAnhByCauHinhAndDongSanPham($_GET['idCHSP'], $_GET['idDSP']);
                     foreach ($data as &$anh) {
                         if (isset($anh['Anh'])) {

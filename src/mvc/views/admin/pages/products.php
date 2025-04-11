@@ -54,6 +54,11 @@
                         <label for="soLuong" class="form-label">Số lượng</label>
                         <input type="number" class="form-control" id="soLuong" min="0" value="0" required>
                     </div>
+                    <div class="mb-3">
+                        <label for="addProductImages" class="form-label">Ảnh sản phẩm</label>
+                        <input type="file" class="form-control" id="addProductImages" accept="image/*" multiple>
+                        <small class="form-text text-muted">Chọn một hoặc nhiều ảnh để thêm vào sản phẩm</small>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">

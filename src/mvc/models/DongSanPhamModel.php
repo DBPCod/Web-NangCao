@@ -14,7 +14,7 @@ class DongSanPhamModel {
     }
     
     public function getDongSanPhamById($idDongSanPham) {
-        $stmt = $this->db->prepare("SELECT * FROM dongsanpham WHERE IdDongSanPham = ?");
+        $stmt = $this->db->prepare("SELECT * FROM dongsanpham WHERE IdDongSanPham = ? AND TrangThai = 1");
         $stmt->bind_param("i", $idDongSanPham);
         $stmt->execute();
         return $stmt->get_result()->fetch_assoc();

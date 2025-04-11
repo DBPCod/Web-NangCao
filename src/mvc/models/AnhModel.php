@@ -29,9 +29,10 @@ class AnhModel {
     }
 
     public function addAnh($data) {
+        $binaryImage = base64_decode($data['Anh']); // Giải mã base64 thành binary
         $stmt = $this->db->prepare("INSERT INTO anh (Anh, IdCHSP, IdDongSanPham, TrangThai) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param("biii", $data['Anh'], $data['IdCHSP'], $data['IdDongSanPham'], $data['TrangThai']);
-        $stmt->send_long_data(0, $data['Anh']); // Dùng send_long_data cho dữ liệu blob lớn
+        $stmt->bind_param("biii", $binaryImage, $data['IdCHSP'], $data['IdDongSanPham'], $data['TrangThai']);
+        $stmt->send_long_data(0, $binaryImage); // Lưu dữ liệu binary
         $stmt->execute();
         return $this->getAnhById($this->db->insert_id);
     }
