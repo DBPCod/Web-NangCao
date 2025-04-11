@@ -10,7 +10,7 @@ class ThuongHieuModel {
 
     // Lấy tất cả thương hiệu
     public function getAllThuongHieu() {
-        $result = $this->db->query("SELECT * FROM ThuongHieu WHERE TrangThai = 1"); // Lấy những thương hiệu đang hoạt động
+        $result = $this->db->query("SELECT * FROM ThuongHieu WHERE TrangThai = 1");
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
@@ -37,8 +37,22 @@ class ThuongHieuModel {
         return $stmt->execute();
     }
 
+    // Hàm kiểm tra xem ThuongHieu có đang được sử dụng trong DongSanPham không
+    public function isThuongHieuInUse($idThuongHieu) {
+        $stmt = $this->db->prepare("SELECT COUNT(*) as count FROM dongsanpham WHERE IdThuongHieu = ? AND TrangThai = 1");
+        $stmt->bind_param("i", $idThuongHieu);
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+        return $result['count'] > 0;
+    }
+
     // Xóa thương hiệu (ẩn bằng cách đổi trạng thái)
     public function deleteThuongHieu($idThuongHieu) {
+        // Kiểm tra xem ThuongHieu có đang được sử dụng không
+        if ($this->isThuongHieuInUse($idThuongHieu)) {
+            return false; // Không xóa được nếu đang được sử dụng
+        }
+
         $stmt = $this->db->prepare("UPDATE ThuongHieu SET TrangThai = 0 WHERE IdThuongHieu = ?");
         $stmt->bind_param("i", $idThuongHieu);
         return $stmt->execute();

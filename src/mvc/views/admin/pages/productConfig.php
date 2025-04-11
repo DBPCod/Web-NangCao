@@ -14,7 +14,6 @@
                 <th>Pin</th>
                 <th>Màu sắc</th>
                 <th>Camera</th>
-                <th>Trạng thái</th>
                 <th>Hành động</th>
             </tr>
         </thead>
@@ -56,13 +55,13 @@
                         <label for="camera" class="form-label">Camera (MP)</label>
                         <input type="number" class="form-control" id="camera" min="0" step="1" required>
                     </div>
-                    <div class="mb-3">
+                    <!-- <div class="mb-3">
                         <label for="trangThai" class="form-label">Trạng thái</label>
                         <select class="form-control" id="trangThai" required>
                             <option value="1">Hoạt động</option>
                             <option value="0">Ngừng hoạt động</option>
                         </select>
-                    </div>
+                    </div> -->
                 </form>
             </div>
             <div class="modal-footer">

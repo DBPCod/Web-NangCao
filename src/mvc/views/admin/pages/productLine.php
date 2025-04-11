@@ -10,8 +10,7 @@
                 <th>ID Dòng sản phẩm</th>
                 <th>Tên dòng</th>
                 <th>Số lượng</th>
-                <th>ID Thương hiệu</th>
-                <th>Trạng thái</th>
+                <th>Thương hiệu</th>
                 <th>Hành động</th>
             </tr>
         </thead>
@@ -30,30 +29,19 @@
             <div class="modal-body">
                 <form id="productLineForm">
                     <div class="mb-3">
-                        <label for="idDongSanPham" class="form-label">ID Dòng sản phẩm</label>
-                        <input type="text" class="form-control" id="idDongSanPham" required>
-                    </div>
-                    <div class="mb-3">
                         <label for="tenDong" class="form-label">Tên dòng</label>
                         <input type="text" class="form-control" id="tenDong" required>
                     </div>
                     <div class="mb-3">
-                        <label for="soLuong" class="form-label">Số lượng</label>
-                        <input type="number" class="form-control" id="soLuong" required>
-                    </div>
-                    <div class="mb-3">
                         <label for="idThuongHieu" class="form-label">Thương hiệu</label>
-                        <select class="form-control" id="idThuongHieu">
+                        <select class="form-control" id="idThuongHieu" required>
                             <option value="">Chọn thương hiệu</option>
                             <!-- Options sẽ được thêm bằng JavaScript -->
                         </select>
                     </div>
-                    <div class="mb-3">
-                        <label for="trangThai" class="form-label">Trạng thái</label>
-                        <select class="form-control" id="trangThai" required>
-                            <option value="1">Hoạt động</option>
-                            <option value="0">Ngừng hoạt động</option>
-                        </select>
+                    <div class="mb-3" id="soLuongField" style="display: none;">
+                        <label for="soLuong" class="form-label">Số lượng</label>
+                        <input type="number" class="form-control" id="soLuong" disabled>
                     </div>
                 </form>
             </div>
