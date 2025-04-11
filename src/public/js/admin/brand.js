@@ -93,7 +93,6 @@ function loadBrands() {
                       <tr>
                           <td>${brand.IdThuongHieu}</td>
                           <td>${brand.TenThuongHieu}</td>
-                          <td>${brand.TrangThai == 1 ? "Hoạt động" : "Ngừng hoạt động"}</td>
                           <td>
                               <button class="btn btn-primary" onclick="editBrand('${brand.IdThuongHieu}')">Sửa</button>
                               <button class="btn btn-danger" onclick="deleteBrand('${brand.IdThuongHieu}')">Xóa</button>
