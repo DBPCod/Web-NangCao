@@ -33,28 +33,28 @@
             <div class="modal-body">
                 <form id="productConfigForm">
                     <div class="mb-3">
-                        <label for="ram" class="form-label">Ram</label>
-                        <input type="text" class="form-control" id="ram" required>
+                        <label for="ram" class="form-label">Ram (GB)</label>
+                        <input type="number" class="form-control" id="ram" min="0" step="1" required>
                     </div>
                     <div class="mb-3">
-                        <label for="rom" class="form-label">Rom</label>
-                        <input type="text" class="form-control" id="rom" required>
+                        <label for="rom" class="form-label">Rom (GB)</label>
+                        <input type="number" class="form-control" id="rom" min="0" step="1" required>
                     </div>
                     <div class="mb-3">
-                        <label for="manHinh" class="form-label">Màn hình</label>
-                        <input type="text" class="form-control" id="manHinh" required>
+                        <label for="manHinh" class="form-label">Màn hình (inch)</label>
+                        <input type="number" class="form-control" id="manHinh" min="0" step="0.1" required>
                     </div>
                     <div class="mb-3">
-                        <label for="pin" class="form-label">Pin</label>
-                        <input type="text" class="form-control" id="pin" required>
+                        <label for="pin" class="form-label">Pin (mAh)</label>
+                        <input type="number" class="form-control" id="pin" min="0" step="1" required>
                     </div>
                     <div class="mb-3">
                         <label for="mauSac" class="form-label">Màu sắc</label>
                         <input type="text" class="form-control" id="mauSac" required>
                     </div>
                     <div class="mb-3">
-                        <label for="camera" class="form-label">Camera</label>
-                        <input type="text" class="form-control" id="camera" required>
+                        <label for="camera" class="form-label">Camera (MP)</label>
+                        <input type="number" class="form-control" id="camera" min="0" step="1" required>
                     </div>
                     <div class="mb-3">
                         <label for="trangThai" class="form-label">Trạng thái</label>

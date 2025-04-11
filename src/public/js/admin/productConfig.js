@@ -40,6 +40,7 @@ function openAddModal() {
   document.getElementById("productConfigModalLabel").innerText = "Thêm cấu hình sản phẩm";
   document.getElementById("productConfigForm").reset();
   document.getElementById("trangThai").value = "1"; // Mặc định là Hoạt động
+  delete document.getElementById("productConfigForm").dataset.idCHSP; // Xóa idCHSP nếu có
 }
 
 // Mở modal sửa
@@ -53,14 +54,15 @@ function openEditModal(idCHSP) {
       })
       .then((config) => {
           document.getElementById("productConfigModalLabel").innerText = "Sửa cấu hình sản phẩm";
-          document.getElementById("ram").value = config.Ram || "";
-          document.getElementById("rom").value = config.Rom || "";
-          document.getElementById("manHinh").value = config.ManHinh || "";
-          document.getElementById("pin").value = config.Pin || "";
+          // Tách số từ chuỗi có đơn vị
+          document.getElementById("ram").value = config.Ram ? parseFloat(config.Ram.replace("GB", "")) : "";
+          document.getElementById("rom").value = config.Rom ? parseFloat(config.Rom.replace("GB", "")) : "";
+          document.getElementById("manHinh").value = config.ManHinh ? parseFloat(config.ManHinh.replace(" inch", "")) : "";
+          document.getElementById("pin").value = config.Pin ? parseFloat(config.Pin.replace("mAh", "")) : "";
           document.getElementById("mauSac").value = config.MauSac || "";
-          document.getElementById("camera").value = config.Camera || "";
+          document.getElementById("camera").value = config.Camera ? parseFloat(config.Camera.replace("MP", "")) : "";
           document.getElementById("trangThai").value = config.TrangThai;
-          // Lưu idCHSP vào một thuộc tính ẩn để sử dụng khi lưu
+          // Lưu idCHSP vào dataset
           document.getElementById("productConfigForm").dataset.idCHSP = idCHSP;
           new bootstrap.Modal(document.getElementById("productConfigModal")).show();
       })
@@ -79,12 +81,12 @@ function openEditModal(idCHSP) {
 function saveProductConfig() {
   const idCHSP = document.getElementById("productConfigForm").dataset.idCHSP;
   const data = {
-      Ram: document.getElementById("ram").value,
-      Rom: document.getElementById("rom").value,
-      ManHinh: document.getElementById("manHinh").value,
-      Pin: document.getElementById("pin").value,
-      MauSac: document.getElementById("mauSac").value,
-      Camera: document.getElementById("camera").value,
+      Ram: document.getElementById("ram").value ? `${document.getElementById("ram").value}GB` : null,
+      Rom: document.getElementById("rom").value ? `${document.getElementById("rom").value}GB` : null,
+      ManHinh: document.getElementById("manHinh").value ? `${document.getElementById("manHinh").value} inch` : null,
+      Pin: document.getElementById("pin").value ? `${document.getElementById("pin").value}mAh` : null,
+      MauSac: document.getElementById("mauSac").value || null,
+      Camera: document.getElementById("camera").value ? `${document.getElementById("camera").value}MP` : null,
       TrangThai: parseInt(document.getElementById("trangThai").value),
   };
 
@@ -110,7 +112,6 @@ function saveProductConfig() {
               duration: 3000,
           });
           bootstrap.Modal.getInstance(document.getElementById("productConfigModal")).hide();
-          // Xóa idCHSP khỏi dataset sau khi lưu
           delete document.getElementById("productConfigForm").dataset.idCHSP;
           loadProductConfigs();
       })
