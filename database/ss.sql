@@ -3,14 +3,13 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th4 08, 2025 lúc 05:52 PM
+-- Thời gian đã tạo: Th4 11, 2025
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
-
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -31,7 +30,7 @@ CREATE TABLE `anh` (
   `IdAnh` int(11) NOT NULL,
   `Anh` mediumblob DEFAULT NULL,
   `IdCHSP` int(11) DEFAULT NULL,
-  `IdDongSanPham` varchar(20) DEFAULT NULL,
+  `IdDongSanPham` int DEFAULT NULL, -- Thay đổi từ varchar(20) thành int
   `TrangThai` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -40,11 +39,11 @@ CREATE TABLE `anh` (
 --
 
 INSERT INTO `anh` (`IdAnh`, `Anh`, `IdCHSP`, `IdDongSanPham`, `TrangThai`) VALUES
-(1, 0x6970375f626c61636b2e6a7067, 1, 'IP7', 1),
-(2, 0x6970385f77686974652e6a7067, 2, 'IP8', 1),
-(3, 0x737331305f677265656e2e6a7067, 3, 'SS10', 1),
-(4, 0x786d31325f7265642e6a7067, 4, 'XM12', 1),
-(5, 0x6f70355f676f6c642e6a7067, 5, 'OP5', 0);
+(1, 0x6970375f626c61636b2e6a7067, 1, 1, 1),
+(2, 0x6970385f77686974652e6a7067, 2, 2, 1),
+(3, 0x737331305f677265656e2e6a7067, 3, 3, 1),
+(4, 0x786d31325f7265642e6a7067, 4, 4, 1),
+(5, 0x6f70355f676f6c642e6a7067, 5, 5, 0);
 
 -- --------------------------------------------------------
 
@@ -123,9 +122,6 @@ INSERT INTO `cthoadon` (`IdHoaDon`, `GiaTien`, `SoLuong`, `Imei`) VALUES
 
 -- --------------------------------------------------------
 
-
--- --------------------------------------------------------
-
 --
 -- Cấu trúc bảng cho bảng `ctphieunhap`
 --
@@ -135,7 +131,7 @@ CREATE TABLE `ctphieunhap` (
   `GiaNhap` decimal(15,2) NOT NULL,
   `SoLuong` int(11) NOT NULL,
   `IdCHSP` int(11) NOT NULL,
-  `IdDongSanPham` varchar(20) NOT NULL
+  `IdDongSanPham` int NOT NULL -- Thay đổi từ varchar(20) thành int
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -143,11 +139,11 @@ CREATE TABLE `ctphieunhap` (
 --
 
 INSERT INTO `ctphieunhap` (`IdPhieuNhap`, `GiaNhap`, `SoLuong`, `IdCHSP`, `IdDongSanPham`) VALUES
-(1, 12000000.00, 5, 1, 'IP7'),
-(2, 18000000.00, 4, 2, 'IP8'),
-(3, 8000000.00, 3, 3, 'SS10'),
-(4, 9000000.00, 2, 4, 'XM12'),
-(5, 15000000.00, 1, 5, 'OP5');
+(1, 12000000.00, 5, 1, 1),
+(2, 18000000.00, 4, 2, 2),
+(3, 8000000.00, 3, 3, 3),
+(4, 9000000.00, 2, 4, 4),
+(5, 15000000.00, 1, 5, 5);
 
 -- --------------------------------------------------------
 
@@ -192,11 +188,12 @@ INSERT INTO `ctquyen` (`IdQuyen`, `IdVaiTro`) VALUES
 --
 
 CREATE TABLE `dongsanpham` (
-  `IdDongSanPham` varchar(20) NOT NULL,
+  `IdDongSanPham` int NOT NULL AUTO_INCREMENT, -- Thêm AUTO_INCREMENT
   `TenDong` varchar(20) NOT NULL,
   `SoLuong` int(11) NOT NULL,
   `IdThuongHieu` int(11) DEFAULT NULL,
-  `TrangThai` tinyint(1) DEFAULT NULL
+  `TrangThai` tinyint(1) DEFAULT NULL,
+  PRIMARY KEY (`IdDongSanPham`) -- Định nghĩa khóa chính ngay trong CREATE TABLE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -204,11 +201,11 @@ CREATE TABLE `dongsanpham` (
 --
 
 INSERT INTO `dongsanpham` (`IdDongSanPham`, `TenDong`, `SoLuong`, `IdThuongHieu`, `TrangThai`) VALUES
-('IP7', 'iPhone 7', 5, 1, 1),
-('IP8', 'iPhone 8 ', 4, 1, 1),
-('OP5', 'OPPO', 1, 4, 0),
-('SS10', 'Samsung 10', 3, 2, 1),
-('XM12', 'Xiaomi 12', 2, 3, 1);
+(1, 'iPhone 7', 5, 1, 1),
+(2, 'iPhone 8', 4, 1, 1),
+(3, 'Samsung 10', 3, 2, 1),
+(4, 'Xiaomi 12', 2, 3, 1),
+(5, 'OPPO', 1, 4, 0);
 
 -- --------------------------------------------------------
 
@@ -383,7 +380,7 @@ INSERT INTO `quyen` (`IdQuyen`, `TenQuyen`) VALUES
 
 CREATE TABLE `sanpham` (
   `IdCHSP` int(11) NOT NULL,
-  `IdDongSanPham` varchar(20) NOT NULL,
+  `IdDongSanPham` int NOT NULL, -- Thay đổi từ varchar(20) thành int
   `SoLuong` int(11) NOT NULL,
   `Gia` double NOT NULL,
   `TrangThai` tinyint(1) DEFAULT NULL
@@ -394,12 +391,12 @@ CREATE TABLE `sanpham` (
 --
 
 INSERT INTO `sanpham` (`IdCHSP`, `IdDongSanPham`, `SoLuong`, `Gia`, `TrangThai`) VALUES
-(1, 'IP7', 5, 0, 1),
-(2, 'IP8', 4, 0, 1),
-(3, 'SS10', 3, 0, 1),
-(4, 'XM12', 2, 0, 1),
-(5, 'IP7', 10, 0, 0),
-(5, 'OP5', 1, 0, 1);
+(1, 1, 5, 0, 1),
+(2, 2, 4, 0, 1),
+(3, 3, 3, 0, 1),
+(4, 4, 2, 0, 1),
+(5, 1, 10, 0, 0),
+(5, 5, 1, 0, 1);
 
 -- --------------------------------------------------------
 
@@ -411,7 +408,7 @@ CREATE TABLE `sanphamchitiet` (
   `Imei` varchar(50) NOT NULL,
   `TrangThai` tinyint(1) DEFAULT NULL,
   `IdCHSP` int(11) DEFAULT NULL,
-  `IdDongSanPham` varchar(20) DEFAULT NULL,
+  `IdDongSanPham` int DEFAULT NULL, -- Thay đổi từ varchar(20) thành int
   `IdBaoHanh` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -420,21 +417,21 @@ CREATE TABLE `sanphamchitiet` (
 --
 
 INSERT INTO `sanphamchitiet` (`Imei`, `TrangThai`, `IdCHSP`, `IdDongSanPham`, `IdBaoHanh`) VALUES
-('352094108765401', 1, 4, 'XM12', 4),
-('352094108765402', 1, 4, 'XM12', 4),
-('354128907563201', 1, 1, 'IP7', 1),
-('354128907563202', 1, 1, 'IP7', 1),
-('354128907563203', 1, 1, 'IP7', 1),
-('354128907563204', 1, 1, 'IP7', 1),
-('354128907563205', 1, 1, 'IP7', 1),
-('490154203237501', 1, 3, 'SS10', 3),
-('490154203237502', 1, 3, 'SS10', 3),
-('490154203237503', 1, 3, 'SS10', 3),
-('867493021584901', 1, 2, 'IP8', 2),
-('867493021584902', 1, 2, 'IP8', 2),
-('867493021584903', 1, 2, 'IP8', 2),
-('867493021584904', 1, 2, 'IP8', 2),
-('987654321098701', 0, 5, 'OP5', 5);
+('352094108765401', 1, 4, 4, 4),
+('352094108765402', 1, 4, 4, 4),
+('354128907563201', 1, 1, 1, 1),
+('354128907563202', 1, 1, 1, 1),
+('354128907563203', 1, 1, 1, 1),
+('354128907563204', 1, 1, 1, 1),
+('354128907563205', 1, 1, 1, 1),
+('490154203237501', 1, 3, 3, 3),
+('490154203237502', 1, 3, 3, 3),
+('490154203237503', 1, 3, 3, 3),
+('867493021584901', 1, 2, 2, 2),
+('867493021584902', 1, 2, 2, 2),
+('867493021584903', 1, 2, 2, 2),
+('867493021584904', 1, 2, 2, 2),
+('987654321098701', 0, 5, 5, 5);
 
 -- --------------------------------------------------------
 
@@ -534,6 +531,30 @@ INSERT INTO `vaitro` (`IdVaiTro`, `TenVaiTro`, `TrangThai`) VALUES
 (2, 'Nhập kho', 1),
 (3, 'Người dùng', 1);
 
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `ctkhuyenmai`
+--
+
+CREATE TABLE `ctkhuyenmai` (
+  `IdKhuyenMai` int(11) NOT NULL,
+  `IdDongSanPham` int NOT NULL, -- Thay đổi từ varchar(20) thành int
+  PRIMARY KEY (`IdKhuyenMai`, `IdDongSanPham`),
+  KEY `IdDongSanPham` (`IdDongSanPham`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `ctkhuyenmai`
+--
+
+INSERT INTO `ctkhuyenmai` (`IdKhuyenMai`, `IdDongSanPham`) VALUES
+(1, 1),
+(2, 2),
+(3, 3),
+(4, 4),
+(5, 5);
+
 --
 -- Chỉ mục cho các bảng đã đổ
 --
@@ -562,15 +583,14 @@ ALTER TABLE `cauhinhsanpham`
 -- Chỉ mục cho bảng `cthoadon`
 --
 ALTER TABLE `cthoadon`
-  ADD PRIMARY KEY (`IdHoaDon`,`Imei`),
+  ADD PRIMARY KEY (`IdHoaDon`, `Imei`),
   ADD KEY `Imei` (`Imei`);
-
 
 --
 -- Chỉ mục cho bảng `ctphieunhap`
 --
 ALTER TABLE `ctphieunhap`
-  ADD PRIMARY KEY (`IdPhieuNhap`,`IdCHSP`,`IdDongSanPham`),
+  ADD PRIMARY KEY (`IdPhieuNhap`, `IdCHSP`, `IdDongSanPham`),
   ADD KEY `IdCHSP` (`IdCHSP`),
   ADD KEY `IdDongSanPham` (`IdDongSanPham`);
 
@@ -578,15 +598,8 @@ ALTER TABLE `ctphieunhap`
 -- Chỉ mục cho bảng `ctquyen`
 --
 ALTER TABLE `ctquyen`
-  ADD PRIMARY KEY (`IdQuyen`,`IdVaiTro`),
+  ADD PRIMARY KEY (`IdQuyen`, `IdVaiTro`),
   ADD KEY `IdVaiTro` (`IdVaiTro`);
-
---
--- Chỉ mục cho bảng `dongsanpham`
---
-ALTER TABLE `dongsanpham`
-  ADD PRIMARY KEY (`IdDongSanPham`),
-  ADD KEY `IdThuongHieu` (`IdThuongHieu`);
 
 --
 -- Chỉ mục cho bảng `hoadon`
@@ -632,7 +645,7 @@ ALTER TABLE `quyen`
 -- Chỉ mục cho bảng `sanpham`
 --
 ALTER TABLE `sanpham`
-  ADD PRIMARY KEY (`IdCHSP`,`IdDongSanPham`),
+  ADD PRIMARY KEY (`IdCHSP`, `IdDongSanPham`),
   ADD KEY `IdDongSanPham` (`IdDongSanPham`);
 
 --
@@ -699,6 +712,12 @@ ALTER TABLE `cthoadon`
   MODIFY `IdHoaDon` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
+-- AUTO_INCREMENT cho bảng `dongsanpham`
+--
+ALTER TABLE `dongsanpham`
+  MODIFY `IdDongSanPham` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
 -- AUTO_INCREMENT cho bảng `hoadon`
 --
 ALTER TABLE `hoadon`
@@ -735,12 +754,6 @@ ALTER TABLE `quyen`
   MODIFY `IdQuyen` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
--- AUTO_INCREMENT cho bảng `sanpham`
---
-ALTER TABLE `sanpham`
-  MODIFY `IdCHSP` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
---
 -- AUTO_INCREMENT cho bảng `taikhoan`
 --
 ALTER TABLE `taikhoan`
@@ -761,7 +774,7 @@ ALTER TABLE `thuonghieu`
 --
 ALTER TABLE `anh`
   ADD CONSTRAINT `anh_ibfk_1` FOREIGN KEY (`IdCHSP`) REFERENCES `sanpham` (`IdCHSP`),
-  ADD CONSTRAINT `anh_ibfk_2` FOREIGN KEY (`IdDongSanPham`) REFERENCES `sanpham` (`IdDongSanPham`);
+  ADD CONSTRAINT `anh_ibfk_2` FOREIGN KEY (`IdDongSanPham`) REFERENCES `dongsanpham` (`IdDongSanPham`);
 
 --
 -- Các ràng buộc cho bảng `cthoadon`
@@ -770,6 +783,12 @@ ALTER TABLE `cthoadon`
   ADD CONSTRAINT `cthoadon_ibfk_1` FOREIGN KEY (`IdHoaDon`) REFERENCES `hoadon` (`IdHoaDon`),
   ADD CONSTRAINT `cthoadon_ibfk_2` FOREIGN KEY (`Imei`) REFERENCES `sanphamchitiet` (`Imei`);
 
+--
+-- Các ràng buộc cho bảng `ctkhuyenmai`
+--
+ALTER TABLE `ctkhuyenmai`
+  ADD CONSTRAINT `ctkhuyenmai_ibfk_1` FOREIGN KEY (`IdKhuyenMai`) REFERENCES `khuyenmai` (`IdKhuyenMai`),
+  ADD CONSTRAINT `ctkhuyenmai_ibfk_2` FOREIGN KEY (`IdDongSanPham`) REFERENCES `dongsanpham` (`IdDongSanPham`);
 
 --
 -- Các ràng buộc cho bảng `ctphieunhap`
@@ -777,7 +796,7 @@ ALTER TABLE `cthoadon`
 ALTER TABLE `ctphieunhap`
   ADD CONSTRAINT `ctphieunhap_ibfk_1` FOREIGN KEY (`IdPhieuNhap`) REFERENCES `phieunhap` (`IdPhieuNhap`),
   ADD CONSTRAINT `ctphieunhap_ibfk_2` FOREIGN KEY (`IdCHSP`) REFERENCES `sanpham` (`IdCHSP`),
-  ADD CONSTRAINT `ctphieunhap_ibfk_3` FOREIGN KEY (`IdDongSanPham`) REFERENCES `sanpham` (`IdDongSanPham`);
+  ADD CONSTRAINT `ctphieunhap_ibfk_3` FOREIGN KEY (`IdDongSanPham`) REFERENCES `dongsanpham` (`IdDongSanPham`);
 
 --
 -- Các ràng buộc cho bảng `ctquyen`
@@ -818,7 +837,7 @@ ALTER TABLE `sanpham`
 --
 ALTER TABLE `sanphamchitiet`
   ADD CONSTRAINT `sanphamchitiet_ibfk_1` FOREIGN KEY (`IdCHSP`) REFERENCES `sanpham` (`IdCHSP`),
-  ADD CONSTRAINT `sanphamchitiet_ibfk_2` FOREIGN KEY (`IdDongSanPham`) REFERENCES `sanpham` (`IdDongSanPham`),
+  ADD CONSTRAINT `sanphamchitiet_ibfk_2` FOREIGN KEY (`IdDongSanPham`) REFERENCES `dongsanpham` (`IdDongSanPham`),
   ADD CONSTRAINT `sanphamchitiet_ibfk_3` FOREIGN KEY (`IdBaoHanh`) REFERENCES `baohanh` (`IdBaoHanh`);
 
 --
@@ -827,39 +846,9 @@ ALTER TABLE `sanphamchitiet`
 ALTER TABLE `taikhoan`
   ADD CONSTRAINT `taikhoan_ibfk_1` FOREIGN KEY (`IdVaiTro`) REFERENCES `vaitro` (`IdVaiTro`),
   ADD CONSTRAINT `taikhoan_ibfk_2` FOREIGN KEY (`IdNguoiDung`) REFERENCES `nguoidung` (`IdNguoiDung`);
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-
-
---
--- Cấu trúc bảng cho bảng `ctkhuyenmai`
---
-CREATE TABLE `ctkhuyenmai` (
-  `IdKhuyenMai` int(11) NOT NULL,
-  `IdDongSanPham` varchar(20) NOT NULL,
-  PRIMARY KEY (`IdKhuyenMai`, `IdDongSanPham`),
-  KEY `IdDongSanPham` (`IdDongSanPham`),
-  CONSTRAINT `ctkhuyenmai_ibfk_1` FOREIGN KEY (`IdKhuyenMai`) REFERENCES `khuyenmai` (`IdKhuyenMai`),
-  CONSTRAINT `ctkhuyenmai_ibfk_2` FOREIGN KEY (`IdDongSanPham`) REFERENCES `dongsanpham` (`IdDongSanPham`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Đang đổ dữ liệu cho bảng `ctkhuyenmai`
---
-
---
--- AUTO_INCREMENT cho bảng `ctkhuyenmai`
---
-ALTER TABLE `ctkhuyenmai`
-  MODIFY `IdKhuyenMai` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
-
-INSERT INTO `ctkhuyenmai` (`IdKhuyenMai`, `IdDongSanPham`) VALUES
-(1, 'IP7'),
-(2, 'IP8'),
-(3, 'SS10'),
-(4, 'XM12'),
-(5, 'OP5');
