@@ -55,12 +55,44 @@ class PhieuNhapModel {
             $stmt->bind_param("i", $idPhieuNhap);
             $stmt->execute();
             $result = $stmt->get_result()->fetch_assoc();
-
+    
             if ($result['sold_count'] > 0) {
                 throw new Exception("Không thể xóa phiếu nhập vì có sản phẩm đã được bán.");
             }
-
-            // Cập nhật số lượng trong bảng sanpham
+    
+            // Lấy chi tiết phiếu nhập để cập nhật dongsanpham
+            $stmt = $this->db->prepare("
+                SELECT IdDongSanPham, SoLuong 
+                FROM ctphieunhap 
+                WHERE IdPhieuNhap = ?
+            ");
+            $stmt->bind_param("i", $idPhieuNhap);
+            $stmt->execute();
+            $ctPhieuNhaps = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    
+            // Tính tổng số lượng theo IdDongSanPham
+            $dongSanPhamQuantities = [];
+            foreach ($ctPhieuNhaps as $ct) {
+                $idDSP = $ct['IdDongSanPham'];
+                $soLuong = $ct['SoLuong'];
+                if (!isset($dongSanPhamQuantities[$idDSP])) {
+                    $dongSanPhamQuantities[$idDSP] = 0;
+                }
+                $dongSanPhamQuantities[$idDSP] += $soLuong;
+            }
+    
+            // Cập nhật số lượng trong dongsanpham
+            foreach ($dongSanPhamQuantities as $idDSP => $soLuongToDecrease) {
+                $stmt = $this->db->prepare("
+                    UPDATE dongsanpham 
+                    SET SoLuong = GREATEST(SoLuong - ?, 0)
+                    WHERE IdDongSanPham = ?
+                ");
+                $stmt->bind_param("ii", $soLuongToDecrease, $idDSP);
+                $stmt->execute();
+            }
+    
+            // Cập nhật số lượng trong bảng sanpham, không thay đổi TrangThai
             $stmt = $this->db->prepare("
                 UPDATE sanpham sp
                 INNER JOIN ctphieunhap cpn ON sp.IdCHSP = cpn.IdCHSP AND sp.IdDongSanPham = cpn.IdDongSanPham
@@ -69,22 +101,17 @@ class PhieuNhapModel {
             ");
             $stmt->bind_param("i", $idPhieuNhap);
             $stmt->execute();
-
+    
             // Xóa hoàn toàn các bản ghi trong sanphamchitiet
             $stmt = $this->db->prepare("DELETE FROM sanphamchitiet WHERE IdPhieuNhap = ?");
             $stmt->bind_param("i", $idPhieuNhap);
             $stmt->execute();
-
-            // Đặt trạng thái ctphieunhap = 0
-            // $stmt = $this->db->prepare("UPDATE ctphieunhap SET TrangThai = 0 WHERE IdPhieuNhap = ?");
-            // $stmt->bind_param("i", $idPhieuNhap);
-            // $stmt->execute();
-
+    
             // Đặt trạng thái phieunhap = 0
             $stmt = $this->db->prepare("UPDATE phieunhap SET TrangThai = 0 WHERE IdPhieuNhap = ?");
             $stmt->bind_param("i", $idPhieuNhap);
             $stmt->execute();
-
+    
             $this->db->commit();
             return true;
         } catch (Exception $e) {
