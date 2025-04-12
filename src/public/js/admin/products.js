@@ -1,5 +1,11 @@
 // Hàm tải danh sách sản phẩm
+
+let isLoadingProducts = false; // Đặt cờ để kiểm tra trạng thái tải sản phẩm
+
 function loadProducts() {
+    if (isLoadingProducts) return; // Bỏ qua nếu đang tải
+    isLoadingProducts = true;
+
     fetch("/smartstation/src/mvc/controllers/SanPhamController.php", {
         method: "GET",
     })
@@ -11,23 +17,31 @@ function loadProducts() {
             const tbody = document.getElementById("productTableBody");
             tbody.innerHTML = "";
             if (!products || products.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7">Không có sản phẩm nào</td></tr>'; // Cập nhật colspan thành 7
+                tbody.innerHTML = '<tr><td colspan="7">Không có sản phẩm nào</td></tr>';
             } else {
                 Promise.all(products.map(product => 
                     Promise.all([
                         fetch(`/smartstation/src/mvc/controllers/DongSanPhamController.php?idDSP=${product.IdDongSanPham}`).then(res => res.json()),
                         fetch(`/smartstation/src/mvc/controllers/CauHinhSanPhamController.php?idCHSP=${product.IdCHSP}`).then(res => res.json())
                     ])
-                    .then(([dongSanPham, cauHinh]) => ({
-                        ...product,
-                        TenDong: dongSanPham.TenDong,
-                        Ram: cauHinh.Ram,
-                        Rom: cauHinh.Rom,
-                        MauSac: cauHinh.MauSac
-                    }))
+                    .then(([dongSanPham, cauHinh]) => {
+                        if (!dongSanPham || !cauHinh) {
+                            console.warn("Dữ liệu không hợp lệ:", { dongSanPham, cauHinh });
+                            return null;
+                        }
+                        return {
+                            ...product,
+                            TenDong: dongSanPham.TenDong || "Không xác định",
+                            Ram: cauHinh.Ram || "N/A",
+                            Rom: cauHinh.Rom || "N/A",
+                            MauSac: cauHinh.MauSac || "N/A"
+                        };
+                    })
                 ))
                 .then(productsWithDetails => {
-                    productsWithDetails.forEach((product) => {
+                    // Lọc bỏ các mục null
+                    const validProducts = productsWithDetails.filter(product => product);
+                    validProducts.forEach((product) => {
                         tbody.innerHTML += `
                             <tr onclick="showProductDetail('${product.IdCHSP}', '${product.IdDongSanPham}')" style="cursor: pointer;">
                                 <td>${product.TenDong}</td>
@@ -35,7 +49,7 @@ function loadProducts() {
                                 <td>${product.Rom}</td>
                                 <td>${product.MauSac}</td>
                                 <td>${product.Gia.toLocaleString('vi-VN')} VNĐ</td>
-                                <td>${product.SoLuong}</td> <!-- Thêm cột Số lượng -->
+                                <td>${product.SoLuong}</td>
                                 <td>
                                     <button class="btn btn-danger" onclick="deleteProduct('${product.IdCHSP}', '${product.IdDongSanPham}'); event.stopPropagation();">Xóa</button>
                                 </td>
@@ -44,7 +58,10 @@ function loadProducts() {
                 });
             }
         })
-        .catch((error) => console.error("Fetch error:", error));
+        .catch((error) => console.error("Fetch error:", error))
+        .finally(() => {
+            isLoadingProducts = false; // Đặt lại trạng thái
+        });
 }
 
 // Hàm tải danh sách dòng sản phẩm vào modal thêm
