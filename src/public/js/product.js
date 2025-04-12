@@ -1,7 +1,7 @@
 $(document).ready(function () {
     function loadProducts(page) {
         $.ajax({
-            url: "../../../public/product.json", // Đường dẫn file JSON
+            url: "/smartstation/src/mvc/controllers/SanPhamController.php", // Đường dẫn file JSON
             method: "GET",
             dataType: "json",
             success: function (data) {

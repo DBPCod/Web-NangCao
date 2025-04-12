@@ -117,7 +117,7 @@ function loadCauHinhOptions() {
 function showAddProductModal() {
     document.getElementById("addProductForm").reset();
     document.getElementById("soLuong").value = 0;
-    document.getElementById("addProductImages").value = ""; // Xóa file đã chọn trước đó
+    document.getElementById("addProductImages").value = "";
     document.getElementById("addRam").textContent = "";
     document.getElementById("addRom").textContent = "";
     document.getElementById("addManHinh").textContent = "";
@@ -132,7 +132,7 @@ function showAddProductModal() {
 function readImageFile(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
-        reader.onload = () => resolve(reader.result.split(',')[1]); // Lấy phần base64 sau dấu phẩy
+        reader.onload = () => resolve(reader.result.split(',')[1]);
         reader.onerror = reject;
         reader.readAsDataURL(file);
     });
@@ -144,7 +144,7 @@ async function submitAddProduct() {
     const idCHSP = document.getElementById("idCHSP").value;
     const soLuong = document.getElementById("soLuong").value;
     const imageFiles = document.getElementById("addProductImages").files;
-    console.log("a");
+
     if (!idDongSanPham || !idCHSP) {
         toast({
             title: "Cảnh báo",
@@ -171,13 +171,27 @@ async function submitAddProduct() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(productData),
         });
-        if (!productResponse.ok) throw new Error("Thêm sản phẩm thất bại");
+
+        if (!productResponse.ok) {
+            const errorData = await productResponse.json();
+            if (errorData.message === "Sản phẩm đã tồn tại và đang hoạt động.") {
+                toast({
+                    title: "Cảnh báo",
+                    message: "Sản phẩm này đã tồn tại và đang hoạt động!",
+                    type: "warning",
+                    duration: 3000,
+                });
+                return;
+            }
+            throw new Error(errorData.message || "Thêm sản phẩm thất bại");
+        }
+
         const productResult = await productResponse.json();
 
         // Nếu có ảnh, upload từng ảnh
         if (imageFiles.length > 0) {
             const uploadPromises = Array.from(imageFiles).map(async (file) => {
-                const base64Image = await readImageFile(file); // Chuyển file thành base64
+                const base64Image = await readImageFile(file);
                 const imageData = {
                     Anh: base64Image,
                     IdCHSP: idCHSP,
@@ -194,14 +208,14 @@ async function submitAddProduct() {
             await Promise.all(uploadPromises);
             toast({
                 title: "Thành công",
-                message: "Thêm sản phẩm và ảnh thành công",
+                message: "Thêm hoặc kích hoạt sản phẩm và ảnh thành công",
                 type: "success",
                 duration: 3000,
             });
         } else {
             toast({
                 title: "Thành công",
-                message: "Thêm sản phẩm thành công",
+                message: "Thêm hoặc kích hoạt sản phẩm thành công",
                 type: "success",
                 duration: 3000,
             });
@@ -212,9 +226,9 @@ async function submitAddProduct() {
     } catch (error) {
         console.error("Error:", error);
         toast({
-            title: "Cảnh báo",
-            message: "Thêm sản phẩm hoặc ảnh thất bại",
-            type: "warning",
+            title: "Lỗi",
+            message: error.message || "Thêm sản phẩm hoặc ảnh thất bại",
+            type: "error",
             duration: 3000,
         });
     }
@@ -222,7 +236,6 @@ async function submitAddProduct() {
 
 // Hàm hiển thị chi tiết sản phẩm
 function showProductDetail(idCHSP, idDSP) {
-    console.log(idDSP);
     Promise.all([
         fetch(`/smartstation/src/mvc/controllers/SanPhamController.php?idCHSP=${idCHSP}&idDSP=${idDSP}`).then(res => res.json()),
         fetch(`/smartstation/src/mvc/controllers/DongSanPhamController.php?idDSP=${idDSP}`).then(res => res.json()),
@@ -230,17 +243,14 @@ function showProductDetail(idCHSP, idDSP) {
         fetch(`/smartstation/src/mvc/controllers/AnhController.php?idCHSP=${idCHSP}&idDSP=${idDSP}`).then(res => res.json())
     ])
     .then(([sanPham, dongSanPham, cauHinh, anhList]) => {
-        // Lấy IdThuongHieu từ dongSanPham và gọi API ThuongHieuController
         return fetch(`/smartstation/src/mvc/controllers/ThuongHieuController.php?idThuongHieu=${dongSanPham.IdThuongHieu}`)
             .then(res => res.json())
             .then(thuongHieu => {
-                // Nếu không tìm thấy thương hiệu, dùng "Không xác định"
                 const thuongHieuData = thuongHieu && thuongHieu.IdThuongHieu ? thuongHieu : { TenThuongHieu: "Không xác định" };
                 return [sanPham, dongSanPham, cauHinh, thuongHieuData, anhList];
             });
     })
     .then(([sanPham, dongSanPham, cauHinh, thuongHieu, anhList]) => {
-        console.log(thuongHieu);
         document.getElementById("detailTenDong").textContent = dongSanPham.TenDong;
         document.getElementById("detailSoLuong").textContent = sanPham.SoLuong;
         document.getElementById("detailGia").textContent = sanPham.Gia.toLocaleString('vi-VN') + " VNĐ";
@@ -282,7 +292,6 @@ function showProductDetail(idCHSP, idDSP) {
         });
     });
 }
-
 
 // Hàm xóa sản phẩm
 function deleteProduct(idCHSP, idDSP) {
