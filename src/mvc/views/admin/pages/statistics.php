@@ -4,12 +4,12 @@
         <h2>Thống kê</h2>
         <div class="row align-items-end">
             <div class="col-md-3">
-                <label for="fromMonth" class="form-label">Từ tháng:</label>
-                <input type="month" id="fromMonth" class="form-control">
+                <label for="fromDate" class="form-label">Từ ngày:</label>
+                <input type="date" id="fromDate" class="form-control">
             </div>
             <div class="col-md-3">
-                <label for="toMonth" class="form-label">Đến tháng:</label>
-                <input type="month" id="toMonth" class="form-control">
+                <label for="toDate" class="form-label">Đến ngày:</label>
+                <input type="date" id="toDate" class="form-control">
             </div>
             <div class="col-md-3">
                 <label class="form-label invisible"></label>
@@ -32,8 +32,8 @@
     <table class="table">
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Tháng</th>
+                <th>STT</th>
+                <th>Tên khách hàng</th>
                 <th>Tổng tiền</th>
                 <th>Hành động</th>
             </tr>
@@ -41,7 +41,7 @@
         <tbody>
             <tr>
                 <td>1</td>
-                <td>Tháng 3/2025</td>
+                <td>Nguyễn Văn A</td>
                 <td>10,000,000 đ</td>
                 <td>
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#orderListModal">
@@ -51,7 +51,7 @@
             </tr>
             <tr>
                 <td>2</td>
-                <td>Tháng 3/2025</td>
+                <td>Nguyễn Văn B</td>
                 <td>10,000,000 đ</td>
                 <td>
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#orderListModal">
@@ -61,7 +61,7 @@
             </tr>
             <tr>
                 <td>3</td>
-                <td>Tháng 3/2025</td>
+                <td>Nguyễn Văn C</td>
                 <td>10,000,000 đ</td>
                 <td>
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#orderListModal">
@@ -71,7 +71,7 @@
             </tr>
             <tr>
                 <td>4</td>
-                <td>Tháng 3/2025</td>
+                <td>Nguyễn Văn D</td>
                 <td>10,000,000 đ</td>
                 <td>
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#orderListModal">
@@ -81,7 +81,7 @@
             </tr>
             <tr>
                 <td>5</td>
-                <td>Tháng 3/2025</td>
+                <td>Nguyễn Văn E</td>
                 <td>10,000,000 đ</td>
                 <td>
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#orderListModal">
