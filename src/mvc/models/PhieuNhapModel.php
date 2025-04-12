@@ -9,7 +9,7 @@ class PhieuNhapModel {
     }
 
     public function getAllPhieuNhap() {
-        $result = $this->db->query("SELECT * FROM phieunhap");
+        $result = $this->db->query("SELECT * FROM phieunhap where trangthai=1");
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
