@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th4 12, 2025 lúc 04:07 AM
+-- Thời gian đã tạo: Th4 12, 2025 lúc 12:20 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -193,7 +193,8 @@ INSERT INTO `ctphieunhap` (`IdPhieuNhap`, `GiaNhap`, `SoLuong`, `IdCHSP`, `IdDon
 (2, 18000000.00, 4, 2, 2),
 (3, 8000000.00, 3, 3, 3),
 (4, 9000000.00, 2, 4, 4),
-(5, 15000000.00, 1, 5, 5);
+(5, 15000000.00, 1, 5, 5),
+(15, 11.00, 2, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -364,7 +365,7 @@ INSERT INTO `nhacungcap` (`IdNCC`, `TenNCC`, `DiaChi`, `SoDienThoai`, `Email`, `
 (2, 'Công ty TNHH B', 'TP.HCM', '0922222222', 'ctyb@gmail.com', 1),
 (3, 'Công ty TNHH C', 'Đà Nẵng', '0933333333', 'ctyc@gmail.com', 1),
 (4, 'Công ty TNHH D', 'Hải Phòng', '0944444444', 'ctyd@gmail.com', 1),
-(5, 'Công ty TNHH E', 'Cần Thơ', '0955555555', 'ctye@gmail.com', 0);
+(5, 'Công ty TNHH E', 'Cần Thơ', '0955555555', 'ctye@gmail.com', 1);
 
 -- --------------------------------------------------------
 
@@ -390,7 +391,13 @@ INSERT INTO `phieunhap` (`IdPhieuNhap`, `IdTaiKhoan`, `NgayNhap`, `TongTien`, `T
 (2, 2, '2025-03-02', 0, 1, 2),
 (3, 5, '2025-03-03', 0, 1, 3),
 (4, 2, '2025-03-04', 0, 1, 4),
-(5, 5, '2025-03-05', 0, 0, 5);
+(5, 5, '2025-03-05', 0, 1, 5),
+(10, 10, '2025-04-12', 1, 0, 1),
+(11, 10, '2025-04-12', 1, 0, 2),
+(12, 10, '2025-04-12', 1, 0, 1),
+(13, 10, '2025-04-12', 1, 0, 1),
+(14, 10, '2025-04-12', 1, 0, 1),
+(15, 10, '2025-04-12', 22, 0, 1);
 
 -- --------------------------------------------------------
 
@@ -443,7 +450,7 @@ CREATE TABLE `sanpham` (
 --
 
 INSERT INTO `sanpham` (`IdCHSP`, `IdDongSanPham`, `SoLuong`, `Gia`, `TrangThai`) VALUES
-(1, 1, 5, 0, 1),
+(1, 1, 7, 22, 1),
 (1, 2, 0, 0, 0),
 (1, 3, 0, 0, 0),
 (1, 5, 0, 0, 0),
@@ -477,29 +484,20 @@ CREATE TABLE `sanphamchitiet` (
   `TrangThai` tinyint(1) DEFAULT NULL,
   `IdCHSP` int(11) DEFAULT NULL,
   `IdDongSanPham` int(11) DEFAULT NULL,
-  `IdBaoHanh` int(11) DEFAULT NULL
+  `IdBaoHanh` int(11) DEFAULT NULL,
+  `IdPhieuNhap` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `sanphamchitiet`
 --
 
-INSERT INTO `sanphamchitiet` (`Imei`, `TrangThai`, `IdCHSP`, `IdDongSanPham`, `IdBaoHanh`) VALUES
-('352094108765401', 1, 4, 4, 4),
-('352094108765402', 1, 4, 4, 4),
-('354128907563201', 1, 1, 1, 1),
-('354128907563202', 1, 1, 1, 1),
-('354128907563203', 1, 1, 1, 1),
-('354128907563204', 1, 1, 1, 1),
-('354128907563205', 1, 1, 1, 1),
-('490154203237501', 1, 3, 3, 3),
-('490154203237502', 1, 3, 3, 3),
-('490154203237503', 1, 3, 3, 3),
-('867493021584901', 1, 2, 2, 2),
-('867493021584902', 1, 2, 2, 2),
-('867493021584903', 1, 2, 2, 2),
-('867493021584904', 1, 2, 2, 2),
-('987654321098701', 0, 5, 5, 5);
+INSERT INTO `sanphamchitiet` (`Imei`, `TrangThai`, `IdCHSP`, `IdDongSanPham`, `IdBaoHanh`, `IdPhieuNhap`) VALUES
+('352094108765401', 1, 4, 4, 4, 1),
+('354128907563201', 1, 1, 1, 1, 4),
+('490154203237501', 1, 3, 3, 3, 3),
+('867493021584901', 1, 2, 2, 2, 1),
+('987654321098701', 0, 5, 5, 5, 5);
 
 -- --------------------------------------------------------
 
@@ -716,7 +714,8 @@ ALTER TABLE `sanphamchitiet`
   ADD PRIMARY KEY (`Imei`),
   ADD KEY `IdCHSP` (`IdCHSP`),
   ADD KEY `IdDongSanPham` (`IdDongSanPham`),
-  ADD KEY `IdBaoHanh` (`IdBaoHanh`);
+  ADD KEY `IdBaoHanh` (`IdBaoHanh`),
+  ADD KEY `phieunhap_ibfk1` (`IdPhieuNhap`);
 
 --
 -- Chỉ mục cho bảng `taikhoan`
@@ -806,7 +805,7 @@ ALTER TABLE `nhacungcap`
 -- AUTO_INCREMENT cho bảng `phieunhap`
 --
 ALTER TABLE `phieunhap`
-  MODIFY `IdPhieuNhap` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `IdPhieuNhap` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT cho bảng `quyen`
@@ -897,6 +896,7 @@ ALTER TABLE `sanpham`
 -- Các ràng buộc cho bảng `sanphamchitiet`
 --
 ALTER TABLE `sanphamchitiet`
+  ADD CONSTRAINT `phieunhap_ibfk1` FOREIGN KEY (`IdPhieuNhap`) REFERENCES `phieunhap` (`IdPhieuNhap`),
   ADD CONSTRAINT `sanphamchitiet_ibfk_1` FOREIGN KEY (`IdCHSP`) REFERENCES `sanpham` (`IdCHSP`),
   ADD CONSTRAINT `sanphamchitiet_ibfk_2` FOREIGN KEY (`IdDongSanPham`) REFERENCES `dongsanpham` (`IdDongSanPham`),
   ADD CONSTRAINT `sanphamchitiet_ibfk_3` FOREIGN KEY (`IdBaoHanh`) REFERENCES `baohanh` (`IdBaoHanh`);
