@@ -11,7 +11,7 @@ function loadProducts() {
             const tbody = document.getElementById("productTableBody");
             tbody.innerHTML = "";
             if (!products || products.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6">Không có sản phẩm nào</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7">Không có sản phẩm nào</td></tr>'; // Cập nhật colspan thành 7
             } else {
                 Promise.all(products.map(product => 
                     Promise.all([
@@ -35,8 +35,8 @@ function loadProducts() {
                                 <td>${product.Rom}</td>
                                 <td>${product.MauSac}</td>
                                 <td>${product.Gia.toLocaleString('vi-VN')} VNĐ</td>
+                                <td>${product.SoLuong}</td> <!-- Thêm cột Số lượng -->
                                 <td>
-                                    <button class="btn btn-primary" onclick="editProduct('${product.IdCHSP}', '${product.IdDongSanPham}'); event.stopPropagation();">Sửa</button>
                                     <button class="btn btn-danger" onclick="deleteProduct('${product.IdCHSP}', '${product.IdDongSanPham}'); event.stopPropagation();">Xóa</button>
                                 </td>
                             </tr>`;
@@ -127,7 +127,7 @@ async function submitAddProduct() {
     const idCHSP = document.getElementById("idCHSP").value;
     const soLuong = document.getElementById("soLuong").value;
     const imageFiles = document.getElementById("addProductImages").files;
-console.log("a");
+    console.log("a");
     if (!idDongSanPham || !idCHSP) {
         toast({
             title: "Cảnh báo",
@@ -266,10 +266,6 @@ function showProductDetail(idCHSP, idDSP) {
     });
 }
 
-// Hàm sửa sản phẩm
-function editProduct(idCHSP, idDSP) {
-    window.location.href = `edit_product.php?idCHSP=${idCHSP}&idDSP=${idDSP}`;
-}
 
 // Hàm xóa sản phẩm
 function deleteProduct(idCHSP, idDSP) {

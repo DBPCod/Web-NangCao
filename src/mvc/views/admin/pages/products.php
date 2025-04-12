@@ -12,6 +12,7 @@
                 <th>ROM</th>
                 <th>Màu sắc</th>
                 <th>Giá</th>
+                <th>Số lượng</th> <!-- Thêm cột Số lượng -->
                 <th>Hành động</th>
             </tr>
         </thead>
@@ -52,7 +53,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="soLuong" class="form-label">Số lượng</label>
-                        <input type="number" class="form-control" id="soLuong" min="0" value="0" required>
+                        <input type="number" class="form-control" id="soLuong" min="0" value="0" required disabled>
                     </div>
                     <div class="mb-3">
                         <label for="addProductImages" class="form-label">Ảnh sản phẩm</label>
