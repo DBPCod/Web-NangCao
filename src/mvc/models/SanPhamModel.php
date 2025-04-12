@@ -20,6 +20,27 @@ class SanPhamModel {
         return $stmt->get_result()->fetch_assoc();
     }
 
+    // Hàm cập nhật số lượng trong dongsanpham dựa trên sanpham
+    private function updateDongSanPhamQuantity($idDongSanPham) {
+        $stmt = $this->db->prepare("
+            SELECT SUM(SoLuong) as total 
+            FROM sanpham 
+            WHERE IdDongSanPham = ? AND TrangThai = 1
+        ");
+        $stmt->bind_param("i", $idDongSanPham);
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+        $totalQuantity = $result['total'] ?? 0;
+
+        $stmt = $this->db->prepare("
+            UPDATE dongsanpham 
+            SET SoLuong = ? 
+            WHERE IdDongSanPham = ?
+        ");
+        $stmt->bind_param("ii", $totalQuantity, $idDongSanPham);
+        $stmt->execute();
+    }
+
     public function addProduct($data) {
         $this->db->begin_transaction();
         try {
@@ -62,6 +83,9 @@ class SanPhamModel {
                 $stmt->execute();
             }
 
+            // Cập nhật số lượng trong dongsanpham
+            $this->updateDongSanPhamQuantity($data['IdDongSanPham']);
+
             $this->db->commit();
             return $this->getProductById($data['IdCHSP'], $data['IdDongSanPham']);
         } catch (Exception $e) {
@@ -73,9 +97,17 @@ class SanPhamModel {
     public function updateProduct($idCHSP, $idDSP, $soLuong, $gia, $trangThai) {
         $this->db->begin_transaction();
         try {
-            $stmt = $this->db->prepare("UPDATE sanpham SET SoLuong = ?, Gia = ?, TrangThai = ? WHERE IdCHSP = ? AND IdDongSanPham = ?");
+            $stmt = $this->db->prepare("
+                UPDATE sanpham 
+                SET SoLuong = ?, Gia = ?, TrangThai = ? 
+                WHERE IdCHSP = ? AND IdDongSanPham = ?
+            ");
             $stmt->bind_param("idiii", $soLuong, $gia, $trangThai, $idCHSP, $idDSP);
             $stmt->execute();
+
+            // Cập nhật số lượng trong dongsanpham
+            $this->updateDongSanPhamQuantity($idDSP);
+
             $this->db->commit();
             return true;
         } catch (Exception $e) {
@@ -85,9 +117,25 @@ class SanPhamModel {
     }
 
     public function deleteProduct($idCHSP, $idDSP) {
-        $stmt = $this->db->prepare("UPDATE sanpham SET TrangThai = 0 WHERE IdCHSP = ? AND IdDongSanPham = ?");
-        $stmt->bind_param("ii", $idCHSP, $idDSP);
-        return $stmt->execute();
+        $this->db->begin_transaction();
+        try {
+            $stmt = $this->db->prepare("
+                UPDATE sanpham 
+                SET TrangThai = 0 
+                WHERE IdCHSP = ? AND IdDongSanPham = ?
+            ");
+            $stmt->bind_param("ii", $idCHSP, $idDSP);
+            $stmt->execute();
+
+            // Cập nhật số lượng trong dongsanpham
+            $this->updateDongSanPhamQuantity($idDSP);
+
+            $this->db->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->db->rollback();
+            throw new Exception("Lỗi xóa sản phẩm: " . $e->getMessage());
+        }
     }
 }
 ?>
