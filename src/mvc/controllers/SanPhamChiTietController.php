@@ -24,11 +24,16 @@ class SanPhamChiTietController {
                 break;
 
             case 'POST':
-                $newSanPhamChiTiet = $this->model->addSanPhamChiTiet($input);
-                echo json_encode([
-                    "message" => "Thêm sản phẩm chi tiết thành công",
-                    "sanphamchitiet" => $newSanPhamChiTiet
-                ]);
+                try {
+                    $newSanPhamChiTiet = $this->model->addSanPhamChiTiet($input);
+                    echo json_encode([
+                        "message" => "Thêm sản phẩm chi tiết thành công",
+                        "sanphamchitiet" => $newSanPhamChiTiet
+                    ]);
+                } catch (Exception $e) {
+                    http_response_code(500);
+                    echo json_encode(["message" => $e->getMessage()]);
+                }
                 break;
 
             case 'PUT':
@@ -36,24 +41,31 @@ class SanPhamChiTietController {
                 $_PUT = json_decode($json, true);
                 if (isset($_GET['imei'])) {
                     $result = $this->model->updateSanPhamChiTiet(
-                        $_GET['imei'], 
-                        $_PUT['TrangThai'], 
-                        $_PUT['IdCHSP'], 
-                        $_PUT['IdDongSanPham'], 
+                        $_GET['imei'],
+                        $_PUT['TrangThai'],
+                        $_PUT['IdCHSP'],
+                        $_PUT['IdDongSanPham'],
                         $_PUT['IdBaoHanh']
                     );
                     echo json_encode(["message" => $result ? "Cập nhật thành công" : "Cập nhật thất bại"]);
+                } else {
+                    http_response_code(400);
+                    echo json_encode(["message" => "Thiếu IMEI"]);
                 }
                 break;
-            
+
             case 'DELETE':
                 if (isset($_GET['imei'])) {
                     $result = $this->model->deleteSanPhamChiTiet($_GET['imei']);
                     echo json_encode(["message" => $result ? "Xóa thành công" : "Xóa thất bại"]);
+                } else {
+                    http_response_code(400);
+                    echo json_encode(["message" => "Thiếu IMEI"]);
                 }
                 break;
-            
+
             default:
+                http_response_code(405);
                 echo json_encode(["message" => "Yêu cầu không hợp lệ"]);
         }
     }
@@ -61,4 +73,3 @@ class SanPhamChiTietController {
 
 (new SanPhamChiTietController())->handleRequest();
 ?>
-

@@ -24,11 +24,16 @@ class PhieuNhapController {
                 break;
 
             case 'POST':
-                $newPhieuNhap = $this->model->addPhieuNhap($input);
-                echo json_encode([
-                    "message" => "Thêm phiếu nhập thành công",
-                    "phieuNhap" => $newPhieuNhap
-                ]);
+                try {
+                    $newPhieuNhap = $this->model->addPhieuNhap($input);
+                    echo json_encode([
+                        "message" => "Thêm phiếu nhập thành công",
+                        "phieuNhap" => $newPhieuNhap
+                    ]);
+                } catch (Exception $e) {
+                    http_response_code(500);
+                    echo json_encode(["message" => $e->getMessage()]);
+                }
                 break;
 
             case 'PUT':
@@ -43,6 +48,9 @@ class PhieuNhapController {
                         $_PUT['IdNCC']
                     );
                     echo json_encode(["message" => $result ? "Cập nhật thành công" : "Cập nhật thất bại"]);
+                } else {
+                    http_response_code(400);
+                    echo json_encode(["message" => "Thiếu IdPhieuNhap"]);
                 }
                 break;
 
@@ -50,10 +58,14 @@ class PhieuNhapController {
                 if (isset($_GET['idPhieuNhap'])) {
                     $result = $this->model->deletePhieuNhap($_GET['idPhieuNhap']);
                     echo json_encode(["message" => $result ? "Xóa thành công" : "Xóa thất bại"]);
+                } else {
+                    http_response_code(400);
+                    echo json_encode(["message" => "Thiếu IdPhieuNhap"]);
                 }
                 break;
-            
+
             default:
+                http_response_code(405);
                 echo json_encode(["message" => "Yêu cầu không hợp lệ"]);
         }
     }

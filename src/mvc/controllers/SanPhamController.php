@@ -24,19 +24,38 @@ class SanPhamController {
                 break;
 
             case 'POST':
-                $newProduct = $this->model->addProduct($input);
-                echo json_encode([
-                    "message" => "Thêm sản phẩm thành công",
-                    "product" => $newProduct
-                ]);
+                try {
+                    $newProduct = $this->model->addProduct($input);
+                    echo json_encode([
+                        "message" => "Thêm sản phẩm thành công",
+                        "product" => $newProduct
+                    ]);
+                } catch (Exception $e) {
+                    http_response_code(500);
+                    echo json_encode(["message" => $e->getMessage()]);
+                }
                 break;
 
             case 'PUT':
                 $json = file_get_contents("php://input");
                 $_PUT = json_decode($json, true);
                 if (isset($_GET['idCHSP']) && isset($_GET['idDSP'])) {
-                    $result = $this->model->updateProduct($_GET['idCHSP'], $_GET['idDSP'], $_PUT['SoLuong'], $_PUT['TrangThai']);
-                    echo json_encode(["message" => $result ? "Cập nhật thành công" : "Cập nhật thất bại"]);
+                    try {
+                        $result = $this->model->updateProduct(
+                            $_GET['idCHSP'],
+                            $_GET['idDSP'],
+                            $_PUT['SoLuong'],
+                            $_PUT['Gia'],
+                            $_PUT['TrangThai']
+                        );
+                        echo json_encode(["message" => $result ? "Cập nhật thành công" : "Cập nhật thất bại"]);
+                    } catch (Exception $e) {
+                        http_response_code(500);
+                        echo json_encode(["message" => $e->getMessage()]);
+                    }
+                } else {
+                    http_response_code(400);
+                    echo json_encode(["message" => "Thiếu idCHSP hoặc idDSP"]);
                 }
                 break;
 
@@ -44,13 +63,18 @@ class SanPhamController {
                 if (isset($_GET['idCHSP']) && isset($_GET['idDSP'])) {
                     $result = $this->model->deleteProduct($_GET['idCHSP'], $_GET['idDSP']);
                     echo json_encode(["message" => $result ? "Xóa thành công" : "Xóa thất bại"]);
+                } else {
+                    http_response_code(400);
+                    echo json_encode(["message" => "Thiếu idCHSP hoặc idDSP"]);
                 }
                 break;
 
             default:
+                http_response_code(405);
                 echo json_encode(["message" => "Yêu cầu không hợp lệ"]);
         }
     }
 }
+
 (new SanPhamController())->handleRequest();
 ?>

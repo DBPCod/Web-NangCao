@@ -1,11 +1,11 @@
 <?php
-include_once __DIR__ . '../../models/CtphieunhapModel.php';
+include_once __DIR__ . '../../models/CTPhieuNhapModel.php';
 
-class CTPhieunhapController {
+class CTPhieuNhapController {
     private $model;
 
     public function __construct() {
-        $this->model = new CtphieunhapModel();
+        $this->model = new CTPhieuNhapModel();
     }
 
     public function handleRequest() {
@@ -24,18 +24,34 @@ class CTPhieunhapController {
                 break;
 
             case 'POST':
-                $newCTPhieuNhap = $this->model->addCTPhieuNhap($input);
-                echo json_encode([
-                    "message" => "Thêm CTPhieuNhap thành công",
-                    "ctPhieuNhap" => $newCTPhieuNhap
-                ]);
+                try {
+                    $newCTPhieuNhap = $this->model->addCTPhieuNhap($input);
+                    echo json_encode([
+                        "message" => "Thêm chi tiết phiếu nhập thành công",
+                        "ctPhieuNhap" => $newCTPhieuNhap
+                    ]);
+                } catch (Exception $e) {
+                    http_response_code(500);
+                    echo json_encode(["message" => $e->getMessage()]);
+                }
+                break;
+
+            case 'DELETE':
+                if (isset($_GET['idPhieuNhap']) && isset($_GET['idCHSP']) && isset($_GET['idDSP'])) {
+                    $result = $this->model->deleteCTPhieuNhap($_GET['idPhieuNhap'], $_GET['idCHSP'], $_GET['idDSP']);
+                    echo json_encode(["message" => $result ? "Xóa thành công" : "Xóa thất bại"]);
+                } else {
+                    http_response_code(400);
+                    echo json_encode(["message" => "Thiếu thông tin"]);
+                }
                 break;
 
             default:
+                http_response_code(405);
                 echo json_encode(["message" => "Yêu cầu không hợp lệ"]);
         }
     }
 }
 
-(new CTPhieunhapController())->handleRequest();
+(new CTPhieuNhapController())->handleRequest();
 ?>

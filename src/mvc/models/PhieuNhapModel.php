@@ -1,4 +1,4 @@
-<?php 
+<?php
 include_once '../core/DB.php';
 
 class PhieuNhapModel {
@@ -9,7 +9,7 @@ class PhieuNhapModel {
     }
 
     public function getAllPhieuNhap() {
-        $result = $this->db->query("SELECT * FROM phieunhap where trangthai=1");
+        $result = $this->db->query("SELECT * FROM phieunhap WHERE TrangThai = 1");
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
@@ -21,10 +21,18 @@ class PhieuNhapModel {
     }
 
     public function addPhieuNhap($data) {
-        $stmt = $this->db->prepare("INSERT INTO phieunhap (IdPhieuNhap, IdTaiKhoan, NgayNhap, TrangThai, IdNCC) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("iisii", $data['IdPhieuNhap'], $data['IdTaiKhoan'], $data['NgayNhap'], $data['TrangThai'], $data['IdNCC']);
-        $stmt->execute();
-        return $this->getPhieuNhapById($data['IdPhieuNhap']);
+        $this->db->begin_transaction();
+        try {
+            $stmt = $this->db->prepare("INSERT INTO phieunhap (IdTaiKhoan, NgayNhap, TrangThai, IdNCC, TongTien) VALUES (?, ?, ?, ?, ?)");
+            $stmt->bind_param("isiid", $data['IdTaiKhoan'], $data['NgayNhap'], $data['TrangThai'], $data['IdNCC'], $data['TongTien']);
+            $stmt->execute();
+            $idPhieuNhap = $this->db->insert_id;
+            $this->db->commit();
+            return ['IdPhieuNhap' => $idPhieuNhap];
+        } catch (Exception $e) {
+            $this->db->rollback();
+            throw new Exception("Lỗi thêm phiếu nhập: " . $e->getMessage());
+        }
     }
 
     public function updatePhieuNhap($idPhieuNhap, $idTaiKhoan, $ngayNhap, $trangThai, $idNCC) {

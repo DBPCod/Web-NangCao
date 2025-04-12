@@ -51,6 +51,14 @@
                         <div id="productList" class="product-list p-3 bg-light rounded"></div>
                         <button type="button" class="btn btn-primary btn-sm mt-2" onclick="addProductRow()">Thêm sản phẩm</button>
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Tổng số lượng</label>
+                        <input type="text" class="form-control" id="totalQuantity" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Tổng giá nhập</label>
+                        <input type="text" class="form-control" id="totalPriceIn" readonly>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -63,31 +71,31 @@
 
 <style>
     .product-list {
-        max-height: 400px; /* Tăng chiều cao để hiển thị nhiều sản phẩm */
-        overflow-y: auto; /* Thanh cuộn dọc */
-        border: 1px solid #e0e0e0; /* Viền nhẹ */
+        max-height: 400px;
+        overflow-y: auto;
+        border: 1px solid #e0e0e0;
         padding: 15px;
-        background-color: #f8f9fa; /* Nền sáng */
-        border-radius: 8px; /* Bo góc */
+        background-color: #f8f9fa;
+        border-radius: 8px;
     }
     .product-row {
-        margin-bottom: 15px; /* Khoảng cách giữa các dòng */
-        padding: 15px; /* Padding rộng hơn */
+        margin-bottom: 15px;
+        padding: 15px;
         border: 1px solid #dee2e6;
         border-radius: 6px;
         position: relative;
-        background-color: #ffffff; /* Nền trắng cho mỗi dòng */
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Đổ bóng nhẹ */
-        transition: all 0.2s ease; /* Hiệu ứng mượt mà */
+        background-color: #ffffff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        transition: all 0.2s ease;
     }
     .product-row:hover {
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Hiệu ứng hover */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
     .product-row .row {
-        align-items: center; /* Căn giữa */
+        align-items: center;
     }
     .product-row select, .product-row input {
-        height: 38px; /* Tăng chiều cao input/select */
+        height: 38px;
         font-size: 14px;
         border-radius: 4px;
     }
@@ -106,13 +114,13 @@
         color: #333;
     }
     .modal-content {
-        border-radius: 10px; /* Modal bo góc */
+        border-radius: 10px;
     }
     .modal-header {
-        border-bottom: none; /* Xóa viền dưới header */
+        border-bottom: none;
     }
     .modal-footer {
-        border-top: none; /* Xóa viền trên footer */
+        border-top: none;
     }
 </style>
 

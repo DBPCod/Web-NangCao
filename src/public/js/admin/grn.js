@@ -1,3 +1,60 @@
+// Hàm tạo mã IMEI theo chuẩn Luhn
+function generateIMEI() {
+    let imeiBase = [];
+
+    // Tạo 14 số đầu ngẫu nhiên
+    for (let i = 0; i < 14; i++) {
+        imeiBase.push(Math.floor(Math.random() * 10));
+    }
+
+    // Tính số kiểm tra bằng thuật toán Luhn
+    function luhnChecksum(digits) {
+        let sum = 0;
+        for (let i = 0; i < 14; i++) {
+            let digit = digits[i];
+            if (i % 2 === 1) { // Vị trí chẵn (theo chuẩn IMEI) => index lẻ
+                digit *= 2;
+                if (digit > 9) digit -= 9;
+            }
+            sum += digit;
+        }
+        return (10 - (sum % 10)) % 10;
+    }
+
+    let checkDigit = luhnChecksum(imeiBase);
+    imeiBase.push(checkDigit);
+
+    // Trả về chuỗi IMEI
+    return imeiBase.join('');
+}
+
+// Hàm kiểm tra và tạo IMEI không trùng
+async function getUniqueIMEI() {
+    let imei;
+    let isUnique = false;
+    let attempts = 0;
+    const maxAttempts = 10;
+
+    while (!isUnique && attempts < maxAttempts) {
+        imei = generateIMEI();
+        try {
+            const response = await fetch(`/smartstation/src/mvc/controllers/SanPhamChiTietController.php?imei=${imei}`);
+            const data = await response.json();
+            if (!data) {
+                isUnique = true; // IMEI chưa tồn tại
+            }
+        } catch (error) {
+            console.error("Error checking IMEI:", error);
+            attempts++;
+        }
+    }
+
+    if (!isUnique) {
+        throw new Error("Không thể tạo mã IMEI duy nhất sau nhiều lần thử.");
+    }
+    return imei;
+}
+
 // Hàm tải danh sách phiếu nhập
 function loadGRNs() {
     fetch("/smartstation/src/mvc/controllers/PhieuNhapController.php", {
@@ -8,6 +65,7 @@ function loadGRNs() {
             return response.json();
         })
         .then((phieuNhaps) => {
+            console.log(phieuNhaps);
             const tbody = document.getElementById("grnTableBody");
             tbody.innerHTML = "";
             if (!phieuNhaps || phieuNhaps.length === 0) {
@@ -177,6 +235,28 @@ function loadSanPhamOptions(selectElement) {
         });
 }
 
+// Hàm tính tổng số lượng
+function updateTotalQuantity() {
+    const productRows = document.querySelectorAll(".product-row");
+    let total = 0;
+    productRows.forEach(row => {
+        total += parseInt(row.querySelector(".product-quantity").value) || 0;
+    });
+    document.getElementById("totalQuantity").value = total;
+}
+
+// Hàm tính tổng giá nhập
+function updateTotalPriceIn() {
+    const productRows = document.querySelectorAll(".product-row");
+    let total = 0;
+    productRows.forEach(row => {
+        const quantity = parseInt(row.querySelector(".product-quantity").value) || 0;
+        const priceIn = parseInt(row.querySelector(".product-price-in").value) || 0;
+        total += quantity * priceIn;
+    });
+    document.getElementById("totalPriceIn").value = total.toLocaleString('vi-VN') + ' VNĐ';
+}
+
 // Hàm thêm dòng sản phẩm mới vào modal
 function addProductRow() {
     const productList = document.getElementById("productList");
@@ -206,11 +286,18 @@ function addProductRow() {
             </div>
             <div class="col-md-12 product-details mt-2"></div>
         </div>
-        <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 mt-2 me-2" onclick="this.parentElement.remove()">Xóa</button>
+        <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 mt-2 me-2" onclick="this.parentElement.remove(); updateTotalQuantity(); updateTotalPriceIn()">Xóa</button>
     `;
     productList.appendChild(row);
     loadSanPhamOptions(row.querySelector(".product-select"));
     loadBaoHanhOptions(row.querySelector(".warranty-select"));
+    row.querySelector(".product-quantity").addEventListener("input", () => {
+        updateTotalQuantity();
+        updateTotalPriceIn();
+    });
+    row.querySelector(".product-price-in").addEventListener("input", updateTotalPriceIn);
+    updateTotalQuantity();
+    updateTotalPriceIn();
 }
 
 // Hàm hiển thị modal thêm phiếu nhập
@@ -218,13 +305,15 @@ function showAddGRNModal() {
     document.getElementById("addGRNForm").reset();
     document.getElementById("ngayNhap").value = new Date().toISOString().split("T")[0]; // Ngày hiện tại
     document.getElementById("productList").innerHTML = "";
-    addProductRow(); // Thêm một dòng sản phẩm mặc định
+    document.getElementById("totalQuantity").value = "0";
+    document.getElementById("totalPriceIn").value = "0 VNĐ";
+    addProductRow();
     loadNhaCungCapOptions();
 }
 
 // Hàm lấy cookie theo tên
 function getCookie(name) {
-    const value = `; ${document.cookie}`; // thêm dấu chấm phẩy để tránh lỗi split
+    const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2) return parts.pop().split(';').shift();
     return null;
@@ -234,7 +323,6 @@ function getCookie(name) {
 async function submitAddGRN() {
     const idNCC = document.getElementById("idNCC").value;
     const ngayNhap = document.getElementById("ngayNhap").value;
-    const nguoiThem = document.getElementById("nguoiThem").value;
     const productRows = document.querySelectorAll(".product-row");
 
     if (!idNCC || productRows.length === 0) {
@@ -247,23 +335,15 @@ async function submitAddGRN() {
         return;
     }
 
-    if (nguoiThem === "Không xác định") {
-        toast({
-            title: "Cảnh báo",
-            message: "Không thể xác định người dùng, vui lòng đăng nhập lại!",
-            type: "warning",
-            duration: 3000,
-        });
-        return;
-    }
-
     const products = [];
+    let totalPrice = 0;
     for (const row of productRows) {
         const select = row.querySelector(".product-select");
         const quantity = row.querySelector(".product-quantity").value;
         const priceIn = row.querySelector(".product-price-in").value;
         const priceOut = row.querySelector(".product-price-out").value;
         const warranty = row.querySelector(".warranty-select").value;
+
         if (!select.value || !quantity || !priceIn || !priceOut || !warranty) {
             toast({
                 title: "Cảnh báo",
@@ -291,7 +371,17 @@ async function submitAddGRN() {
             });
             return;
         }
+        if (parseInt(priceOut) <= parseInt(priceIn)) {
+            toast({
+                title: "Cảnh báo",
+                message: "Giá bán phải lớn hơn giá nhập!",
+                type: "warning",
+                duration: 3000,
+            });
+            return;
+        }
         const [idCHSP, idDSP] = select.value.split(",");
+        totalPrice += parseInt(quantity) * parseInt(priceIn);
         products.push({
             IdCHSP: parseInt(idCHSP),
             IdDongSanPham: parseInt(idDSP),
@@ -303,16 +393,18 @@ async function submitAddGRN() {
     }
 
     const phieuNhapData = {
-        IdNguoiDung: getCookie("admin_idnguoidung"),
+        IdTaiKhoan: getCookie("admin_idnguoidung"),
         NgayNhap: ngayNhap,
+        TongTien: totalPrice,
         TrangThai: 1,
         IdNCC: parseInt(idNCC)
     };
 
-    if (!phieuNhapData.IdNguoiDung) {
+    console.log(phieuNhapData);
+    if (!phieuNhapData.IdTaiKhoan) {
         toast({
             title: "Cảnh báo",
-            message: "Không thể xác định người dùng, vui lòng đăng nhập lại!",
+            message: "Không thể xác định tài khoản, vui lòng đăng nhập lại!",
             type: "warning",
             duration: 3000,
         });
@@ -329,30 +421,84 @@ async function submitAddGRN() {
         if (!phieuNhapResponse.ok) throw new Error("Thêm phiếu nhập thất bại");
         const phieuNhapResult = await phieuNhapResponse.json();
         const idPhieuNhap = phieuNhapResult.phieuNhap.IdPhieuNhap;
-
-        // Thêm chi tiết phiếu nhập
-        const ctPhieuNhapPromises = products.map(product => {
+        console.log(idPhieuNhap)
+        // Thêm chi tiết phiếu nhập và cập nhật sản phẩm/sản phẩm chi tiết
+        const promises = products.map(async product => {
+            // Thêm chi tiết phiếu nhập
             const ctPhieuNhapData = {
                 IdPhieuNhap: idPhieuNhap,
                 IdCHSP: product.IdCHSP,
                 IdDongSanPham: product.IdDongSanPham,
                 SoLuong: product.SoLuong,
-                GiaNhap: product.GiaNhap,
-                GiaBan: product.GiaBan,
-                IdBaoHanh: product.IdBaoHanh
+                GiaNhap: product.GiaNhap
             };
-            return fetch("/smartstation/src/mvc/controllers/CTPhieuNhapController.php", {
+            console.log(ctPhieuNhapData);
+            const ctPhieuNhapResponse = await fetch("/smartstation/src/mvc/controllers/CTPhieuNhapController.php", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(ctPhieuNhapData),
             });
+            if (!ctPhieuNhapResponse.ok) throw new Error("Thêm chi tiết phiếu nhập thất bại");
+
+            // Cập nhật hoặc thêm sản phẩm trong bảng sanpham
+            const existingProductResponse = await fetch(`/smartstation/src/mvc/controllers/SanPhamController.php?idCHSP=${product.IdCHSP}&idDSP=${product.IdDongSanPham}`);
+            const existingProduct = await existingProductResponse.json();
+            if (existingProduct) {
+                // Cập nhật số lượng và giá bán
+                const updateProductData = {
+                    SoLuong: existingProduct.SoLuong + product.SoLuong,
+                    Gia: product.GiaBan,
+                    TrangThai: 1
+                };
+                const updateResponse = await fetch(`/smartstation/src/mvc/controllers/SanPhamController.php?idCHSP=${product.IdCHSP}&idDSP=${product.IdDongSanPham}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(updateProductData),
+                });
+                if (!updateResponse.ok) throw new Error("Cập nhật sản phẩm thất bại");
+            } else {
+                // Thêm sản phẩm mới
+                const newProductData = {
+                    IdCHSP: product.IdCHSP,
+                    IdDongSanPham: product.IdDongSanPham,
+                    SoLuong: product.SoLuong,
+                    Gia: product.GiaBan,
+                    TrangThai: 1
+                };
+                const newProductResponse = await fetch("/smartstation/src/mvc/controllers/SanPhamController.php", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(newProductData),
+                });
+                if (!newProductResponse.ok) throw new Error("Thêm sản phẩm thất bại");
+            }
+
+            // Thêm sản phẩm chi tiết (sanphamchitiet)
+            const sanPhamChiTietPromises = Array.from({ length: product.SoLuong }, async () => {
+                const imei = await getUniqueIMEI();
+                const sanPhamChiTietData = {
+                    Imei: imei,
+                    TrangThai: 1,
+                    IdCHSP: product.IdCHSP,
+                    IdDongSanPham: product.IdDongSanPham,
+                    IdBaoHanh: product.IdBaoHanh
+                };
+                const spctResponse = await fetch("/smartstation/src/mvc/controllers/SanPhamChiTietController.php", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(sanPhamChiTietData),
+                });
+                if (!spctResponse.ok) throw new Error("Thêm sản phẩm chi tiết thất bại");
+            });
+
+            return Promise.all(sanPhamChiTietPromises);
         });
 
-        await Promise.all(ctPhieuNhapPromises);
+        await Promise.all(promises);
 
         toast({
             title: "Thành công",
-            message: "Thêm phiếu nhập thành công",
+            message: "Thêm phiếu nhập và sản phẩm chi tiết thành công",
             type: "success",
             duration: 3000,
         });
@@ -362,9 +508,9 @@ async function submitAddGRN() {
     } catch (error) {
         console.error("Error:", error);
         toast({
-            title: "Cảnh báo",
-            message: "Thêm phiếu nhập thất bại",
-            type: "warning",
+            title: "Lỗi",
+            message: "Thêm phiếu nhập thất bại: " + error.message,
+            type: "error",
             duration: 3000,
         });
     }
