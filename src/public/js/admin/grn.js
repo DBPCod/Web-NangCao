@@ -81,7 +81,7 @@ function loadGRNs() {
                     phieuNhapsWithDetails.forEach((phieuNhap) => {
                         tbody.innerHTML += `
                             <tr>
-                                <td>${phieuNhap.IdPhieuNhap}</td>
+                                <td><span class="clickable-id" onclick="viewGRN(${phieuNhap.IdPhieuNhap})">${phieuNhap.IdPhieuNhap}</span></td>
                                 <td>${phieuNhap.TenNCC}</td>
                                 <td>${phieuNhap.TongTien ? phieuNhap.TongTien.toLocaleString('vi-VN') + ' VNĐ' : 'Chưa xác định'}</td>
                                 <td>
@@ -103,6 +103,124 @@ function loadGRNs() {
         });
 }
 
+// Hàm xem chi tiết phiếu nhập
+function viewGRN(idPhieuNhap) {
+    // Lấy thông tin phiếu nhập
+    fetch(`/smartstation/src/mvc/controllers/PhieuNhapController.php?idPhieuNhap=${idPhieuNhap}`)
+        .then(response => {
+            if (!response.ok) throw new Error("Không thể lấy thông tin phiếu nhập");
+            return response.json();
+        })
+        .then(phieuNhap => {
+            // Lấy thông tin nhà cung cấp
+            fetch(`/smartstation/src/mvc/controllers/NhaCungCapController.php?idNCC=${phieuNhap.IdNCC}`)
+                .then(res => {
+                    if (!res.ok) throw new Error("Không thể lấy thông tin nhà cung cấp");
+                    return res.json();
+                })
+                .then(ncc => {
+                    // Lấy chi tiết phiếu nhập
+                    fetch(`/smartstation/src/mvc/controllers/CTPhieuNhapController.php?idPhieuNhap=${idPhieuNhap}`)
+                        .then(res => {
+                            if (!res.ok) throw new Error("Không thể lấy chi tiết phiếu nhập");
+                            return res.json();
+                        })
+                        .then(ctPhieuNhaps => {
+                            // Điền thông tin phiếu nhập vào modal
+                            document.getElementById("viewIdPhieuNhap").value = phieuNhap.IdPhieuNhap;
+                            document.getElementById("viewTenNCC").value = ncc ? ncc.TenNCC : "Không xác định";
+                            document.getElementById("viewNgayNhap").value = phieuNhap.NgayNhap;
+                            document.getElementById("viewTongTien").value = phieuNhap.TongTien ? phieuNhap.TongTien.toLocaleString('vi-VN') + ' VNĐ' : "Chưa xác định";
+                            document.getElementById("viewTrangThai").value = phieuNhap.TrangThai === 1 ? "Hoạt động" : "Đã xóa";
+
+                            // Điền danh sách sản phẩm từ ctphieunhap
+                            const productList = document.getElementById("viewProductList");
+                            productList.innerHTML = "";
+
+                            // Chuẩn hóa ctPhieuNhaps thành mảng
+                            const ctPhieuNhapsArray = Array.isArray(ctPhieuNhaps) ? ctPhieuNhaps : ctPhieuNhaps && typeof ctPhieuNhaps === 'object' ? [ctPhieuNhaps] : [];
+
+                            if (!ctPhieuNhapsArray.length) {
+                                productList.innerHTML = '<tr><td colspan="4">Không có sản phẩm</td></tr>';
+                            } else {
+                                Promise.all(ctPhieuNhapsArray.map(ct => 
+                                    Promise.all([
+                                        fetch(`/smartstation/src/mvc/controllers/DongSanPhamController.php?idDSP=${ct.IdDongSanPham}`)
+                                            .then(res => {
+                                                if (!res.ok) throw new Error("Không thể lấy dòng sản phẩm");
+                                                return res.json();
+                                            }),
+                                        fetch(`/smartstation/src/mvc/controllers/CauHinhSanPhamController.php?idCHSP=${ct.IdCHSP}`)
+                                            .then(res => {
+                                                if (!res.ok) throw new Error("Không thể lấy cấu hình sản phẩm");
+                                                return res.json();
+                                            })
+                                    ])
+                                    .then(([dongSanPham, cauHinh]) => ({
+                                        ...ct,
+                                        TenDong: dongSanPham.TenDong || "Không xác định",
+                                        Ram: cauHinh.Ram || "N/A",
+                                        Rom: cauHinh.Rom || "N/A",
+                                        MauSac: cauHinh.MauSac || "N/A",
+                                        GiaNhap: parseFloat(ct.GiaNhap) // Chuyển đổi GiaNhap thành số
+                                    }))
+                                ))
+                                .then(ctPhieuNhapsWithDetails => {
+                                    ctPhieuNhapsWithDetails.forEach(ct => {
+                                        productList.innerHTML += `
+                                            <tr>
+                                                <td>${ct.TenDong}</td>
+                                                <td>${ct.Ram} / ${ct.Rom} / ${ct.MauSac}</td>
+                                                <td>${ct.SoLuong}</td>
+                                                <td>${ct.GiaNhap.toLocaleString('vi-VN')} VNĐ</td>
+                                            </tr>`;
+                                    });
+                                    // Hiển thị modal
+                                    const modal = new bootstrap.Modal(document.getElementById("viewGRNModal"));
+                                    modal.show();
+                                })
+                                .catch(error => {
+                                    console.error("Error fetching product details:", error);
+                                    productList.innerHTML = '<tr><td colspan="4">Lỗi khi tải sản phẩm</td></tr>';
+                                    toast({
+                                        title: "Lỗi",
+                                        message: "Không thể tải chi tiết sản phẩm",
+                                        type: "error",
+                                        duration: 3000,
+                                    });
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Error fetching ctphieunhap:", error);
+                            toast({
+                                title: "Lỗi",
+                                message: "Không thể tải chi tiết phiếu nhập",
+                                type: "error",
+                                duration: 3000,
+                            });
+                        });
+                })
+                .catch(error => {
+                    console.error("Error fetching nhacungcap:", error);
+                    toast({
+                        title: "Lỗi",
+                        message: "Không thể tải thông tin nhà cung cấp",
+                        type: "error",
+                        duration: 3000,
+                    });
+                });
+        })
+        .catch(error => {
+            console.error("Error fetching phieunhap:", error);
+            toast({
+                title: "Lỗi",
+                message: "Không thể tải thông tin phiếu nhập",
+                type: "error",
+                duration: 3000,
+            });
+        });
+}
 // Hàm xóa phiếu nhập
 function deleteGRN(idPhieuNhap) {
     if (confirm("Bạn có chắc muốn xóa phiếu nhập này?")) {
@@ -353,173 +471,173 @@ async function submitAddGRN() {
             toast({
                 title: "Cảnh báo",
                 message: "Vui lòng điền đầy đủ thông tin sản phẩm, số lượng, giá nhập, giá bán và bảo hành!",
-                type: "warning",
-                duration: 3000,
-            });
-            return;
-        }
-        if (parseInt(quantity) < 1) {
-            toast({
-                title: "Cảnh báo",
-                message: "Số lượng phải lớn hơn 0!",
-                type: "warning",
-                duration: 3000,
-            });
-            return;
-        }
-        if (parseInt(priceIn) < 0 || parseInt(priceOut) < 0) {
-            toast({
-                title: "Cảnh báo",
-                message: "Giá nhập và giá bán không được âm!",
-                type: "warning",
-                duration: 3000,
-            });
-            return;
-        }
-        if (parseInt(priceOut) <= parseInt(priceIn)) {
-            toast({
-                title: "Cảnh báo",
-                message: "Giá bán phải lớn hơn giá nhập!",
-                type: "warning",
-                duration: 3000,
-            });
-            return;
-        }
-        const [idCHSP, idDSP] = select.value.split(",");
-        totalPrice += parseInt(quantity) * parseInt(priceIn);
-        products.push({
-            IdCHSP: parseInt(idCHSP),
-            IdDongSanPham: parseInt(idDSP),
-            SoLuong: parseInt(quantity),
-            GiaNhap: parseInt(priceIn),
-            GiaBan: parseInt(priceOut),
-            IdBaoHanh: parseInt(warranty)
-        });
-    }
-
-    const phieuNhapData = {
-        IdTaiKhoan: getCookie("admin_idnguoidung"),
-        NgayNhap: ngayNhap,
-        TongTien: totalPrice,
-        TrangThai: 1,
-        IdNCC: parseInt(idNCC)
-    };
-
-    if (!phieuNhapData.IdTaiKhoan) {
-        toast({
-            title: "Cảnh báo",
-            message: "Không thể xác định tài khoản, vui lòng đăng nhập lại!",
             type: "warning",
             duration: 3000,
         });
         return;
     }
+    if (parseInt(quantity) < 1) {
+        toast({
+            title: "Cảnh báo",
+            message: "Số lượng phải lớn hơn 0!",
+            type: "warning",
+            duration: 3000,
+        });
+        return;
+    }
+    if (parseInt(priceIn) < 0 || parseInt(priceOut) < 0) {
+        toast({
+            title: "Cảnh báo",
+            message: "Giá nhập và giá bán không được âm!",
+            type: "warning",
+            duration: 3000,
+        });
+        return;
+    }
+    if (parseInt(priceOut) <= parseInt(priceIn)) {
+        toast({
+            title: "Cảnh báo",
+            message: "Giá bán phải lớn hơn giá nhập!",
+            type: "warning",
+            duration: 3000,
+        });
+        return;
+    }
+    const [idCHSP, idDSP] = select.value.split(",");
+    totalPrice += parseInt(quantity) * parseInt(priceIn);
+    products.push({
+        IdCHSP: parseInt(idCHSP),
+        IdDongSanPham: parseInt(idDSP),
+        SoLuong: parseInt(quantity),
+        GiaNhap: parseInt(priceIn),
+        GiaBan: parseInt(priceOut),
+        IdBaoHanh: parseInt(warranty)
+    });
+}
 
-    try {
-        // Thêm phiếu nhập
-        const phieuNhapResponse = await fetch("/smartstation/src/mvc/controllers/PhieuNhapController.php", {
+const phieuNhapData = {
+    IdTaiKhoan: getCookie("admin_idnguoidung"),
+    NgayNhap: ngayNhap,
+    TongTien: totalPrice,
+    TrangThai: 1,
+    IdNCC: parseInt(idNCC)
+};
+
+if (!phieuNhapData.IdTaiKhoan) {
+    toast({
+        title: "Cảnh báo",
+        message: "Không thể xác định tài khoản, vui lòng đăng nhập lại!",
+        type: "warning",
+        duration: 3000,
+    });
+    return;
+}
+
+try {
+    // Thêm phiếu nhập
+    const phieuNhapResponse = await fetch("/smartstation/src/mvc/controllers/PhieuNhapController.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(phieuNhapData),
+    });
+    if (!phieuNhapResponse.ok) throw new Error("Thêm phiếu nhập thất bại");
+    const phieuNhapResult = await phieuNhapResponse.json();
+    const idPhieuNhap = phieuNhapResult.phieuNhap.IdPhieuNhap;
+
+    // Thêm chi tiết phiếu nhập và cập nhật sản phẩm/sản phẩm chi tiết
+    const promises = products.map(async product => {
+        // Thêm chi tiết phiếu nhập
+        const ctPhieuNhapData = {
+            IdPhieuNhap: idPhieuNhap,
+            IdCHSP: product.IdCHSP,
+            IdDongSanPham: product.IdDongSanPham,
+            SoLuong: product.SoLuong,
+            GiaNhap: product.GiaNhap
+        };
+        const ctPhieuNhapResponse = await fetch("/smartstation/src/mvc/controllers/CTPhieuNhapController.php", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(phieuNhapData),
+            body: JSON.stringify(ctPhieuNhapData),
         });
-        if (!phieuNhapResponse.ok) throw new Error("Thêm phiếu nhập thất bại");
-        const phieuNhapResult = await phieuNhapResponse.json();
-        const idPhieuNhap = phieuNhapResult.phieuNhap.IdPhieuNhap;
+        if (!ctPhieuNhapResponse.ok) throw new Error("Thêm chi tiết phiếu nhập thất bại");
 
-        // Thêm chi tiết phiếu nhập và cập nhật sản phẩm/sản phẩm chi tiết
-        const promises = products.map(async product => {
-            // Thêm chi tiết phiếu nhập
-            const ctPhieuNhapData = {
-                IdPhieuNhap: idPhieuNhap,
-                IdCHSP: product.IdCHSP,
-                IdDongSanPham: product.IdDongSanPham,
-                SoLuong: product.SoLuong,
-                GiaNhap: product.GiaNhap
-            };
-            const ctPhieuNhapResponse = await fetch("/smartstation/src/mvc/controllers/CTPhieuNhapController.php", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(ctPhieuNhapData),
-            });
-            if (!ctPhieuNhapResponse.ok) throw new Error("Thêm chi tiết phiếu nhập thất bại");
-
-            // Cập nhật hoặc thêm sản phẩm trong bảng sanpham
-            const productData = {
-                IdCHSP: product.IdCHSP,
-                IdDongSanPham: product.IdDongSanPham,
-                SoLuong: product.SoLuong,
-                Gia: product.GiaBan,
-                TrangThai: 1
-            };
-            const productResponse = await fetch("/smartstation/src/mvc/controllers/SanPhamController.php", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(productData),
-            });
-            if (!productResponse.ok) {
-                const errorData = await productResponse.json();
-                if (errorData.message === "Sản phẩm đã tồn tại và đang hoạt động.") {
-                    // Cập nhật số lượng và giá bán
-                    const existingProductResponse = await fetch(`/smartstation/src/mvc/controllers/SanPhamController.php?idCHSP=${product.IdCHSP}&idDSP=${product.IdDongSanPham}`);
-                    const existingProduct = await existingProductResponse.json();
-                    const updateProductData = {
-                        SoLuong: existingProduct.SoLuong + product.SoLuong,
-                        Gia: product.GiaBan,
-                        TrangThai: 1
-                    };
-                    const updateResponse = await fetch(`/smartstation/src/mvc/controllers/SanPhamController.php?idCHSP=${product.IdCHSP}&idDSP=${product.IdDongSanPham}`, {
-                        method: "PUT",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(updateProductData),
-                    });
-                    if (!updateResponse.ok) throw new Error("Cập nhật sản phẩm thất bại");
-                } else {
-                    throw new Error(errorData.message || "Thêm sản phẩm thất bại");
-                }
-            }
-
-            // Thêm sản phẩm chi tiết (sanphamchitiet)
-            const sanPhamChiTietPromises = Array.from({ length: product.SoLuong }, async () => {
-                const imei = await getUniqueIMEI();
-                const sanPhamChiTietData = {
-                    Imei: imei,
-                    TrangThai: 1,
-                    IdCHSP: product.IdCHSP,
-                    IdDongSanPham: product.IdDongSanPham,
-                    IdBaoHanh: product.IdBaoHanh,
-                    IdPhieuNhap: idPhieuNhap
+        // Cập nhật hoặc thêm sản phẩm trong bảng sanpham
+        const productData = {
+            IdCHSP: product.IdCHSP,
+            IdDongSanPham: product.IdDongSanPham,
+            SoLuong: product.SoLuong,
+            Gia: product.GiaBan,
+            TrangThai: 1
+        };
+        const productResponse = await fetch("/smartstation/src/mvc/controllers/SanPhamController.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(productData),
+        });
+        if (!productResponse.ok) {
+            const errorData = await productResponse.json();
+            if (errorData.message === "Sản phẩm đã tồn tại và đang hoạt động.") {
+                // Cập nhật số lượng và giá bán
+                const existingProductResponse = await fetch(`/smartstation/src/mvc/controllers/SanPhamController.php?idCHSP=${product.IdCHSP}&idDSP=${product.IdDongSanPham}`);
+                const existingProduct = await existingProductResponse.json();
+                const updateProductData = {
+                    SoLuong: existingProduct.SoLuong + product.SoLuong,
+                    Gia: product.GiaBan,
+                    TrangThai: 1
                 };
-                const spctResponse = await fetch("/smartstation/src/mvc/controllers/SanPhamChiTietController.php", {
-                    method: "POST",
+                const updateResponse = await fetch(`/smartstation/src/mvc/controllers/SanPhamController.php?idCHSP=${product.IdCHSP}&idDSP=${product.IdDongSanPham}`, {
+                    method: "PUT",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(sanPhamChiTietData),
+                    body: JSON.stringify(updateProductData),
                 });
-                if (!spctResponse.ok) throw new Error("Thêm sản phẩm chi tiết thất bại");
+                if (!updateResponse.ok) throw new Error("Cập nhật sản phẩm thất bại");
+            } else {
+                throw new Error(errorData.message || "Thêm sản phẩm thất bại");
+            }
+        }
+
+        // Thêm sản phẩm chi tiết (sanphamchitiet)
+        const sanPhamChiTietPromises = Array.from({ length: product.SoLuong }, async () => {
+            const imei = await getUniqueIMEI();
+            const sanPhamChiTietData = {
+                Imei: imei,
+                TrangThai: 1,
+                IdCHSP: product.IdCHSP,
+                IdDongSanPham: product.IdDongSanPham,
+                IdBaoHanh: product.IdBaoHanh,
+                IdPhieuNhap: idPhieuNhap
+            };
+            const spctResponse = await fetch("/smartstation/src/mvc/controllers/SanPhamChiTietController.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(sanPhamChiTietData),
             });
-
-            return Promise.all(sanPhamChiTietPromises);
+            if (!spctResponse.ok) throw new Error("Thêm sản phẩm chi tiết thất bại");
         });
 
-        await Promise.all(promises);
+        return Promise.all(sanPhamChiTietPromises);
+    });
 
-        toast({
-            title: "Thành công",
-            message: "Thêm phiếu nhập và sản phẩm chi tiết thành công",
-            type: "success",
-            duration: 3000,
-        });
+    await Promise.all(promises);
 
-        bootstrap.Modal.getInstance(document.getElementById("addGRNModal")).hide();
-        loadGRNs();
-    } catch (error) {
-        console.error("Error:", error);
-        toast({
-            title: "Lỗi",
-            message: "Thêm phiếu nhập thất bại: " + error.message,
-            type: "error",
-            duration: 3000,
-        });
-    }
+    toast({
+        title: "Thành công",
+        message: "Thêm phiếu nhập và sản phẩm chi tiết thành công",
+        type: "success",
+        duration: 3000,
+    });
+
+    bootstrap.Modal.getInstance(document.getElementById("addGRNModal")).hide();
+    loadGRNs();
+} catch (error) {
+    console.error("Error:", error);
+    toast({
+        title: "Lỗi",
+        message: "Thêm phiếu nhập thất bại: " + error.message,
+        type: "error",
+        duration: 3000,
+    });
+}
 }
 
 // Gắn sự kiện cho nút "Thêm phiếu nhập"

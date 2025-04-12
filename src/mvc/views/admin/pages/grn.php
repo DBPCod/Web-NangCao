@@ -69,6 +69,57 @@
     </div>
 </div>
 
+<!-- Modal Chi tiết Phiếu nhập -->
+<div class="modal fade" id="viewGRNModal" tabindex="-1" aria-labelledby="viewGRNModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title" id="viewGRNModalLabel">Chi tiết phiếu nhập</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">ID Phiếu nhập</label>
+                    <input type="text" class="form-control" id="viewIdPhieuNhap" readonly>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Nhà cung cấp</label>
+                    <input type="text" class="form-control" id="viewTenNCC" readonly>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Ngày nhập</label>
+                    <input type="text" class="form-control" id="viewNgayNhap" readonly>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Tổng tiền</label>
+                    <input type="text" class="form-control" id="viewTongTien" readonly>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Trạng thái</label>
+                    <input type="text" class="form-control" id="viewTrangThai" readonly>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Danh sách sản phẩm</label>
+                    <table class="table table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Dòng sản phẩm</th>
+                                <th>Cấu hình</th>
+                                <th>Số lượng</th>
+                                <th>Giá nhập</th>
+                            </tr>
+                        </thead>
+                        <tbody id="viewProductList"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <style>
     .product-list {
         max-height: 400px;
@@ -121,6 +172,14 @@
     }
     .modal-footer {
         border-top: none;
+    }
+    .clickable-id {
+        cursor: pointer;
+        color: #007bff;
+        text-decoration: underline;
+    }
+    .clickable-id:hover {
+        color: #0056b3;
     }
 </style>
 

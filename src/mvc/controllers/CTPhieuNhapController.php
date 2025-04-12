@@ -17,6 +17,8 @@ class CTPhieuNhapController {
             case 'GET':
                 if (isset($_GET['idPhieuNhap']) && isset($_GET['idCHSP']) && isset($_GET['idDSP'])) {
                     $data = $this->model->getCTPhieuNhapById($_GET['idPhieuNhap'], $_GET['idCHSP'], $_GET['idDSP']);
+                }else if(isset($_GET['idPhieuNhap'])){
+                    $data = $this->model->getCTPhieuNhapByIdPN($_GET['idPhieuNhap']);
                 } else {
                     $data = $this->model->getAllCTPhieuNhap();
                 }

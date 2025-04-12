@@ -20,6 +20,13 @@ class CTPhieuNhapModel {
         return $stmt->get_result()->fetch_assoc();
     }
 
+    public function getCTPhieuNhapByIdPN($idPhieuNhap) {
+        $stmt = $this->db->prepare("SELECT * FROM ctphieunhap WHERE IdPhieuNhap = ?");
+        $stmt->bind_param("i", $idPhieuNhap);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_assoc();
+    }
+
     public function addCTPhieuNhap($data) {
         $this->db->begin_transaction();
         try {
