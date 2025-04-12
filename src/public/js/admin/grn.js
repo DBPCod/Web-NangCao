@@ -107,11 +107,20 @@ function loadGRNs() {
 
 // Hàm xóa phiếu nhập
 function deleteGRN(idPhieuNhap) {
+    console.log(idPhieuNhap);
     if (confirm("Bạn có chắc muốn xóa phiếu nhập này?")) {
         fetch(`/smartstation/src/mvc/controllers/PhieuNhapController.php?idPhieuNhap=${idPhieuNhap}`, {
             method: "DELETE",
         })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        console.log("a");
+                        throw new Error(data.message || "Lỗi từ server");
+                    });
+                }
+                return response.json();
+            })
             .then(data => {
                 toast({
                     title: "Thành công",
@@ -125,7 +134,7 @@ function deleteGRN(idPhieuNhap) {
                 console.error("Error:", error);
                 toast({
                     title: "Lỗi",
-                    message: "Xóa phiếu nhập thất bại",
+                    message: error.message || "Xóa phiếu nhập thất bại",
                     type: "error",
                     duration: 3000,
                 });
@@ -400,7 +409,6 @@ async function submitAddGRN() {
         IdNCC: parseInt(idNCC)
     };
 
-    console.log(phieuNhapData);
     if (!phieuNhapData.IdTaiKhoan) {
         toast({
             title: "Cảnh báo",
@@ -421,7 +429,7 @@ async function submitAddGRN() {
         if (!phieuNhapResponse.ok) throw new Error("Thêm phiếu nhập thất bại");
         const phieuNhapResult = await phieuNhapResponse.json();
         const idPhieuNhap = phieuNhapResult.phieuNhap.IdPhieuNhap;
-        console.log(idPhieuNhap)
+
         // Thêm chi tiết phiếu nhập và cập nhật sản phẩm/sản phẩm chi tiết
         const promises = products.map(async product => {
             // Thêm chi tiết phiếu nhập
@@ -432,7 +440,6 @@ async function submitAddGRN() {
                 SoLuong: product.SoLuong,
                 GiaNhap: product.GiaNhap
             };
-            console.log(ctPhieuNhapData);
             const ctPhieuNhapResponse = await fetch("/smartstation/src/mvc/controllers/CTPhieuNhapController.php", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -456,22 +463,23 @@ async function submitAddGRN() {
                     body: JSON.stringify(updateProductData),
                 });
                 if (!updateResponse.ok) throw new Error("Cập nhật sản phẩm thất bại");
-            } else {
-                // Thêm sản phẩm mới
-                const newProductData = {
-                    IdCHSP: product.IdCHSP,
-                    IdDongSanPham: product.IdDongSanPham,
-                    SoLuong: product.SoLuong,
-                    Gia: product.GiaBan,
-                    TrangThai: 1
-                };
-                const newProductResponse = await fetch("/smartstation/src/mvc/controllers/SanPhamController.php", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(newProductData),
-                });
-                if (!newProductResponse.ok) throw new Error("Thêm sản phẩm thất bại");
-            }
+            } 
+            // else {
+            //     // Thêm sản phẩm mới
+            //     const newProductData = {
+            //         IdCHSP: product.IdCHSP,
+            //         IdDongSanPham: product.IdDongSanPham,
+            //         SoLuong: product.SoLuong,
+            //         Gia: product.GiaBan,
+            //         TrangThai: 1
+            //     };
+            //     const newProductResponse = await fetch("/smartstation/src/mvc/controllers/SanPhamController.php", {
+            //         method: "POST",
+            //         headers: { "Content-Type": "application/json" },
+            //         body: JSON.stringify(newProductData),
+            //     });
+            //     if (!newProductResponse.ok) throw new Error("Thêm sản phẩm thất bại");
+            // }
 
             // Thêm sản phẩm chi tiết (sanphamchitiet)
             const sanPhamChiTietPromises = Array.from({ length: product.SoLuong }, async () => {
@@ -481,7 +489,8 @@ async function submitAddGRN() {
                     TrangThai: 1,
                     IdCHSP: product.IdCHSP,
                     IdDongSanPham: product.IdDongSanPham,
-                    IdBaoHanh: product.IdBaoHanh
+                    IdBaoHanh: product.IdBaoHanh,
+                    IdPhieuNhap: idPhieuNhap // Thêm IdPhieuNhap
                 };
                 const spctResponse = await fetch("/smartstation/src/mvc/controllers/SanPhamChiTietController.php", {
                     method: "POST",

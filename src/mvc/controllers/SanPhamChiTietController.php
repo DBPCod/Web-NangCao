@@ -40,14 +40,20 @@ class SanPhamChiTietController {
                 $json = file_get_contents("php://input");
                 $_PUT = json_decode($json, true);
                 if (isset($_GET['imei'])) {
-                    $result = $this->model->updateSanPhamChiTiet(
-                        $_GET['imei'],
-                        $_PUT['TrangThai'],
-                        $_PUT['IdCHSP'],
-                        $_PUT['IdDongSanPham'],
-                        $_PUT['IdBaoHanh']
-                    );
-                    echo json_encode(["message" => $result ? "Cập nhật thành công" : "Cập nhật thất bại"]);
+                    try {
+                        $result = $this->model->updateSanPhamChiTiet(
+                            $_GET['imei'],
+                            $_PUT['TrangThai'],
+                            $_PUT['IdCHSP'],
+                            $_PUT['IdDongSanPham'],
+                            $_PUT['IdBaoHanh'],
+                            $_PUT['IdPhieuNhap'] ?? null
+                        );
+                        echo json_encode(["message" => $result ? "Cập nhật thành công" : "Cập nhật thất bại"]);
+                    } catch (Exception $e) {
+                        http_response_code(500);
+                        echo json_encode(["message" => $e->getMessage()]);
+                    }
                 } else {
                     http_response_code(400);
                     echo json_encode(["message" => "Thiếu IMEI"]);
@@ -55,12 +61,17 @@ class SanPhamChiTietController {
                 break;
 
             case 'DELETE':
-                if (isset($_GET['imei'])) {
-                    $result = $this->model->deleteSanPhamChiTiet($_GET['imei']);
-                    echo json_encode(["message" => $result ? "Xóa thành công" : "Xóa thất bại"]);
+                if (isset($_GET['idPhieuNhap'])) {
+                    try {
+                        $result = $this->model->deleteSanPhamChiTiet($_GET['idPhieuNhap']);
+                        echo json_encode(["message" => $result ? "Xóa thành công" : "Xóa thất bại"]);
+                    } catch (Exception $e) {
+                        http_response_code(500);
+                        echo json_encode(["message" => $e->getMessage()]);
+                    }
                 } else {
                     http_response_code(400);
-                    echo json_encode(["message" => "Thiếu IMEI"]);
+                    echo json_encode(["message" => "Thiếu IdPhieuNhap"]);
                 }
                 break;
 

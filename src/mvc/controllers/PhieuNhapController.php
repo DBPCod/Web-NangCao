@@ -56,8 +56,13 @@ class PhieuNhapController {
 
             case 'DELETE':
                 if (isset($_GET['idPhieuNhap'])) {
-                    $result = $this->model->deletePhieuNhap($_GET['idPhieuNhap']);
-                    echo json_encode(["message" => $result ? "Xóa thành công" : "Xóa thất bại"]);
+                    try {
+                        $result = $this->model->deletePhieuNhap($_GET['idPhieuNhap']);
+                        echo json_encode(["message" => "Xóa phiếu nhập thành công"]);
+                    } catch (Exception $e) {
+                        http_response_code(400);
+                        echo json_encode(["message" => $e->getMessage()]);
+                    }
                 } else {
                     http_response_code(400);
                     echo json_encode(["message" => "Thiếu IdPhieuNhap"]);

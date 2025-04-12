@@ -23,15 +23,50 @@ class SanPhamModel {
     public function addProduct($data) {
         $this->db->begin_transaction();
         try {
-            $stmt = $this->db->prepare("INSERT INTO sanpham (IdCHSP, IdDongSanPham, SoLuong, Gia, TrangThai) VALUES (?, ?, ?, ?, ?)");
-            $gia = $data['Gia'] ?? 0;
-            $stmt->bind_param("iiidi", $data['IdCHSP'], $data['IdDongSanPham'], $data['SoLuong'], $gia, $data['TrangThai']);
+            // Kiểm tra xem sản phẩm với IdCHSP và IdDongSanPham đã tồn tại chưa
+            $stmt = $this->db->prepare("
+                SELECT * FROM sanpham 
+                WHERE IdCHSP = ? AND IdDongSanPham = ?
+            ");
+            $stmt->bind_param("ii", $data['IdCHSP'], $data['IdDongSanPham']);
             $stmt->execute();
+            $existingProduct = $stmt->get_result()->fetch_assoc();
+
+            if ($existingProduct) {
+                if ($existingProduct['TrangThai'] == 1) {
+                    // Sản phẩm đã tồn tại và đang hoạt động
+                    throw new Exception("Sản phẩm đã tồn tại và đang hoạt động.");
+                } else {
+                    // Sản phẩm tồn tại nhưng TrangThai = 0, cập nhật thành TrangThai = 1 và SoLuong = 0
+                    $stmt = $this->db->prepare("
+                        UPDATE sanpham 
+                        SET TrangThai = 1,
+                            SoLuong = 0,
+                            Gia = ?
+                        WHERE IdCHSP = ? AND IdDongSanPham = ?
+                    ");
+                    $gia = $data['Gia'] ?? $existingProduct['Gia'];
+                    $stmt->bind_param("dii", $gia, $data['IdCHSP'], $data['IdDongSanPham']);
+                    $stmt->execute();
+                }
+            } else {
+                // Nếu sản phẩm chưa tồn tại, thêm mới
+                $stmt = $this->db->prepare("
+                    INSERT INTO sanpham (IdCHSP, IdDongSanPham, SoLuong, Gia, TrangThai) 
+                    VALUES (?, ?, ?, ?, ?)
+                ");
+                $gia = $data['Gia'] ?? 0;
+                $trangThai = $data['TrangThai'] ?? 1;
+                $soLuong = $data['SoLuong'] ?? 0;
+                $stmt->bind_param("iiidi", $data['IdCHSP'], $data['IdDongSanPham'], $soLuong, $gia, $trangThai);
+                $stmt->execute();
+            }
+
             $this->db->commit();
             return $this->getProductById($data['IdCHSP'], $data['IdDongSanPham']);
         } catch (Exception $e) {
             $this->db->rollback();
-            throw new Exception("Lỗi thêm sản phẩm: " . $e->getMessage());
+            throw new Exception($e->getMessage());
         }
     }
 

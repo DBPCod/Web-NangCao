@@ -42,9 +42,55 @@ class PhieuNhapModel {
     }
 
     public function deletePhieuNhap($idPhieuNhap) {
-        $stmt = $this->db->prepare("UPDATE phieunhap SET TrangThai = 0 WHERE IdPhieuNhap = ?");
-        $stmt->bind_param("i", $idPhieuNhap);
-        return $stmt->execute();
+        $this->db->begin_transaction();
+        try {
+            // Kiểm tra xem có sản phẩm nào trong phiếu nhập đã được bán không
+            $stmt = $this->db->prepare("
+                SELECT COUNT(*) AS sold_count
+                FROM sanphamchitiet spct
+                INNER JOIN cthoadon cthd ON spct.Imei = cthd.Imei
+                INNER JOIN hoadon hd ON cthd.IdHoaDon = hd.IdHoaDon
+                WHERE spct.IdPhieuNhap = ? AND hd.TrangThai = 1
+            ");
+            $stmt->bind_param("i", $idPhieuNhap);
+            $stmt->execute();
+            $result = $stmt->get_result()->fetch_assoc();
+
+            if ($result['sold_count'] > 0) {
+                throw new Exception("Không thể xóa phiếu nhập vì có sản phẩm đã được bán.");
+            }
+
+            // Cập nhật số lượng trong bảng sanpham
+            $stmt = $this->db->prepare("
+                UPDATE sanpham sp
+                INNER JOIN ctphieunhap cpn ON sp.IdCHSP = cpn.IdCHSP AND sp.IdDongSanPham = cpn.IdDongSanPham
+                SET sp.SoLuong = GREATEST(sp.SoLuong - cpn.SoLuong, 0)
+                WHERE cpn.IdPhieuNhap = ?
+            ");
+            $stmt->bind_param("i", $idPhieuNhap);
+            $stmt->execute();
+
+            // Xóa hoàn toàn các bản ghi trong sanphamchitiet
+            $stmt = $this->db->prepare("DELETE FROM sanphamchitiet WHERE IdPhieuNhap = ?");
+            $stmt->bind_param("i", $idPhieuNhap);
+            $stmt->execute();
+
+            // Đặt trạng thái ctphieunhap = 0
+            // $stmt = $this->db->prepare("UPDATE ctphieunhap SET TrangThai = 0 WHERE IdPhieuNhap = ?");
+            // $stmt->bind_param("i", $idPhieuNhap);
+            // $stmt->execute();
+
+            // Đặt trạng thái phieunhap = 0
+            $stmt = $this->db->prepare("UPDATE phieunhap SET TrangThai = 0 WHERE IdPhieuNhap = ?");
+            $stmt->bind_param("i", $idPhieuNhap);
+            $stmt->execute();
+
+            $this->db->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->db->rollback();
+            throw new Exception($e->getMessage());
+        }
     }
 }
 ?>

@@ -25,13 +25,16 @@ class SanPhamController {
 
             case 'POST':
                 try {
+                    if (!isset($input['IdCHSP']) || !isset($input['IdDongSanPham'])) {
+                        throw new Exception("Thiếu IdCHSP hoặc IdDongSanPham.");
+                    }
                     $newProduct = $this->model->addProduct($input);
                     echo json_encode([
-                        "message" => "Thêm sản phẩm thành công",
+                        "message" => "Thêm hoặc kích hoạt sản phẩm thành công",
                         "product" => $newProduct
                     ]);
                 } catch (Exception $e) {
-                    http_response_code(500);
+                    http_response_code($e->getMessage() === "Sản phẩm đã tồn tại và đang hoạt động." ? 400 : 500);
                     echo json_encode(["message" => $e->getMessage()]);
                 }
                 break;
