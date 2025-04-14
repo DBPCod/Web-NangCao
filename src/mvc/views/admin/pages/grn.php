@@ -11,7 +11,7 @@
                     <th>ID</th>
                     <th>Nhà cung cấp</th>
                     <th>Tổng tiền</th>
-                    <th>Hành động</th>
+                    <th class="text-center" style="width: 120px;">Hành động</th>
                 </tr>
             </thead>
             <tbody id="grnTableBody"></tbody>
@@ -183,6 +183,11 @@
     .btn-them {
         background-color: #218838;
         color: #fff;
+    }
+    .btn-them:hover {
+        background-color: #218838;
+        color: #fff;
+        opacity: 0.8;
     }
 </style>
 

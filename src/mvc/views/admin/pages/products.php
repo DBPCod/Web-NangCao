@@ -4,7 +4,7 @@
         <h2>Quản lý sản phẩm</h2>
         <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addProductModal">Thêm sản phẩm</button>
     </div>
-    <table class="table">
+    <table class="table table-hover">
         <thead>
             <tr>
                 <th>Tên dòng sản phẩm</th>
@@ -159,10 +159,6 @@
 
     .bg-green {
         background-color: #218838;
-        ;
-    }
-    .product-row:hover {
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 </style>
 

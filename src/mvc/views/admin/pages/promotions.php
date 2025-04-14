@@ -2,9 +2,9 @@
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2>Quản lý khuyến mãi</h2>
-        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addPromotionModal">Thêm</button>
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addPromotionModal">Thêm khuyến mãi</button>
     </div>
-    <table class="table">
+    <table class="table table-hover">
         <thead>
             <tr>
                 <th>ID Khuyến mãi</th>
@@ -12,7 +12,7 @@
                 <th>Ngày kết thúc</th>
                 <th>Phần trăm giảm</th>
                 <th>Trạng thái</th>
-                <th>Hành động</th>
+                <th class="text-center" style="width: 120px">Hành động</th>
             </tr>
         </thead>
         <tbody id="promotionTableBody"></tbody>

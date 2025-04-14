@@ -10,7 +10,7 @@
                 <th>ID Bảo hành</th>
                 <th>Thời gian bảo hành (tháng)</th>
                 <th>Trạng thái</th>
-                <th>Hành động</th>
+                <th class="text-center" style="width: 140px;">Hành động</th>
             </tr>
         </thead>
         <tbody id="warrantyTableBody"></tbody>
