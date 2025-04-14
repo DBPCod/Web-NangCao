@@ -73,7 +73,7 @@ async function loadProductLines() {
                         <td>${productLine.TenDong}</td>
                         <td>${productLine.SoLuong}</td>
                         <td>${brandName}</td>
-                        <td>
+                        <td class="text-center">
                             <button class="btn btn-primary" onclick="openEditModal(${productLine.IdDongSanPham})">Sửa</button>
                             <button class="btn btn-danger" onclick="deleteProductLine(${productLine.IdDongSanPham})">Xóa</button>
                         </td>

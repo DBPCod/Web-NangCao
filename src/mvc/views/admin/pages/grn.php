@@ -5,7 +5,7 @@
             <h2>Quản lý phiếu nhập</h2>
             <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addGRNModal">Thêm phiếu nhập</button>
         </div>
-        <table class="table table-bordered table-hover">
+        <table class="table table-hover">
             <thead class="table-dark">
                 <tr>
                     <th>ID</th>
@@ -23,9 +23,9 @@
 <div class="modal fade" id="addGRNModal" tabindex="-1" aria-labelledby="addGRNModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
+            <div class="modal-header text-white">
                 <h5 class="modal-title" id="addGRNModalLabel">Thêm phiếu nhập</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close bg-light" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="addGRNForm">
@@ -49,7 +49,7 @@
                     <div class="mb-3">
                         <label class="form-label fw-bold">Danh sách sản phẩm</label>
                         <div id="productList" class="product-list p-3 bg-light rounded"></div>
-                        <button type="button" class="btn btn-primary btn-sm mt-2" onclick="addProductRow()">Thêm sản phẩm</button>
+                        <button type="button" class="btn btn-them btn-sm mt-2" onclick="addProductRow()">Thêm sản phẩm</button>
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold">Tổng số lượng</label>
@@ -73,7 +73,7 @@
 <div class="modal fade" id="viewGRNModal" tabindex="-1" aria-labelledby="viewGRNModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
-            <div class="modal-header bg-info text-white">
+            <div class="modal-header bg-green text-white">
                 <h5 class="modal-title" id="viewGRNModalLabel">Chi tiết phiếu nhập</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -169,17 +169,20 @@
     }
     .modal-header {
         border-bottom: none;
+        background-color: #218838;
     }
     .modal-footer {
         border-top: none;
     }
     .clickable-id {
         cursor: pointer;
-        color: #007bff;
-        text-decoration: underline;
     }
     .clickable-id:hover {
-        color: #0056b3;
+        color: #218838;
+    }
+    .btn-them {
+        background-color: #218838;
+        color: #fff;
     }
 </style>
 

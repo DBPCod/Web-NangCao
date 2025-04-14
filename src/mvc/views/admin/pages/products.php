@@ -13,7 +13,7 @@
                 <th>Màu sắc</th>
                 <th>Giá</th>
                 <th>Số lượng</th> <!-- Thêm cột Số lượng -->
-                <th>Hành động</th>
+                <th class="text-center" style="width: 120px;">Hành động</th>
             </tr>
         </thead>
         <tbody id="productTableBody"></tbody>
@@ -24,9 +24,9 @@
 <div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header bg-green text-white">
                 <h5 class="modal-title" id="addProductModalLabel">Thêm sản phẩm</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close bg-light" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="addProductForm">
@@ -74,9 +74,9 @@
 <div class="modal fade" id="productDetailModal" tabindex="-1" aria-labelledby="productDetailModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="productDetailModalLabel">Chi tiết sản phẩm</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-header bg-green">
+                <h5 class="modal-title text-white" id="productDetailModalLabel">Chi tiết sản phẩm</h5>
+                <button type="button" class="btn-close bg-light" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="row">
@@ -120,7 +120,8 @@
     /* Tùy chỉnh màu nút điều hướng carousel thành màu xám đậm */
     .carousel-control-prev-icon,
     .carousel-control-next-icon {
-        background-image: none; /* Xóa hình nền mặc định */
+        background-image: none;
+        /* Xóa hình nền mặc định */
         width: 30px;
         height: 30px;
         position: relative;
@@ -133,23 +134,35 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        border: solid #555555; /* Màu xám đậm */
+        border: solid #555555;
+        /* Màu xám đậm */
         border-width: 0 3px 3px 0;
         display: inline-block;
         padding: 5px;
     }
 
     .carousel-control-prev-icon::before {
-        transform: translate(-50%, -50%) rotate(135deg); /* Mũi tên trái */
+        transform: translate(-50%, -50%) rotate(135deg);
+        /* Mũi tên trái */
     }
 
     .carousel-control-next-icon::before {
-        transform: translate(-50%, -50%) rotate(-45deg); /* Mũi tên phải */
+        transform: translate(-50%, -50%) rotate(-45deg);
+        /* Mũi tên phải */
     }
 
     .carousel-control-prev:hover .carousel-control-prev-icon::before,
     .carousel-control-next:hover .carousel-control-next-icon::before {
-        border-color: #333333; /* Màu gần đen khi hover */
+        border-color: #333333;
+        /* Màu gần đen khi hover */
+    }
+
+    .bg-green {
+        background-color: #218838;
+        ;
+    }
+    .product-row:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 </style>
 

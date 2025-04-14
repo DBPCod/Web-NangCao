@@ -22,9 +22,9 @@
     <div class="modal fade" id="productLineModal" tabindex="-1" aria-labelledby="productLineModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="productLineModalLabel">Danh sách dòng sản phẩm áp dụng khuyến mãi</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-header bg-green">
+                    <h5 class="modal-title text-white" id="productLineModalLabel">Danh sách dòng sản phẩm áp dụng khuyến mãi</h5>
+                    <button type="button" class="btn-close bg-light" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <ul id="productLineList" class="list-group"></ul>
@@ -40,9 +40,9 @@
     <div class="modal fade" id="addPromotionModal" tabindex="-1" aria-labelledby="addPromotionModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addPromotionModalLabel">Thêm khuyến mãi mới</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-header bg-green">
+                    <h5 class="modal-title text-white" id="addPromotionModalLabel">Thêm khuyến mãi mới</h5>
+                    <button type="button" class="btn-close bg-light" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form id="addPromotionForm">
@@ -80,5 +80,14 @@
         </div>
     </div>
 </div>
+
+<style>
+    .bg-green {
+        background-color: #218838;
+    }
+    .product-row:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+</style>
 
 <script src="/smartstation/src/public/js/admin/promotion.js"></script>

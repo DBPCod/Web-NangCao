@@ -50,7 +50,7 @@ function loadProducts() {
                                 <td>${product.MauSac}</td>
                                 <td>${product.Gia.toLocaleString('vi-VN')} VNĐ</td>
                                 <td>${product.SoLuong}</td>
-                                <td>
+                                <td class="text-center">
                                     <button class="btn btn-danger" onclick="deleteProduct('${product.IdCHSP}', '${product.IdDongSanPham}'); event.stopPropagation();">Xóa</button>
                                 </td>
                             </tr>`;

@@ -20,9 +20,9 @@
     <div class="modal fade" id="addWarrantyModal" tabindex="-1" aria-labelledby="addWarrantyModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addWarrantyModalLabel">Thêm bảo hành mới</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-header bg-green">
+                    <h5 class="modal-title text-white" id="addWarrantyModalLabel">Thêm bảo hành mới</h5>
+                    <button type="button" class="btn-close bg-light" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form id="addWarrantyForm">
@@ -44,9 +44,9 @@
     <div class="modal fade" id="editWarrantyModal" tabindex="-1" aria-labelledby="editWarrantyModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editWarrantyModalLabel">Sửa thời gian bảo hành</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-header bg-green">
+                    <h5 class="modal-title text-white" id="editWarrantyModalLabel">Sửa thời gian bảo hành</h5>
+                    <button type="button" class="btn-close bg-light" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form id="editWarrantyForm">
@@ -65,5 +65,11 @@
         </div>
     </div>
 </div>
+
+<style>
+    .bg-green {
+        background-color: #218838;
+    }
+</style>
 
 <script src="/smartstation/src/public/js/admin/warranty.js"></script>
