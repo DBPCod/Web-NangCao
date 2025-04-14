@@ -51,9 +51,17 @@ function loadTinhTrangOptions() {
 
 // Hàm tải danh sách hóa đơn
 function loadOrders(filters = {}) {
+    console.log(filters);
     let url = "/smartstation/src/mvc/controllers/HoaDonController.php";
-    if (Object.keys(filters).length) {
-        const params = new URLSearchParams(filters);
+    // Chỉ thêm tham số nếu có giá trị
+    const validFilters = {};
+    if (filters.tinhTrang) validFilters.tinhTrang = filters.tinhTrang;
+    if (filters.fromDate) validFilters.fromDate = filters.fromDate;
+    if (filters.toDate) validFilters.toDate = filters.toDate;
+    if (filters.diaChi) validFilters.diaChi = filters.diaChi;
+
+    if (Object.keys(validFilters).length) {
+        const params = new URLSearchParams(validFilters);
         url += `?${params.toString()}`;
     }
 
@@ -61,7 +69,6 @@ function loadOrders(filters = {}) {
         method: "GET",
     })
         .then(response => {
-            console.log(response);
             if (!response.ok) throw new Error("Không thể tải danh sách hóa đơn");
             return response.json();
         })
@@ -72,7 +79,6 @@ function loadOrders(filters = {}) {
                 tbody.innerHTML = '<tr><td colspan="5">Không có hóa đơn nào</td></tr>';
             } else {
                 hoaDons.forEach(hoaDon => {
-                    console.log(hoaDon);
                     // Xây dựng nút hành động
                     let actionButtons = `<button class="btn btn-primary btn-sm action-btn" onclick="viewOrder(${hoaDon.IdHoaDon})">Xem</button>`;
                     const nextTinhTrang = getNextTinhTrang(hoaDon.IdTinhTrang);
@@ -122,12 +128,13 @@ function loadOrders(filters = {}) {
 function viewOrder(idHoaDon) {
     fetch(`/smartstation/src/mvc/controllers/HoaDonController.php?idHoaDon=${idHoaDon}`)
         .then(response => {
-
             if (!response.ok) throw new Error("Không thể lấy thông tin hóa đơn");
-
             return response.json();
         })
         .then(hoaDon => {
+            if (!hoaDon) {
+                throw new Error("Hóa đơn không tồn tại");
+            }
             // Lấy danh sách tình trạng
             fetch(`/smartstation/src/mvc/controllers/TinhTrangVanChuyenController.php`)
                 .then(res => {
@@ -142,57 +149,44 @@ function viewOrder(idHoaDon) {
                             return res.json();
                         })
                         .then(ctHoaDons => {
-                            
                             // Điền thông tin hóa đơn
-                            document.getElementById("viewIdHoaDon").value = hoaDon.IdHoaDon;
+                            document.getElementById("viewIdHoaDon").value = hoaDon.IdHoaDon || '';
                             document.getElementById("viewTenKhachHang").value = hoaDon.HoVaTen || "Không xác định";
-                            document.getElementById("viewNgayTao").value = hoaDon.NgayTao;
+                            document.getElementById("viewNgayTao").value = hoaDon.NgayTao || '';
                             document.getElementById("viewThanhTien").value = hoaDon.ThanhTien ? Number(hoaDon.ThanhTien).toLocaleString('vi-VN') + ' VNĐ' : "Chưa xác định";
                             document.getElementById("viewTrangThai").value = hoaDon.TrangThai === 1 ? "Hoạt động" : "Đã hủy";
 
                             // Điền select tình trạng
                             const tinhTrangSelect = document.getElementById("viewTinhTrang");
-                            tinhTrangSelect.disabled = true;
                             tinhTrangSelect.innerHTML = "";
                             const allowedTinhTrang = getAllowedTinhTrang(hoaDon.IdTinhTrang);
                             tinhTrangs.forEach(tt => {
-                                console.log(tt);
                                 if (allowedTinhTrang.includes(parseInt(tt.IdTinhTrang))) {
-
-                                    console.log(tt.TenTinhTrang);
                                     tinhTrangSelect.innerHTML += `
                                         <option value="${tt.IdTinhTrang}" ${tt.IdTinhTrang === hoaDon.IdTinhTrang ? 'selected' : ''}>
                                             ${tt.TenTinhTrang}
                                         </option>`;
-                                    console.log(`
-                                        <option value="${tt.IdTinhTrang}" ${tt.IdTinhTrang === hoaDon.IdTinhTrang ? 'selected' : ''}>
-                                            ${tt.TenTinhTrang}
-                                        </option>`);
                                 }
                             });
-                            console.log(tinhTrangSelect);
 
                             // Hiển thị gợi ý trạng thái
                             const hintElement = document.getElementById("tinhTrangHint");
-                            console.log(tinhTrangMap[hoaDon.IdTinhTrang].name);
-
                             if (hoaDon.IdTinhTrang >= 3) {
                                 hintElement.innerHTML = `Đơn hàng đã ở trạng thái "${tinhTrangMap[hoaDon.IdTinhTrang].name}". Không thể thay đổi thêm.`;
                                 tinhTrangSelect.disabled = true;
                             } else {
                                 const nextStates = allowedTinhTrang
-                                    .filter(id => id !== hoaDon.IdTinhTrang)
+                                    .filter(id => id !== parseInt(hoaDon.IdTinhTrang))
                                     .map(id => tinhTrangMap[id].name)
                                     .join(" hoặc ");
                                 hintElement.innerHTML = `Trạng thái hiện tại: "${tinhTrangMap[hoaDon.IdTinhTrang].name}". Có thể cập nhật thành: ${nextStates || "Không có tùy chọn"}.`;
-                                tinhTrangSelect.disabled = true;
+                                tinhTrangSelect.disabled = false; // Cho phép thay đổi nếu trạng thái cho phép
                             }
 
                             // Điền danh sách sản phẩm
                             const productList = document.getElementById("viewProductList");
                             productList.innerHTML = "";
                             const ctHoaDonsArray = Array.isArray(ctHoaDons) ? ctHoaDons : ctHoaDons && typeof ctHoaDons === 'object' ? [ctHoaDons] : [];
-                            console.log(ctHoaDonsArray);
                             if (!ctHoaDonsArray.length) {
                                 productList.innerHTML = '<tr><td colspan="6">Không có sản phẩm</td></tr>';
                             } else {
