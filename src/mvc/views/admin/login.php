@@ -36,6 +36,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $userInfo = LayThongTinNguoiDung($username);
         $_SESSION['admin_logged_in'] = true;
         $_SESSION['admin_info'] = $userInfo;
+        // Lưu thông tin vào cookie (thời gian sống: 30 ngày)
+        $cookie_expiry = time() + (1 * 24 * 60 * 60); // 30 ngày
+        setcookie('admin_idnguoidung', $userInfo['idnguoidung'], $cookie_expiry, '/');
+        setcookie('admin_hovaten', $userInfo['hovaten'], $cookie_expiry, '/');
 
         echo json_encode([
             'success' => true,
