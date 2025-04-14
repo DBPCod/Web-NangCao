@@ -1,17 +1,14 @@
 <?php
 include_once __DIR__ . '../../models/SanPhamModel.php';
 
-class SanPhamController
-{
+class SanPhamController {
     private $model;
 
-    public function __construct()
-    {
-        $this->model = new SanPhamModel(); // Khởi tạo $model trong constructor
+    public function __construct() {
+        $this->model = new SanPhamModel();
     }
 
-    public function handleRequest()
-    {
+    public function handleRequest() {
         header("Content-Type: application/json");
         $method = $_SERVER["REQUEST_METHOD"];
         $input = json_decode(file_get_contents('php://input'), true);
@@ -27,19 +24,41 @@ class SanPhamController
                 break;
 
             case 'POST':
-                $newProduct = $this->model->addProduct($input);
-                echo json_encode([
-                    "message" => "Thêm sản phẩm thành công",
-                    "product" => $newProduct
-                ]);
+                try {
+                    if (!isset($input['IdCHSP']) || !isset($input['IdDongSanPham'])) {
+                        throw new Exception("Thiếu IdCHSP hoặc IdDongSanPham.");
+                    }
+                    $newProduct = $this->model->addProduct($input);
+                    echo json_encode([
+                        "message" => "Thêm hoặc kích hoạt sản phẩm thành công",
+                        "product" => $newProduct
+                    ]);
+                } catch (Exception $e) {
+                    http_response_code($e->getMessage() === "Sản phẩm đã tồn tại và đang hoạt động." ? 400 : 500);
+                    echo json_encode(["message" => $e->getMessage()]);
+                }
                 break;
 
             case 'PUT':
                 $json = file_get_contents("php://input");
                 $_PUT = json_decode($json, true);
                 if (isset($_GET['idCHSP']) && isset($_GET['idDSP'])) {
-                    $result = $this->model->updateProduct($_GET['idCHSP'], $_GET['idDSP'], $_PUT['SoLuong'], $_PUT['TrangThai']);
-                    echo json_encode(["message" => $result ? "Cập nhật thành công" : "Cập nhật thất bại"]);
+                    try {
+                        $result = $this->model->updateProduct(
+                            $_GET['idCHSP'],
+                            $_GET['idDSP'],
+                            $_PUT['SoLuong'],
+                            $_PUT['Gia'],
+                            $_PUT['TrangThai']
+                        );
+                        echo json_encode(["message" => $result ? "Cập nhật thành công" : "Cập nhật thất bại"]);
+                    } catch (Exception $e) {
+                        http_response_code(500);
+                        echo json_encode(["message" => $e->getMessage()]);
+                    }
+                } else {
+                    http_response_code(400);
+                    echo json_encode(["message" => "Thiếu idCHSP hoặc idDSP"]);
                 }
                 break;
 
@@ -47,19 +66,18 @@ class SanPhamController
                 if (isset($_GET['idCHSP']) && isset($_GET['idDSP'])) {
                     $result = $this->model->deleteProduct($_GET['idCHSP'], $_GET['idDSP']);
                     echo json_encode(["message" => $result ? "Xóa thành công" : "Xóa thất bại"]);
+                } else {
+                    http_response_code(400);
+                    echo json_encode(["message" => "Thiếu idCHSP hoặc idDSP"]);
                 }
                 break;
 
             default:
+                http_response_code(405);
                 echo json_encode(["message" => "Yêu cầu không hợp lệ"]);
         }
-    }
-
-    // Thêm getter để truy cập $model từ bên ngoài nếu cần
-    public function getModel()
-    {
-        return $this->model;
     }
 }
 
 (new SanPhamController())->handleRequest();
+?>
