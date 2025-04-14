@@ -61,7 +61,6 @@ function loadOrders(filters = {}) {
         method: "GET",
     })
         .then(response => {
-            console.log(response);
             if (!response.ok) throw new Error("Không thể tải danh sách hóa đơn");
             return response.json();
         })
@@ -72,7 +71,6 @@ function loadOrders(filters = {}) {
                 tbody.innerHTML = '<tr><td colspan="5">Không có hóa đơn nào</td></tr>';
             } else {
                 hoaDons.forEach(hoaDon => {
-                    console.log(hoaDon);
                     // Xây dựng nút hành động
                     let actionButtons = `<button class="btn btn-primary btn-sm action-btn" onclick="viewOrder(${hoaDon.IdHoaDon})">Xem</button>`;
                     const nextTinhTrang = getNextTinhTrang(hoaDon.IdTinhTrang);
@@ -267,6 +265,7 @@ function confirmUpdateStatusTable(idHoaDon, currentTinhTrang, newTinhTrang) {
     const confirmMessage = `Bạn có chắc muốn cập nhật trạng thái đơn hàng #${idHoaDon} từ "${tinhTrangMap[currentTinhTrang].name}" thành "${tinhTrangMap[newTinhTrang].name}"?`;
     if (!confirm(confirmMessage)) return;
 
+    console.log(idHoaDon, newTinhTrang, currentTinhTrang);
     updateOrderStatus(idHoaDon, newTinhTrang, currentTinhTrang);
 }
 

@@ -32,10 +32,11 @@ class HoaDonModel {
 
     // Cập nhật hóa đơn
     public function updateHoaDon($idHoaDon, $data) {
-        $stmt = $this->db->prepare("UPDATE hoadon SET IdTaiKhoan = ?, NgayTao = ?, ThanhTien = ?, TrangThai = ?, IdTinhTrang = ? WHERE IdHoaDon = ?");
-        $stmt->bind_param("isdisi", $data['IdTaiKhoan'], $data['NgayTao'], $data['ThanhTien'], $data['TrangThai'], $data['IdTinhTrang'], $idHoaDon);
+        $stmt = $this->db->prepare("UPDATE hoadon SET IdTinhTrang = ? WHERE IdHoaDon = ?");
+        $stmt->bind_param("ii", $data['IdTinhTrang'], $idHoaDon);
         return $stmt->execute();
     }
+
 
     // Xóa hóa đơn (ẩn hóa đơn bằng cách thay đổi trạng thái)
     public function deleteHoaDon($idHoaDon) {
