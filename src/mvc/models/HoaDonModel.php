@@ -10,13 +10,24 @@ class HoaDonModel {
 
     // Lấy tất cả hóa đơn
     public function getAllHoaDon() {
-        $result = $this->db->query("SELECT * FROM hoadon");
+        $result = $this->db->query("
+            SELECT h.*, nd.HoVaTen 
+            FROM hoadon h
+            LEFT JOIN TaiKhoan tk ON h.IdTaiKhoan = tk.IdTaiKhoan
+            LEFT JOIN nguoidung nd ON tk.IdNguoiDung = nd.IdNguoiDung
+        ");
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
     // Lấy hóa đơn theo IdHoaDon
     public function getHoaDonById($idHoaDon) {
-        $stmt = $this->db->prepare("SELECT * FROM hoadon WHERE IdHoaDon = ?");
+        $stmt = $this->db->prepare("
+            SELECT h.*, nd.HoVaTen 
+            FROM hoadon h
+            LEFT JOIN TaiKhoan tk ON h.IdTaiKhoan = tk.IdTaiKhoan
+            LEFT JOIN nguoidung nd ON tk.IdNguoiDung = nd.IdNguoiDung
+            WHERE h.IdHoaDon = ?
+        ");
         $stmt->bind_param("i", $idHoaDon);
         $stmt->execute();
         return $stmt->get_result()->fetch_assoc();

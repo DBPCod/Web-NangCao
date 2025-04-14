@@ -65,6 +65,7 @@ function loadOrders(filters = {}) {
             return response.json();
         })
         .then(hoaDons => {
+            console.log(hoaDons);
             const tbody = document.getElementById("orderTableBody");
             tbody.innerHTML = "";
             if (!hoaDons || hoaDons.length === 0) {
@@ -140,7 +141,7 @@ function viewOrder(idHoaDon) {
                             return res.json();
                         })
                         .then(ctHoaDons => {
-                            
+                        
                             // Điền thông tin hóa đơn
                             document.getElementById("viewIdHoaDon").value = hoaDon.IdHoaDon;
                             document.getElementById("viewTenKhachHang").value = hoaDon.HoVaTen || "Không xác định";
