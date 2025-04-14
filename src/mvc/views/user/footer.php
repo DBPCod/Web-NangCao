@@ -22,9 +22,9 @@
             <div class="col-md-3">
                 <h5>Thông tin liên hệ</h5>
                 <ul>
-                    <li>Thương hiệu: Công ty Cổ phần TMDT</li>
+                    <li>Thương hiệu: Công ty Anh em Rọt</li>
                     <li>Chứng nhận ĐKKD số: 0106773191</li>
-                    <li>Dịch vụ sửa chữa Hoàng Hà Care</li>
+                    <li>Dịch vụ sửa chữa Anh Em Rọt</li>
                     <li>Khách hàng doanh nghiệp (B2B)</li>
                     <li>Tuyển dụng</li>
                     <li>Tra cứu bảo hành</li>
@@ -52,7 +52,7 @@
             <!-- Column 4: Hotline and Social -->
             <div class="col-md-3">
                 <h5>Tổng đài</h5>
-                <p>1900.2091 (Tư 8h30 - 21h30)</p>
+                <p>1900.2091 (Từ 8h30 - 21h30)</p>
                 <h5 class="mt-3">Kết nối với chúng tôi</h5>
                 <div class="social-icons">
                     <a href="#"><i class="bi bi-facebook"></i></a>
@@ -70,14 +70,13 @@
         <!-- Footer Bottom -->
         <div class="footer-bottom">
             <p>
-                © 2020, CÔNG TY CỔ PHẦN XÂY DỰNG VÀ ĐẦU TƯ THƯƠNG MẠI HOÀNG HÀ -
-                MST: 0106773191. (Đăng ký lần đầu: Ngày 15 tháng 01 năm 2014, Đăng
-                ký thay đổi ngày: 24/11/2022)
+                © 2025, CÔNG TY CỔ PHẦN XÂY DỰNG VÀ ĐẦU TƯ THƯƠNG MẠI ANH EM RỌT -
+                MST: 0106773191. (Đăng ký lần đầu: Ngày 15 tháng 01 năm 2025)
             </p>
             <p>
-                Địa chỉ: Số 89 Đường Tam Trinh, Phường Mai Động, Quận Hoàng Mai,
-                Thành Phố Hà Nội, Việt Nam. Điện thoại: 1900.2091. Chịu trách nhiệm
-                nội dung: Hoàng Minh Tâm.
+                Địa chỉ: Số 273 Đường An Dương Vương, Phường 2, Quận 5,
+                Thành Phố Hồ Chí Minh, Việt Nam. Điện thoại: 1900.2091. Chịu trách nhiệm
+                nội dung: Đinh Bá Phong.
             </p>
         </div>
     </div>
