@@ -1,5 +1,5 @@
 // Định nghĩa ánh xạ trạng thái
-const tinhTrangMap = {
+var tinhTrangMap = {
     1: { name: "Chưa xác nhận", color: "#6c757d", class: "status-1" },
     2: { name: "Đã xác nhận", color: "#007bff", class: "status-2" },
     3: { name: "Giao thành công", color: "#28a745", class: "status-3" },
