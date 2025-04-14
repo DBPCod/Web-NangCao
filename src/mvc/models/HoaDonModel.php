@@ -8,15 +8,52 @@ class HoaDonModel {
         $this->db = (new DB())->conn;
     }
 
-    // Lấy tất cả hóa đơn
-    public function getAllHoaDon() {
-        $result = $this->db->query("
+    // Lấy tất cả hóa đơn với bộ lọc, chỉ lấy TrangThai = 1
+    public function getAllHoaDon($filters = []) {
+        $query = "
             SELECT h.*, nd.HoVaTen 
             FROM hoadon h
             LEFT JOIN TaiKhoan tk ON h.IdTaiKhoan = tk.IdTaiKhoan
             LEFT JOIN nguoidung nd ON tk.IdNguoiDung = nd.IdNguoiDung
-        ");
-        return $result->fetch_all(MYSQLI_ASSOC);
+            WHERE h.TrangThai = 1
+        ";
+        $params = [];
+        $types = "";
+
+        // Lọc theo tình trạng
+        if (!empty($filters['tinhTrang'])) {
+            $query .= " AND h.IdTinhTrang = ?";
+            $params[] = $filters['tinhTrang'];
+            $types .= "i";
+        }
+
+        // Lọc theo ngày bắt đầu
+        if (!empty($filters['fromDate'])) {
+            $query .= " AND h.NgayTao >= ?";
+            $params[] = $filters['fromDate'];
+            $types .= "s";
+        }
+
+        // Lọc theo ngày kết thúc
+        if (!empty($filters['toDate'])) {
+            $query .= " AND h.NgayTao <= ?";
+            $params[] = $filters['toDate'];
+            $types .= "s";
+        }
+
+        // Lọc theo địa chỉ (tìm kiếm trong DiaChi của nguoidung)
+        if (!empty($filters['diaChi'])) {
+            $query .= " AND nd.DiaChi LIKE ?";
+            $params[] = "%" . $filters['diaChi'] . "%";
+            $types .= "s";
+        }
+
+        $stmt = $this->db->prepare($query);
+        if (!empty($params)) {
+            $stmt->bind_param($types, ...$params);
+        }
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
 
     // Lấy hóa đơn theo IdHoaDon
