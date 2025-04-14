@@ -61,6 +61,7 @@ function loadOrders(filters = {}) {
         method: "GET",
     })
         .then(response => {
+            console.log(response);
             if (!response.ok) throw new Error("Không thể tải danh sách hóa đơn");
             return response.json();
         })
