@@ -26,11 +26,11 @@ class SanPhamAPI {
             $sanPham = array_filter($sanPhams, function($sp) use ($cauHinh) {
                 return $sp['IdCHSP'] == $cauHinh['IdCHSP'];
             });
-            $sanPham = reset($sanPham);
-            
+            $sanPham = reset($sanPham); // có thể là array hoặc false
+
             return [
                 'idCHSP' => $cauHinh['IdCHSP'],
-                'name' => $sanPham['IdDongSanPham'], // Có thể thay bằng tên thực tế
+                'name' => $sanPham ? $sanPham['IdDongSanPham'] : null,  // Sửa tại đây
                 'ram' => $cauHinh['Ram'],
                 'rom' => $cauHinh['Rom'],
                 'manHinh' => $cauHinh['ManHinh'],
@@ -38,10 +38,11 @@ class SanPhamAPI {
                 'mauSac' => $cauHinh['MauSac'],
                 'camera' => $cauHinh['Camera'],
                 'trangThai' => $cauHinh['TrangThai'],
-                'gia' => $sanPham['Gia'],
+                'gia' => $sanPham ? $sanPham['Gia'] : null,              // Và ở đây
                 'soLuong' => $sanPham ? $sanPham['SoLuong'] : 0,
-                'image' => "/smartstation/src/public/img/ip16_4.png" // Điều chỉnh đường dẫn ảnh
+                'image' => "/smartstation/src/public/img/ip16_4.png"
             ];
+
         }, $cauHinhs);
 
         // Phân trang
