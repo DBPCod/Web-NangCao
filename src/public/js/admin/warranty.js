@@ -18,7 +18,7 @@ function loadWarranties() {
                           <td>${warranty.IdBaoHanh}</td>
                           <td>${warranty.ThoiGianBaoHanh}</td>
                           <td>${warranty.TrangThai == 1 ? "Hoạt động" : "Ngừng hoạt động"}</td>
-                          <td>
+                          <td class="text-center">
                               <button class="btn btn-primary" onclick="editWarranty('${warranty.IdBaoHanh}')">Sửa</button>
                               <button class="btn btn-danger" onclick="deleteWarranty('${warranty.IdBaoHanh}')">Xóa</button>
                           </td>

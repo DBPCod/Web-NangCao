@@ -11,7 +11,7 @@
                 <th>Tên dòng</th>
                 <th>Số lượng</th>
                 <th>Thương hiệu</th>
-                <th>Hành động</th>
+                <th class="text-center" style="width: 140px">Hành động</th>
             </tr>
         </thead>
         <tbody id="productLineTableBody"></tbody>
@@ -22,9 +22,9 @@
 <div class="modal fade" id="productLineModal" tabindex="-1" aria-labelledby="productLineModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="productLineModalLabel">Thêm dòng sản phẩm</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-header bg-green">
+                <h5 class="modal-title text-white" id="productLineModalLabel">Thêm dòng sản phẩm</h5>
+                <button type="button" class="btn-close bg-light" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="productLineForm">
@@ -52,5 +52,11 @@
         </div>
     </div>
 </div>
+
+<style>
+    .bg-green {
+        background-color: #218838;
+    }
+</style>
 
 <script src="/smartstation/src/public/js/admin/productLine.js"></script>
