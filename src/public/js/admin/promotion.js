@@ -1,7 +1,4 @@
-// Biến toàn cục để lưu danh sách dòng sản phẩm và trạng thái đã chọn
-//  // Dùng Set để lưu IdDongSanPham đã chọn
-
-  var allProductLines = [];
+var allProductLines = [];
   var selectedProductLines = new Set();
   
 function loadPromotions() {
@@ -20,15 +17,14 @@ function loadPromotions() {
             } else {
                 promotions.forEach((promotion) => {
                     tbody.innerHTML += `
-                        <tr>
+                        <tr onclick="viewPromotionDetails('${promotion.IdKhuyenMai}')" style="cursor: pointer;">
                             <td>${promotion.IdKhuyenMai}</td>
                             <td>${promotion.NgayBatDau}</td>
                             <td>${promotion.NgayKetThuc}</td>
                             <td>${promotion.PhanTramGiam}%</td>
                             <td>${promotion.TrangThai == 1 ? "Hoạt động" : "Ngừng hoạt động"}</td>
-                            <td>
-                                <button class="btn btn-primary" onclick="viewPromotionDetails('${promotion.IdKhuyenMai}')">Xem chi tiết</button>
-                                <button class="btn btn-danger" onclick="deletePromotion('${promotion.IdKhuyenMai}')">Xóa</button>
+                            <td class="text-center">
+                                <button class="btn btn-danger" onclick="deletePromotion('${promotion.IdKhuyenMai}'); event.stopPropagation();">Xóa</button>
                             </td>
                         </tr>`;
                 });
@@ -66,28 +62,16 @@ function viewPromotionDetails(idKhuyenMai) {
                 console.error("Modal element #productLineModal not found!");
                 return;
             }
-            modalElement.classList.add("show");
-            modalElement.style.display = "block";
-            document.body.classList.add("modal-open");
-            console.log("Modal should be visible now (manual)");
-
-            const closeButton = modalElement.querySelector(".btn-close");
-            closeButton.addEventListener("click", () => {
-                modalElement.classList.remove("show");
-                modalElement.style.display = "none";
-                document.body.classList.remove("modal-open");
-            });
-
-            const btnSecondary = modalElement.querySelector(".btn-secondary");
-            btnSecondary.addEventListener("click", () => {
-                modalElement.classList.remove("show");
-                modalElement.style.display = "none";
-                document.body.classList.remove("modal-open");
-            });
+            new bootstrap.Modal(modalElement).show();
         })
         .catch((error) => {
             console.error("Error in viewPromotionDetails:", error);
-            alert("Có lỗi khi tải dữ liệu. Kiểm tra console.");
+            toast({
+                title: "Lỗi",
+                message: "Có lỗi khi tải dữ liệu khuyến mãi",
+                type: "error",
+                duration: 3000,
+            });
         });
 }
 
@@ -133,7 +117,7 @@ function loadProductLinesForAdd() {
             return response.json();
         })
         .then((productLines) => {
-            allProductLines = productLines; // Gán dữ liệu vào biến toàn cục
+            allProductLines = productLines;
             renderProductLines(productLines);
         })
         .catch((error) => console.error("Error loading product lines:", error));
@@ -151,7 +135,6 @@ function renderProductLines(productLines) {
             </tr>`;
     });
 
-    // Gắn sự kiện cho các checkbox để cập nhật selectedProductLines
     document.querySelectorAll(".product-line-checkbox").forEach((checkbox) => {
         checkbox.addEventListener("change", function () {
             const id = this.value;
@@ -203,7 +186,7 @@ document.getElementById("addPromotionForm").addEventListener("submit", function 
         .then((data) => {
             if (data.message === "Thêm khuyến mãi thành công") {
                 const newIdKhuyenMai = data.khuyenmai.IdKhuyenMai;
-                const selectedProductLinesArray = Array.from(selectedProductLines); // Chuyển Set thành Array
+                const selectedProductLinesArray = Array.from(selectedProductLines);
 
                 const promises = selectedProductLinesArray.map((idDongSanPham) => {
                     console.log("Adding CTKhuyenMai for IdDongSanPham:", idDongSanPham);
@@ -226,7 +209,7 @@ document.getElementById("addPromotionForm").addEventListener("submit", function 
                             type: "success",
                             duration: 3000,
                         });
-                        selectedProductLines.clear(); // Xóa các lựa chọn sau khi thêm thành công
+                        selectedProductLines.clear();
                         loadPromotions();
                         document.getElementById("addPromotionModal").querySelector(".btn-close").click();
                     })
@@ -243,22 +226,16 @@ document.getElementById("addPromotionForm").addEventListener("submit", function 
         .catch((error) => console.error("Error adding promotion:", error));
 });
 
-// Sự kiện khi modal mở: Set ngày hiện tại và làm mới form
 document.getElementById("addPromotionModal").addEventListener("show.bs.modal", function () {
-    // Set ngày hiện tại cho "Ngày bắt đầu"
     const today = new Date(Date.now() + 7 * 60 * 60 * 1000).toISOString().split('T')[0];
     document.getElementById("startDate").value = today;
-    // Làm mới các trường khác
-    document.getElementById("endDate").value = ""; // Xóa ngày kết thúc
-    document.getElementById("discountPercent").value = ""; // Xóa phần trăm giảm
-    document.getElementById("productLineSearch").value = ""; // Xóa thanh tìm kiếm
-
-    // Bỏ chọn tất cả checkbox và tải lại danh sách dòng sản phẩm
+    document.getElementById("endDate").value = "";
+    document.getElementById("discountPercent").value = "";
+    document.getElementById("productLineSearch").value = "";
     const selectAllCheckbox = document.getElementById("selectAll");
-    selectAllCheckbox.checked = false; // Bỏ chọn "Chọn tất cả"
-    selectedProductLines.clear(); // Xóa các lựa chọn cũ
-    loadProductLinesForAdd(); // Tải lại danh sách đầy đủ
+    selectAllCheckbox.checked = false;
+    selectedProductLines.clear();
+    loadProductLinesForAdd();
 });
 
 loadPromotions();
-

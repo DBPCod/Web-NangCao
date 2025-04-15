@@ -23,7 +23,7 @@ function loadProductConfigs() {
                           <td>${config.Pin || "Không có"}</td>
                           <td>${config.MauSac || "Không có"}</td>
                           <td>${config.Camera || "Không có"}</td>
-                          <td>
+                          <td class="text-center">
                               <button class="btn btn-primary" onclick="openEditModal(${config.IdCHSP})">Sửa</button>
                               <button class="btn btn-danger" onclick="deleteProductConfig(${config.IdCHSP})">Xóa</button>
                           </td>

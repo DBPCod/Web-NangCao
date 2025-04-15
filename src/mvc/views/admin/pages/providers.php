@@ -13,7 +13,7 @@
                 <th>Số điện thoại</th>
                 <th>Email</th>
                 <th>Trạng thái</th>
-                <th>Hành động</th>
+                <th class="text-center" style="width: 140px;">Hành động</th>
             </tr>
         </thead>
         <tbody id="providerTableBody"></tbody>
@@ -24,9 +24,9 @@
 <div class="modal fade" id="providerModal" tabindex="-1" aria-labelledby="providerModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header bg-green text-white">
                 <h5 class="modal-title" id="providerModalLabel">Thêm nhà cung cấp</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close bg-light" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="providerForm">
@@ -62,5 +62,11 @@
         </div>
     </div>
 </div>
+
+<style>
+    .bg-green {
+        background-color: #218838;
+    }
+</style>
 
 <script src="/smartstation/src/public/js/admin/provider.js"></script>
