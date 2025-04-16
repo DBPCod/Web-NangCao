@@ -37,11 +37,11 @@ class TinhTrangVanChuyenModel {
         return $stmt->execute();
     }
 
-    // // Xóa trạng thái vận chuyển
-    // public function deleteTinhTrang($idTinhTrang) {
-    //     $stmt = $this->db->prepare("DELETE FROM TinhTrangVanChuyen WHERE IdTinhTrang = ?");
-    //     $stmt->bind_param("i", $idTinhTrang);
-    //     return $stmt->execute();
-    // }
+    // Xóa trạng thái vận chuyển
+    public function deleteTinhTrang($idTinhTrang) {
+        $stmt = $this->db->prepare("DELETE FROM TinhTrangVanChuyen WHERE IdTinhTrang = ?");
+        $stmt->bind_param("i", $idTinhTrang);
+        return $stmt->execute();
+    }
 }
 ?>
