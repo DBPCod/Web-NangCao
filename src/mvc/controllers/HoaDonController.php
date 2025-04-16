@@ -18,22 +18,7 @@ class HoaDonController {
                 if (isset($_GET['idHoaDon'])) {
                     $data = $this->model->getHoaDonById($_GET['idHoaDon']);
                 } else {
-                    // Lấy các tham số lọc
-                    $filters = [];
-                    if (isset($_GET['tinhTrang']) && $_GET['tinhTrang'] !== '') {
-                        $filters['tinhTrang'] = $_GET['tinhTrang'];
-                    }
-                    if (isset($_GET['fromDate']) && $_GET['fromDate'] !== '') {
-                        $filters['fromDate'] = $_GET['fromDate'];
-                    }
-                    if (isset($_GET['toDate']) && $_GET['toDate'] !== '') {
-                        $filters['toDate'] = $_GET['toDate'];
-                    }
-                    if (isset($_GET['diaChi']) && $_GET['diaChi'] !== '') {
-                        $filters['diaChi'] = $_GET['diaChi'];
-                    }
-                    // Gọi getAllHoaDon với bộ lọc
-                    $data = $this->model->getAllHoaDon($filters);
+                    $data = $this->model->getAllHoaDon();
                 }
                 echo json_encode($data);
                 break;
@@ -69,7 +54,6 @@ class HoaDonController {
 
             default:
                 echo json_encode(["message" => "Yêu cầu không hợp lệ"]);
-                http_response_code(405);
         }
     }
 }

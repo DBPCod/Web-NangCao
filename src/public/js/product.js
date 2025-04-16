@@ -8,31 +8,38 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .then(response => {
             if (!response.ok) {
-                throw new Error('Network response was not ok');
+                throw new Error('Lỗi mạng');
             }
             return response.json();
         })
         .then(data => {
+            console.log(data);
             const products = data.products;
             let productHTML = '';
             
             if (products && products.length > 0) {
                 products.forEach(product => {
+                    const productName = product.name || 'Sản phẩm không xác định';
+                    const giaGoc = product.giaGoc ? `${product.giaGoc.toLocaleString()} VNĐ` : 'N/A';
+                    const giaHienThi = product.giaGiam ? `${product.giaGiam.toLocaleString()} VNĐ` : giaGoc;
+                    const giaGocHTML = product.giaGiam ? `<span class="text-decoration-line-through text-muted">${giaGoc}</span>` : '';
                     productHTML += `
                         <div class="col">
                             <div class="product-card" data-bs-toggle="modal" data-bs-target="#productModal" data-product='${JSON.stringify(product)}'>
-                                <img src="${product.image}" alt="${product.name}">
-                                <div class="product-name">${product.name}</div>
+                                <img src="${product.image}" alt="${productName}">
+                                <div class="product-name">${productName}</div>
                                 <div class="product-specs">RAM: ${product.ram} - ROM: ${product.rom}</div>
-                                <div class="product-price">${product.gia}</div>
+                                <div class="product-price">${giaHienThi} ${giaGocHTML}</div>
                             </div>
                         </div>`;
                 });
+            } else {
+                productHTML = '<div class="col">Không có sản phẩm nào.</div>';
             }
             
             document.querySelector('.product-grid').innerHTML = productHTML;
             
-            // Cập nhật pagination
+            // Cập nhật phân trang
             const totalPages = Math.ceil(data.total / data.limit);
             let paginationHTML = '';
             for (let i = 1; i <= totalPages; i++) {
@@ -44,11 +51,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             document.querySelector('.pagination').innerHTML = paginationHTML;
             
-            // Gắn lại event listeners cho các product card mới
+            // Gắn lại sự kiện cho các thẻ sản phẩm mới
             attachProductCardListeners();
         })
         .catch(error => {
-            console.error('Error loading products:', error);
+            console.error('Lỗi tải sản phẩm:', error);
+            document.querySelector('.product-grid').innerHTML = '<div class="col">Lỗi tải sản phẩm.</div>';
         });
     }
 
@@ -56,13 +64,19 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.product-card').forEach(card => {
             card.addEventListener('click', () => {
                 const product = JSON.parse(card.dataset.product);
+                const productName = product.name || 'Sản phẩm không xác định';
+                const giaGoc = product.giaGoc ? `${product.giaGoc.toLocaleString()} VNĐ` : 'N/A';
+                const giaGiam = product.giaGiam ? `${product.giaGiam.toLocaleString()} VNĐ` : null;
+                const giaHienThi = giaGiam || giaGoc;
+                const giaGocHTML = product.giaGiam ? `<span class="text-decoration-line-through text-muted">${giaGoc}</span>` : '';
+                const khuyenMaiHTML = product.phanTramGiam ? `Giảm ${product.phanTramGiam}%` : '';
                 
                 document.querySelector('#modalProductImage').src = product.image;
-                document.querySelector('#modalProductImage').alt = product.name;
-                document.querySelector('#modalProductName').textContent = product.name;
+                document.querySelector('#modalProductImage').alt = productName;
+                document.querySelector('#modalProductName').textContent = productName;
                 document.querySelector('#modalProductSpecs').textContent = `RAM: ${product.ram} - ROM: ${product.rom}`;
-                document.querySelector('#modalProductPrice').innerHTML = product.gia;
-                document.querySelector('#modalProductDiscount').textContent = '';
+                document.querySelector('#modalProductPrice').innerHTML = `${giaHienThi} ${giaGocHTML}`;
+                document.querySelector('#modalProductDiscount').textContent = khuyenMaiHTML;
                 document.querySelector('#modalProductPoints').textContent = '';
                 
                 // Điền thông số kỹ thuật
@@ -74,13 +88,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.querySelector('#modalProductCamera').textContent = product.camera || 'N/A';
                 document.querySelector('#modalProductTrangThai').textContent = product.trangThai === "1" ? 'Còn hàng' : 'Hết hàng';
 
-                // Xử lý thumbnail gallery
+                // Xử lý thư viện ảnh thu nhỏ
                 const thumbnailHTML = `
-                    <img src="${product.image}" alt="${product.name} thumbnail" class="thumbnail-image active" data-index="0">
+                    <img src="${product.image}" alt="${productName} thumbnail" class="thumbnail-image active" data-index="0">
                 `;
                 document.querySelector('.thumbnail-gallery').innerHTML = thumbnailHTML;
 
-                // Gắn lại event listeners cho thumbnails
+                // Gắn lại sự kiện cho ảnh thu nhỏ
                 attachThumbnailListeners();
             });
         });
@@ -97,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Load trang đầu tiên
+    // Tải trang đầu tiên
     loadProducts(1);
 
     // Xử lý click vào số trang
@@ -110,6 +124,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Gắn event listeners ban đầu
+    // Gắn sự kiện ban đầu
     attachProductCardListeners();
 });
