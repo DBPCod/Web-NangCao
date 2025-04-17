@@ -55,6 +55,9 @@
                             if (section === 'products' && typeof loadProducts === 'function') {
                                 loadProducts();
                             }
+                            if (section === 'statistics' && typeof loadTopUsers === 'function'){
+                                loadTopUsers();
+                            }
                         },
                         error: function() {
                             $("#contentArea").html("<p class='text-danger'>Không thể tải trang!</p>");

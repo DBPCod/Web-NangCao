@@ -1,33 +1,33 @@
 <?php include '../includes/header.php'; ?>
-<div class="container-fluid">
+  <div class="container-fluid">
     <div class="mb-3">
         <h2>Thống kê</h2>
         <div class="row align-items-end">
-            <div class="col-md-3">
-                <label for="fromDate" class="form-label">Từ ngày:</label>
-                <input type="date" id="fromDate" class="form-control">
+        <div class="col-md-3">
+            <label for="fromDate" class="form-label">Từ ngày:</label>
+            <input type="date" id="fromDate" class="form-control">
+        </div>
+        <div class="col-md-3">
+            <label for="toDate" class="form-label">Đến ngày:</label>
+            <input type="date" id="toDate" class="form-control">
+        </div>
+        <div class="col-md-4">
+            <label class="form-label invisible">Lọc</label>
+            <div class="d-flex gap-2">
+                <button class="btn btn-primary" onclick="filterTopUsers()">Chọn</button>
+                <button class="btn btn-secondary" onclick="resetTopUsers()">Bỏ lọc</button>
             </div>
-            <div class="col-md-3">
-                <label for="toDate" class="form-label">Đến ngày:</label>
-                <input type="date" id="toDate" class="form-control">
-            </div>
-            <div class="col-md-3">
-                <label class="form-label invisible"></label>
-                <div class="d-flex justify-content-start">
-                    <button class="btn btn-primary" id="filterTopUsers">Chọn</button>
-                </div>
-            </div>
-
-            <div class="col-md-3 ms-auto">
-                <div class="d-flex justify-content-end">
-                    <select id="sortOrder" class="form-select w-auto">
-                        <option value="desc">Tăng dần</option>
-                        <option value="asc">Giảm dần</option>
-                    </select>
-                </div>
+        </div>
+        <div class="col-md-2 ms-auto">
+            <div class="d-flex justify-content-end">
+                <select id="sortOrder" class="form-select w-auto" onchange="sortOrder()">
+                    <option value="desc">Tăng dần</option>
+                    <option value="asc">Giảm dần</option>
+                </select>
             </div>
         </div>
     </div>
+  </div>
 
     <table class="table table-hover">
         <thead>
@@ -49,7 +49,7 @@
   <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="orderListModalLabel">Danh sách đơn hàng của khách hàng: Nguyễn Văn A</h5>
+        <h5 class="modal-title" id="orderListModalLabel">Danh sách đơn hàng của khách hàng:</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
       </div>
       <div class="modal-body">

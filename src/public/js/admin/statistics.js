@@ -1,6 +1,13 @@
 let isFiltered = false;// đặt cờ cho nút lọc
 function loadTopUsers() {
-    const sortOrder = document.getElementById("sortOrder")?.value || "desc";
+
+    // const savedFiltered = sessionStorage.getItem("isFiltered");
+    // const savedFromDate = sessionStorage.getItem("fromDate");
+    // const savedToDate = sessionStorage.getItem("toDate");
+    // const savedSortOrder = sessionStorage.getItem("sortOrder");
+
+    const sortOrder = document.getElementById("sortOrder")?.value||"desc";
+    sessionStorage.setItem("sortOrder",sortOrder);
     const url = `/smartstation/src/mvc/controllers/ThongKeController.php?sort=${sortOrder}`;
     fetch(url, {
         method: "GET",
@@ -13,13 +20,45 @@ function loadTopUsers() {
         .catch((error) => console.error("Fetch error:", error));
 }
 
-loadTopUsers();
 
-document.getElementById("filterTopUsers").addEventListener("click", function () {
+function filterTopUsers() {
     const fromDate = document.getElementById("fromDate").value;
     const toDate = document.getElementById("toDate").value;
-    isFiltered = true;
     const sortOrder = document.getElementById("sortOrder")?.value || "desc";
+
+    if (!fromDate || !toDate) {
+        toast({
+            title: 'Cảnh báo',
+            message: 'Vui lòng nhập đầy đủ ngày bắt đầu và ngày kết thúc.',
+            type: 'warning',
+            duration: 3000
+        });
+        return;
+    }
+    if(new Date(fromDate) > new Date(toDate)){
+        toast({
+            title: 'Cảnh báo',
+            message: 'Ngày bắt đầu phải nhỏ hơn hoặc bằng ngày kết thúc.',
+            type: 'warning',
+            duration: 3000
+        });
+        return;
+    }
+    if((new Date(toDate) > new Date) || (new Date(fromDate) > new Date)){
+        toast({
+            title: 'Cảnh báo',
+            message: 'Không được chọn quá ngày hôm nay.',
+            type: 'warning',
+            duration: 3000
+        });
+        return;
+    }
+
+    isFiltered = true;
+    // sessionStorage.setItem("isFiltered", isFiltered);
+    // sessionStorage.setItem("fromDate", fromDate);
+    // sessionStorage.setItem("toDate", toDate);
+    // sessionStorage.setItem("sortOrder", sortOrder);
 
     const url = `/smartstation/src/mvc/controllers/ThongKeController.php?from=${fromDate}&to=${toDate}&sort=${sortOrder}`;
 
@@ -29,8 +68,10 @@ document.getElementById("filterTopUsers").addEventListener("click", function () 
             return response.json();
         })
         .then(renderTopUsers)
-        .catch((error) => console.error("Lỗi lọc top khách:", error));
-});
+        .catch((error) => console.error("Fetch error:", error));
+};
+
+
 
 // Hàm render dữ liệu top user
 function renderTopUsers(users) {
@@ -56,6 +97,13 @@ function renderTopUsers(users) {
         });
     }
 }
+function sortOrder(){
+    if (isFiltered) {
+        filterTopUsers(); 
+    } else {
+        loadTopUsers(); 
+    }
+};
 
 // Bấm các nút để xem sâu hơn
 document.addEventListener("click", function (e) {
@@ -156,3 +204,19 @@ document.addEventListener("click", function (e) {
             .catch((error) => console.error("Fetch error:", error));
     }
 });
+
+function resetTopUsers(){
+    document.getElementById("fromDate").value = "";
+    document.getElementById("toDate").value = "";
+    isFiltered = false;
+
+    // sessionStorage.removeItem("isFiltered");
+    // sessionStorage.removeItem("fromDate");
+    // sessionStorage.removeItem("toDate");
+    // sessionStorage.removeItem("sortOrder");
+
+    loadTopUsers();
+}
+
+loadTopUsers();
+
