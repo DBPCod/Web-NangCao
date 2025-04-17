@@ -83,16 +83,16 @@
                     <div class="col-md-6">
                         <h6>Ảnh sản phẩm</h6>
                         <div id="productImageCarousel" class="carousel slide" data-bs-ride="carousel">
-                        <div class="carousel-inner" id="productImages"></div>
-                        <button class="carousel-control-prev" type="button" data-bs-target="#productImageCarousel" data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="sr-only">Previous</span>
-                        </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#productImageCarousel" data-bs-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="sr-only">Next</span>
-                        </button>
-                    </div>
+                            <div class="carousel-inner" id="productImages"></div>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#productImageCarousel" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#productImageCarousel" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                        </div>
                     </div>
                     <div class="col-md-6">
                         <h6>Thông tin chi tiết</h6>
@@ -121,6 +121,7 @@
     .carousel-control-prev-icon,
     .carousel-control-next-icon {
         background-image: none;
+        /* Xóa hình nền mặc định */
         width: 30px;
         height: 30px;
         position: relative;
@@ -134,6 +135,7 @@
         left: 50%;
         transform: translate(-50%, -50%);
         border: solid #555555;
+        /* Màu xám đậm */
         border-width: 0 3px 3px 0;
         display: inline-block;
         padding: 5px;
@@ -141,47 +143,22 @@
 
     .carousel-control-prev-icon::before {
         transform: translate(-50%, -50%) rotate(135deg);
+        /* Mũi tên trái */
     }
 
     .carousel-control-next-icon::before {
         transform: translate(-50%, -50%) rotate(-45deg);
+        /* Mũi tên phải */
     }
 
     .carousel-control-prev:hover .carousel-control-prev-icon::before,
     .carousel-control-next:hover .carousel-control-next-icon::before {
         border-color: #333333;
+        /* Màu gần đen khi hover */
     }
 
     .bg-green {
         background-color: #218838;
-    }
-
-    /* Tùy chỉnh kích thước ảnh trong carousel */
-    .carousel-inner img {
-        max-height: 300px;
-        object-fit: contain;
-        margin: auto;
-    }
-
-    /* Đảm bảo carousel có chiều cao cố định */
-    .carousel-inner {
-        background-color: #f8f9fa;
-        min-height: 300px;
-        display: flex;
-        align-items: center;
-    }
-
-    /* Đảm bảo nút điều hướng luôn hiển thị */
-    .carousel-control-prev,
-    .carousel-control-next {
-        opacity: 1;
-        width: 10%;
-        background: rgba(0, 0, 0, 0.1);
-    }
-
-    .carousel-control-prev:hover,
-    .carousel-control-next:hover {
-        background: rgba(0, 0, 0, 0.2);
     }
 </style>
 
