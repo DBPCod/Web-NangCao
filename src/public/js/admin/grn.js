@@ -84,7 +84,7 @@ function loadGRNs() {
                                 <td><span class="clickable-id">${phieuNhap.IdPhieuNhap}</span></td>
                                 <td>${phieuNhap.TenNCC}</td>
                                 <td>${phieuNhap.TongTien ? phieuNhap.TongTien.toLocaleString('vi-VN') + ' VNĐ' : 'Chưa xác định'}</td>
-                                <td>
+                                <td class="text-center">
                                     <button class="btn btn-danger btn-sm" onclick="event.stopPropagation(); deleteGRN(${phieuNhap.IdPhieuNhap})">Xóa</button>
                                 </td>
                             </tr>`;

@@ -14,7 +14,7 @@
                 <th>Pin</th>
                 <th>Màu sắc</th>
                 <th>Camera</th>
-                <th>Hành động</th>
+                <th class="text-center" style="width: 140px">Hành động</th>
             </tr>
         </thead>
         <tbody id="productConfigTableBody"></tbody>
@@ -25,9 +25,9 @@
 <div class="modal fade" id="productConfigModal" tabindex="-1" aria-labelledby="productConfigModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="productConfigModalLabel">Thêm cấu hình sản phẩm</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-header bg-green">
+                <h5 class="modal-title text-white" id="productConfigModalLabel">Thêm cấu hình sản phẩm</h5>
+                <button type="button" class="btn-close bg-light" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="productConfigForm">
@@ -71,5 +71,11 @@
         </div>
     </div>
 </div>
+
+<style>
+    .bg-green {
+        background-color: #218838;
+    }
+</style>
 
 <script src="/smartstation/src/public/js/admin/productConfig.js"></script>

@@ -9,7 +9,7 @@
             <tr>
                 <th>ID Thương hiệu</th>
                 <th>Tên thương hiệu</th>
-                <th>Hành động</th>
+                <th class="text-center" style="width: 140px">Hành động</th>
             </tr>
         </thead>
         <tbody id="brandTableBody"></tbody>
@@ -20,9 +20,9 @@
 <div class="modal fade" id="addBrandModal" tabindex="-1" aria-labelledby="addBrandModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addBrandModalLabel">Thêm thương hiệu mới</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-header bg-green">
+                <h5 class="modal-title text-white" id="addBrandModalLabel">Thêm thương hiệu mới</h5>
+                <button type="button" class="btn-close bg-light" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="addBrandForm">
@@ -44,9 +44,9 @@
 <div class="modal fade" id="editBrandModal" tabindex="-1" aria-labelledby="editBrandModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editBrandModalLabel">Sửa thương hiệu</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-header bg-green">
+                <h5 class="modal-title text-white" id="editBrandModalLabel">Sửa thương hiệu</h5>
+                <button type="button" class="btn-close bg-light" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="editBrandForm">
@@ -64,5 +64,11 @@
         </div>
     </div>
 </div>
+
+<style>
+    .bg-green {
+        background-color: #218838;
+    }
+</style>
 
 <script src="/smartstation/src/public/js/admin/brand.js"></script>

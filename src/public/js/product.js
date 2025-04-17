@@ -1,40 +1,99 @@
-$(document).ready(function () {
+document.addEventListener('DOMContentLoaded', () => {
     function loadProducts(page) {
-        $.ajax({
-            url: "/smartstation/src/mvc/controllers/SanPhamController.php", // Đường dẫn file JSON
-            method: "GET",
-            dataType: "json",
-            success: function (data) {
-                let products = data[page]; // Lấy sản phẩm của trang hiện tại
-                let productHTML = "";
-                if (products) {
-                    products.forEach(function (product) {
-                        productHTML += `
-                            <div class="col">
-                                <div class="product-card" data-bs-toggle="modal" data-bs-target="#productModal" data-product='${JSON.stringify(product)}'>
-                                    <img src="${product.image}" alt="${product.name}">
-                                    <div class="product-name">${product.name}</div>
-                                    <div class="product-specs">${product.specs}</div>
-                                    <div class="product-price">${product.price} 
-                                        ${product.old_price
-                                            ? `<span class="text-muted text-decoration-line-through">${product.old_price}</span>`
-                                            : ""
-                                        }
-                                    </div>
-                                    <div class="product-discount">${product.discount}</div>
-                                    <div class="product-points">${product.points}</div>
-                                </div>
-                            </div>`;
-                    });
-                }
-                $(".product-grid").html(productHTML); // Đổ dữ liệu vào grid
-                $(".pagination .page-item").removeClass("active");
-                $(`.pagination .page-btn[data-page='${page}']`)
-                    .parent()
-                    .addClass("active");
-                $(".prev-page").attr("data-page", Math.max(1, page - 1));
-                $(".next-page").attr("data-page", Math.min(3, page + 1));
-            },
+        fetch(`/smartstation/src/public/api/SanPhamAPI.php?page=${page}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const products = data.products;
+            let productHTML = '';
+            
+            if (products && products.length > 0) {
+                products.forEach(product => {
+                    productHTML += `
+                        <div class="col">
+                            <div class="product-card" data-bs-toggle="modal" data-bs-target="#productModal" data-product='${JSON.stringify(product)}'>
+                                <img src="${product.image}" alt="${product.name}">
+                                <div class="product-name">${product.name}</div>
+                                <div class="product-specs">RAM: ${product.ram} - ROM: ${product.rom}</div>
+                                <div class="product-price">${product.gia}</div>
+                            </div>
+                        </div>`;
+                });
+            }
+            
+            document.querySelector('.product-grid').innerHTML = productHTML;
+            
+            // Cập nhật pagination
+            const totalPages = Math.ceil(data.total / data.limit);
+            let paginationHTML = '';
+            for (let i = 1; i <= totalPages; i++) {
+                paginationHTML += `
+                    <li class="page-item ${i === page ? 'active' : ''}">
+                        <a class="page-link page-btn" href="#" data-page="${i}">${i}</a>
+                    </li>
+                `;
+            }
+            document.querySelector('.pagination').innerHTML = paginationHTML;
+            
+            // Gắn lại event listeners cho các product card mới
+            attachProductCardListeners();
+        })
+        .catch(error => {
+            console.error('Error loading products:', error);
+        });
+    }
+
+    function attachProductCardListeners() {
+        document.querySelectorAll('.product-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const product = JSON.parse(card.dataset.product);
+                
+                document.querySelector('#modalProductImage').src = product.image;
+                document.querySelector('#modalProductImage').alt = product.name;
+                document.querySelector('#modalProductName').textContent = product.name;
+                document.querySelector('#modalProductSpecs').textContent = `RAM: ${product.ram} - ROM: ${product.rom}`;
+                document.querySelector('#modalProductPrice').innerHTML = product.gia;
+                document.querySelector('#modalProductDiscount').textContent = '';
+                document.querySelector('#modalProductPoints').textContent = '';
+                
+                // Điền thông số kỹ thuật
+                document.querySelector('#modalProductRam').textContent = product.ram || 'N/A';
+                document.querySelector('#modalProductRom').textContent = product.rom || 'N/A';
+                document.querySelector('#modalProductManHinh').textContent = product.manHinh || 'N/A';
+                document.querySelector('#modalProductPin').textContent = product.pin || 'N/A';
+                document.querySelector('#modalProductMauSac').textContent = product.mauSac || 'N/A';
+                document.querySelector('#modalProductCamera').textContent = product.camera || 'N/A';
+                document.querySelector('#modalProductTrangThai').textContent = product.trangThai === "1" ? 'Còn hàng' : 'Hết hàng';
+
+                // Xử lý thumbnail gallery
+                const thumbnailHTML = `
+                    <img src="${product.image}" alt="${product.name} thumbnail" class="thumbnail-image active" data-index="0">
+                `;
+                document.querySelector('.thumbnail-gallery').innerHTML = thumbnailHTML;
+
+                // Gắn lại event listeners cho thumbnails
+                attachThumbnailListeners();
+            });
+        });
+    }
+
+    function attachThumbnailListeners() {
+        document.querySelectorAll('.thumbnail-image').forEach(thumbnail => {
+            thumbnail.addEventListener('click', () => {
+                const imgSrc = thumbnail.src;
+                document.querySelector('#modalProductImage').src = imgSrc;
+                document.querySelectorAll('.thumbnail-image').forEach(img => img.classList.remove('active'));
+                thumbnail.classList.add('active');
+            });
         });
     }
 
@@ -42,110 +101,15 @@ $(document).ready(function () {
     loadProducts(1);
 
     // Xử lý click vào số trang
-    $(".pagination").on("click", ".page-btn", function (e) {
+    document.querySelector('.pagination').addEventListener('click', (e) => {
         e.preventDefault();
-        let page = $(this).data("page");
-        loadProducts(page);
-    });
-
-    // // Xử lý nút Previous và Next
-    $(".pagination").on("click", ".prev-page, .next-page", function (e) {
-        e.preventDefault();
-        let page = parseInt($(this).data("page"));
-        loadProducts(page);
-    });
-
-    // Xử lý khi click vào product card để hiển thị modal
-    $(".product-grid").on("click", ".product-card", function () {
-        let product = $(this).data("product"); // Lấy dữ liệu sản phẩm từ data-product
-        // Điền thông tin vào modal
-        $("#modalProductImage").attr("src", product.image).attr("alt", product.name);
-        $("#modalProductName").text(product.name);
-        $("#modalProductSpecs").text(product.specs);
-        $("#modalProductPrice").html(`${product.price} ${product.old_price ? `<span class="text-muted text-decoration-line-through">${product.old_price}</span>` : ""}`);
-        $("#modalProductDiscount").text(product.discount);
-        $("#modalProductPoints").text(product.points);
-        // Điền thông số kỹ thuật
-        $("#modalProductRom").text(product.rom || "N/A");
-        $("#modalProductManHinh").text(product.manHinh || "N/A");
-        $("#modalProductPin").text(product.pin || "N/A");
-        $("#modalProductCamera").text(product.camera || "N/A");
-        $("#modalProductTrangThai").text(product.trangThai ? "Còn hàng" : "Hết hàng");
-
-        // Tạo button chọn RAM
-        let ramHTML = "";
-        if (product.ramOptions && Array.isArray(product.ramOptions)) {
-            product.ramOptions.forEach(function (ram) {
-                ramHTML += `<button type="button" class="btn btn-outline-secondary btn-sm me-1 btn-ram">${ram}</button>`;
-            });
-        } else {
-            ramHTML = `<span>${product.ram || "N/A"}</span>`;
+        const target = e.target;
+        if (target.classList.contains('page-btn')) {
+            const page = parseInt(target.dataset.page);
+            loadProducts(page);
         }
-        $("#modalProductRam").html(ramHTML);
-
-        // Tạo button chọn màu sắc
-        let colorHTML = "";
-        if (product.colorOptions && Array.isArray(product.colorOptions)) {
-            product.colorOptions.forEach(function (color) {
-                colorHTML += `<button type="button" class="btn btn-outline-secondary btn-sm me-1 btn-color data-color="${color}">${color}</button>`;
-            });
-        } else {
-            colorHTML = `<span>${product.mauSac || "N/A"}</span>`;
-        }
-        $("#modalProductMauSac").html(colorHTML);
-
-        // Điền ảnh vào thumbnail gallery
-        let thumbnailHTML = "";
-        if (product.images && Array.isArray(product.images)) {
-            product.images.forEach(function (imgSrc, index) {
-                thumbnailHTML += `
-                    <img src="${imgSrc}" alt="${product.name} thumbnail ${index + 1}" class="thumbnail-image" data-index="${index}">
-                `;
-            });
-        } else {
-            // Nếu không có mảng images, chỉ hiển thị ảnh chính
-            thumbnailHTML = `
-                <img src="${product.image}" alt="${product.name} thumbnail" class="thumbnail-image" data-index="0">
-            `;
-        }
-        $(".thumbnail-gallery").html(thumbnailHTML);
-
-        // Thêm active class cho thumbnail đầu tiên
-        $(".thumbnail-image").first().addClass("active");
-
-        // Xủ lý chọn nút ram
-        $(document).off("click", ".btn-ram").on("click", ".btn-ram", function () {
-            $(".btn-ram").removeClass("active");
-            $(this).addClass("active");
-            //  Lưu giá trị đã chọn nếu cần
-            product.selectedRam = $(this).text();
-        });
-    
-        // Xử lý chọn nút màu
-        $(document).off("click", ".btn-color").on("click", ".btn-color", function () {
-            $(".btn-color").removeClass("active");
-            $(this).addClass("active");
-            //  Lưu giá trị đã chọn nếu cần
-            product.selectedColor = $(this).text();
-        });
     });
 
-    // Xử lý khi click vào thumbnail để thay đổi ảnh chính
-    $("#productModal").on("click", ".thumbnail-image", function () {
-        let imgSrc = $(this).attr("src");
-        let index = $(this).data("index")
-        $("#modalProductImage").attr("src", imgSrc); // Thay đổi ảnh chính
-        // Xóa class active từ tất cả thumbnail và thêm vào thumbnail được click
-        $(".thumbnail-image").removeClass("active");
-        $(this).addClass("active");
-        //Click ảnh màu gì thì button cũng tương ứng màu đó
-        $(".btn-color").removeClass("active");
-        $(".btn-color").eq(index).addClass("active");
-    });
-
-    
-    
-
+    // Gắn event listeners ban đầu
+    attachProductCardListeners();
 });
-
-

@@ -1,11 +1,11 @@
 <?php
-include_once __DIR__ . '../../models/CthoadonModel.php';
+include_once __DIR__ . '../../models/CTHoaDonModel.php';
 
-class CTHoadonController {
+class CTHoaDonController {
     private $model;
 
     public function __construct() {
-        $this->model = new CthoadonModel();
+        $this->model = new CTHoaDonModel();
     }
 
     public function handleRequest() {
@@ -15,8 +15,8 @@ class CTHoadonController {
 
         switch ($method) {
             case 'GET':
-                if (isset($_GET['idHoaDon']) && isset($_GET['imei'])) {
-                    $data = $this->model->getCTHoaDonById($_GET['idHoaDon'], $_GET['imei']);
+                if (isset($_GET['idHoaDon'])) {
+                    $data = $this->model->getCTHoaDonById($_GET['idHoaDon']);
                 } else {
                     $data = $this->model->getAllCTHoaDon();
                 }
@@ -33,9 +33,9 @@ class CTHoadonController {
 
             default:
                 echo json_encode(["message" => "Yêu cầu không hợp lệ"]);
+                http_response_code(400);
         }
     }
 }
 
-(new CTHoadonController())->handleRequest();
-?>
+(new CTHoaDonController())->handleRequest();
