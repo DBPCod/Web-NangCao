@@ -150,6 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function attachThumbnailListeners() {
+        console.log(document.querySelectorAll('.thumbnail-image'));
         document.querySelectorAll('.thumbnail-image').forEach(thumbnail => {
             thumbnail.addEventListener('click', () => {
                 document.querySelector('#modalProductImage').src = thumbnail.src;
