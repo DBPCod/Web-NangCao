@@ -18,20 +18,27 @@ class AnhController {
                 if (isset($_GET['idAnh'])) {
                     $data = $this->model->getAnhById($_GET['idAnh']);
                     if ($data && isset($data['Anh'])) {
-                        $data['Anh'] = base64_encode($data['Anh']); // Mã hóa base64
+                        $data['Anh'] = base64_encode($data['Anh']);
                     }
                 } else if (isset($_GET['idCHSP']) && isset($_GET['idDSP'])) {
                     $data = $this->model->getAnhByCauHinhAndDongSanPham($_GET['idCHSP'], $_GET['idDSP']);
                     foreach ($data as &$anh) {
                         if (isset($anh['Anh'])) {
-                            $anh['Anh'] = base64_encode($anh['Anh']); // Mã hóa base64 cho từng ảnh
+                            $anh['Anh'] = base64_encode($anh['Anh']);
+                        }
+                    }
+                } else if (isset($_GET['idDSP'])) {
+                    $data = $this->model->getAnhByDongSanPham($_GET['idDSP']);
+                    foreach ($data as &$anh) {
+                        if (isset($anh['Anh'])) {
+                            $anh['Anh'] = base64_encode($anh['Anh']);
                         }
                     }
                 } else {
                     $data = $this->model->getAllAnh();
                     foreach ($data as &$anh) {
                         if (isset($anh['Anh'])) {
-                            $anh['Anh'] = base64_encode($anh['Anh']); // Mã hóa base64 cho từng ảnh
+                            $anh['Anh'] = base64_encode($anh['Anh']);
                         }
                     }
                 }
@@ -41,7 +48,7 @@ class AnhController {
             case 'POST':
                 $newAnh = $this->model->addAnh($input);
                 if ($newAnh && isset($newAnh['Anh'])) {
-                    $newAnh['Anh'] = base64_encode($newAnh['Anh']); // Mã hóa base64
+                    $newAnh['Anh'] = base64_encode($newAnh['Anh']);
                 }
                 echo json_encode([
                     "message" => "Thêm ảnh thành công",

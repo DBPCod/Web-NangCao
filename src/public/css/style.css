@@ -567,3 +567,76 @@ footer ul li a:hover {
 .custom-btn:hover {
     background-color: #0056b3;
 }
+
+
+/* Tùy chỉnh kích thước ảnh trong carousel */
+.carousel-inner img {
+    max-height: 300px;
+    object-fit: contain;
+    margin: auto;
+}
+
+/* Đảm bảo carousel có chiều cao cố định */
+.carousel-inner {
+    background-color: #f8f9fa;
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+}
+
+/* Đảm bảo nút điều hướng luôn hiển thị */
+.carousel-control-prev,
+.carousel-control-next {
+    opacity: 1;
+    width: 10%;
+}
+
+.carousel-control-prev:hover,
+.carousel-control-next:hover {
+    /* background: rgba(0, 0, 0, 0.2); */
+}
+
+
+
+
+
+/*chon ram va mau sac*/
+/* CSS cho viền của các span trong modalProductRam */
+#modalProductRam span {
+    border: 2px solid #000; /* Viền mặc định màu đen */
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Thêm hiệu ứng chuyển màu */
+}
+
+/* Khi span được chọn */
+#modalProductRam span.selected {
+    border-color: #28a745; /* Màu viền xanh lá cây khi chọn */
+    box-shadow: 0 0 5px rgba(40, 167, 69, 0.5); /* Tạo hiệu ứng bóng mờ xanh lá cây */
+}
+
+/* Khi span chưa được chọn */
+#modalProductRam span:hover {
+    border-color: #28a745; /* Màu viền xanh lá cây khi hover vào */
+}
+
+
+#modalProductMauSac span {
+    border: 2px solid #000; /* Viền mặc định màu đen */
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Thêm hiệu ứng chuyển màu */
+}
+
+/* Khi span được chọn */
+#modalProductMauSac span.selected {
+    border-color: #28a745; /* Màu viền xanh lá cây khi chọn */
+    box-shadow: 0 0 5px rgba(40, 167, 69, 0.5); /* Tạo hiệu ứng bóng mờ xanh lá cây */
+}
+
+/* Khi span chưa được chọn */
+#modalProductMauSac span:hover {
+    border-color: #28a745; /* Màu viền xanh lá cây khi hover vào */
+}

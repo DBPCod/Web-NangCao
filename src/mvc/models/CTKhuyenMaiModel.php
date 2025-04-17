@@ -1,5 +1,5 @@
 <?php 
-include_once '../core/DB.php';
+include_once __DIR__ . '/../core/DB.php';
 
 class CTKhuyenMaiModel {
     private $db;
