@@ -84,8 +84,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     priceHTML = giaGoc;
                 }
+                loadConfigItem(product.idDSP,product.idCHSP);
                 const imageSrc = product.image ? `data:image/jpeg;base64,${product.image}` : '/smartstation/src/public/img/default.png';
-                console.log(imageSrc);
                 // document.querySelector('#modalProductImage').src = imageSrc;
                 // document.querySelector('#modalProductImage').alt = productName;
                 document.querySelector('#modalProductName').textContent = productName;
@@ -95,11 +95,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.querySelector('#modalProductPoints').textContent = '';
                 
                 // Điền thông số kỹ thuật
-                document.querySelector('#modalProductRam').textContent = product.ram || 'N/A';
+                // document.querySelector('#modalProductRam').textContent = product.ram || 'N/A';
                 document.querySelector('#modalProductRom').textContent = product.rom || 'N/A';
                 document.querySelector('#modalProductManHinh').textContent = product.manHinh || 'N/A';
                 document.querySelector('#modalProductPin').textContent = product.pin || 'N/A';
-                document.querySelector('#modalProductMauSac').textContent = product.mauSac || 'N/A';
+                // document.querySelector('#modalProductMauSac').textContent = product.mauSac || 'N/A';
                 document.querySelector('#modalProductCamera').textContent = product.camera || 'N/A';
                 document.querySelector('#modalProductTrangThai').textContent = product.trangThai === "1" ? 'Còn hàng' : 'Hết hàng';
                 console.log(product);
@@ -202,7 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Tải trang đầu tiên
     loadProducts(1);
-
+    handleSelectConfigItem();
     // Xử lý click vào số trang
     document.querySelector('.pagination').addEventListener('click', (e) => {
         e.preventDefault();
@@ -211,4 +211,106 @@ document.addEventListener('DOMContentLoaded', () => {
             loadProducts(page);
         }
     });
+
+
+    function loadConfigItem(idDSP,idCHSP)
+    {
+        fetch(`/smartstation/src/mvc/controllers/SanPhamController.php?idDSP=${idDSP}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Lỗi tải ảnh');
+            }
+            return response.json();
+        })
+        .then(configs => {
+            setUpDataConfigItem(configs,idDSP,idCHSP);
+        });
+    }
+
+
+    function setUpDataConfigItem(product,idDSP,idCHSP)
+    {
+        product.forEach((item)=>{
+            if(item.IdCHSP == idCHSP && item.IdDongSanPham == idDSP)
+            {
+                console.log(item);
+                const giaGocNum = Number(item.Gia);
+                const giaGoc = !isNaN(giaGocNum) && item.Gia !== null ? `${giaGocNum.toLocaleString('vi-VN')} VNĐ` : 'N/A';
+                let priceHTML = '';
+                let discountText = '';
+                if (item.GiaGiam !== null && item.GiaGiam !== undefined) {
+                    const giaGiamNum = Number(item.GiaGiam);
+                    const giaGiam = !isNaN(giaGiamNum) ? `${giaGiamNum.toLocaleString('vi-VN')} VNĐ` : 'N/A';
+                    priceHTML = `<span class="text-decoration-line-through text-muted me-2">${giaGoc}</span> ${giaGiam}`;
+                    discountText = item.PhanTramGiam ? `Giảm ${item.PhanTramGiam}%` : '';
+                } else {
+                    priceHTML = giaGoc;
+                }
+                document.querySelector('#modalProductName').textContent = item.TenDong;
+                document.querySelector('#modalProductSpecs').textContent = `RAM: ${item.Ram || 'N/A'} - ROM: ${item.Rom || 'N/A'}`;
+                document.querySelector('#modalProductPrice').innerHTML = priceHTML;
+                document.querySelector('#modalProductDiscount').textContent = discountText;
+                document.querySelector('#modalProductPoints').textContent = '';
+                        
+                        // Điền thông số kỹ thuật
+                        // document.querySelector('#modalProductRam').textContent = product.ram || 'N/A';
+                document.querySelector('#modalProductRom').textContent = item.Rom || 'N/A';
+                document.querySelector('#modalProductManHinh').textContent = item.ManHinh || 'N/A';
+                document.querySelector('#modalProductPin').textContent = item.Pin || 'N/A';
+                        // document.querySelector('#modalProductMauSac').textContent = product.mauSac || 'N/A';
+                document.querySelector('#modalProductCamera').textContent = item.Camera || 'N/A';
+                document.querySelector('#modalProductTrangThai').textContent = item.SoLuong !== 0 ? 'Còn hàng' : 'Hết hàng';
+            }
+        })
+        
+
+        document.getElementById("modalProductRam");
+        document.getElementById("modalProductMauSac")
+        htmlRam='';
+        htmlMauSac='';
+        product.forEach((item)=>{
+            htmlRam+=`<span>${item.Ram}</span>`;  
+            htmlMauSac+=`<span>${item.MauSac}</span>`;
+        });
+        
+        //set up ram va mau sac
+        document.getElementById("modalProductRam").innerHTML=htmlRam;
+        document.getElementById("modalProductMauSac").innerHTML=htmlMauSac;
+
+        //gan ham su kien cho ram va mau sac
+        handleSelectConfigItem();
+    }
+
+    function handleSelectConfigItem()
+    {
+        const ramOptions = document.querySelectorAll('#modalProductRam span');
+        ramOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                // Xóa lớp 'selected' khỏi tất cả các thẻ span
+                ramOptions.forEach(item => item.classList.remove('selected'));
+                
+                // Thêm lớp 'selected' vào thẻ span đã chọn
+                option.classList.add('selected');
+            });
+        });
+
+
+        const mauSacOptions = document.querySelectorAll('#modalProductMauSac span');
+        mauSacOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                // Xóa lớp 'selected' khỏi tất cả các thẻ span
+                mauSacOptions.forEach(item => item.classList.remove('selected'));
+                
+                // Thêm lớp 'selected' vào thẻ span đã chọn
+                option.classList.add('selected');
+            });
+        });
+    }
+
+
 });
