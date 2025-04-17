@@ -93,6 +93,7 @@ class SanPhamAPI {
 
             return [
                 'idCHSP' => $idCHSP,
+                'idDSP' =>$idDongSanPham,
                 'name' => $productName,
                 'ram' => $cauHinh['Ram'] ?? 'N/A',
                 'rom' => $cauHinh['Rom'] ?? 'N/A',

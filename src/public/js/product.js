@@ -102,15 +102,49 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.querySelector('#modalProductMauSac').textContent = product.mauSac || 'N/A';
                 document.querySelector('#modalProductCamera').textContent = product.camera || 'N/A';
                 document.querySelector('#modalProductTrangThai').textContent = product.trangThai === "1" ? 'Còn hàng' : 'Hết hàng';
+                console.log(product);
+                // Gọi API để lấy tất cả ảnh của dòng sản phẩm
+                fetch(`/smartstation/src/mvc/controllers/AnhController.php?idDSP=${product.idDSP}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Lỗi tải ảnh');
+                    }
+                    return response.json();
+                })
+                .then(images => {
+                    let thumbnailHTML = '';
+                    if (images && images.length > 0) {
+                        images.forEach((image, index) => {
+                            const imageSrc = image.Anh ? `data:image/jpeg;base64,${image.Anh}` : '/smartstation/src/public/img/default.png';
+                            thumbnailHTML += `
+                                <img src="${imageSrc}" alt="${productName} thumbnail" class="thumbnail-image ${index === 0 ? 'active' : ''}" data-index="${index}">
+                            `;
+                        });
+                    } else {
+                        // Nếu không có ảnh, hiển thị ảnh mặc định
+                        thumbnailHTML = `
+                            <img src="${imageSrc}" alt="${productName} thumbnail" class="thumbnail-image active" data-index="0">
+                        `;
+                    }
+                    document.querySelector('.thumbnail-gallery').innerHTML = thumbnailHTML;
 
-                // Xử lý thư viện ảnh thu nhỏ
-                const thumbnailHTML = `
-                    <img src="${imageSrc}" alt="${productName} thumbnail" class="thumbnail-image active" data-index="0">
-                `;
-                document.querySelector('.thumbnail-gallery').innerHTML = thumbnailHTML;
-
-                // Gắn sự kiện cho ảnh thu nhỏ
-                attachThumbnailListeners();
+                    // Gắn sự kiện cho ảnh thu nhỏ
+                    attachThumbnailListeners();
+                })
+                .catch(error => {
+                    console.error('Lỗi tải ảnh:', error);
+                    // Hiển thị ảnh mặc định nếu lỗi
+                    const thumbnailHTML = `
+                        <img src="${imageSrc}" alt="${productName} thumbnail" class="thumbnail-image active" data-index="0">
+                    `;
+                    document.querySelector('.thumbnail-gallery').innerHTML = thumbnailHTML;
+                    attachThumbnailListeners();
+                });
             });
         });
     }
