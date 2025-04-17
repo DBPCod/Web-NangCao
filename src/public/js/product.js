@@ -85,9 +85,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     priceHTML = giaGoc;
                 }
                 const imageSrc = product.image ? `data:image/jpeg;base64,${product.image}` : '/smartstation/src/public/img/default.png';
-                
-                document.querySelector('#modalProductImage').src = imageSrc;
-                document.querySelector('#modalProductImage').alt = productName;
+                console.log(imageSrc);
+                // document.querySelector('#modalProductImage').src = imageSrc;
+                // document.querySelector('#modalProductImage').alt = productName;
                 document.querySelector('#modalProductName').textContent = productName;
                 document.querySelector('#modalProductSpecs').textContent = `RAM: ${product.ram || 'N/A'} - ROM: ${product.rom || 'N/A'}`;
                 document.querySelector('#modalProductPrice').innerHTML = priceHTML;
@@ -117,6 +117,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     return response.json();
                 })
                 .then(images => {
+                    loadCarouselImages(images,product)
+                    console.log(images);
                     let thumbnailHTML = '';
                     if (images && images.length > 0) {
                         images.forEach((image, index) => {
@@ -149,16 +151,54 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function loadCarouselImages(data,product)
+    {
+        
+        var carousel = document.querySelectorAll(".carousel-inner");
+        //có một carousel khác bị trùng class
+        html='';
+        data.forEach((item) => {
+            if(item.IdDongSanPham == product.idDSP && item.IdCHSP == product.idCHSP)
+            {
+                html+=`<div class="carousel-item active">
+                            <img class="d-block w-100" src="data:image/jpeg;base64,${item.Anh}" alt="First slide">
+                        </div>`;
+            }else
+            {
+                html+=`<div class="carousel-item">
+                            <img class="d-block w-100" src="data:image/jpeg;base64,${item.Anh}" alt="Second slide">
+                        </div>`;
+            }
+        });
+        carousel[1].innerHTML=html;
+
+    }
     function attachThumbnailListeners() {
-        console.log(document.querySelectorAll('.thumbnail-image'));
+        var listImg = document.querySelectorAll("#carouselExampleControls .carousel-inner .carousel-item");
+    
         document.querySelectorAll('.thumbnail-image').forEach(thumbnail => {
             thumbnail.addEventListener('click', () => {
-                document.querySelector('#modalProductImage').src = thumbnail.src;
+                // Xóa class 'active' khỏi tất cả carousel-item
+                listImg.forEach(item => {
+                    item.classList.remove("active");
+                });
+    
+                // Lấy index từ thumbnail hiện tại
+                const index = thumbnail.dataset.index;
+    
+                // Thêm class 'active' cho carousel-item tương ứng
+                if (listImg[index]) {
+                    listImg[index].classList.add("active");
+                }
+    
+                // Cập nhật trạng thái active cho thumbnail
                 document.querySelectorAll('.thumbnail-image').forEach(img => img.classList.remove('active'));
                 thumbnail.classList.add('active');
             });
         });
     }
+    
+    
 
     // Tải trang đầu tiên
     loadProducts(1);

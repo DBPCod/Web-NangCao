@@ -567,3 +567,31 @@ footer ul li a:hover {
 .custom-btn:hover {
     background-color: #0056b3;
 }
+
+
+/* Tùy chỉnh kích thước ảnh trong carousel */
+.carousel-inner img {
+    max-height: 300px;
+    object-fit: contain;
+    margin: auto;
+}
+
+/* Đảm bảo carousel có chiều cao cố định */
+.carousel-inner {
+    background-color: #f8f9fa;
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+}
+
+/* Đảm bảo nút điều hướng luôn hiển thị */
+.carousel-control-prev,
+.carousel-control-next {
+    opacity: 1;
+    width: 10%;
+}
+
+.carousel-control-prev:hover,
+.carousel-control-next:hover {
+    /* background: rgba(0, 0, 0, 0.2); */
+}
