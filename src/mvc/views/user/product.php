@@ -72,17 +72,17 @@
                                 <span>128gb</span>
                                 <span>128gb</span>
                             </div>
-                            <!-- ROM -->
-                            <p><strong>ROM:</strong> <span id="modalProductRom"></span></p>
-                            <p><strong>Màn hình:</strong> <span id="modalProductManHinh"></span></p>
-                            <p><strong>Pin:</strong> <span id="modalProductPin"></span></p>
-                            <!-- Màu sắc chọn -->
                             <p><strong>Lựa chọn màu và xem địa chỉ còn hàng</strong></p>
                             <div id="modalProductMauSac" class="d-flex flex-wrap gap-2 mb-3">
                                 <span>Xanh</span>
                                 <span>Đỏ</span>
                                 <span>Hồng</span>
                             </div>
+                            <!-- ROM -->
+                            <p><strong>ROM:</strong> <span id="modalProductRom"></span></p>
+                            <p><strong>Màn hình:</strong> <span id="modalProductManHinh"></span></p>
+                            <p><strong>Pin:</strong> <span id="modalProductPin"></span></p>
+                            <!-- Màu sắc chọn -->
                             <p><strong>Camera:</strong> <span id="modalProductCamera"></span></p>
                             <p><strong>Trạng thái:</strong> <span id="modalProductTrangThai"></span></p>
                         </div>
