@@ -270,31 +270,50 @@ document.addEventListener('DOMContentLoaded', () => {
         
 
 
-        // Tạo Set để lọc RAM và màu không bị trùng
+        
         const ramSet = new Set();
         const colorSet = new Set();
-
+        const ramList = [];
+        const colorList = [];
+        
         product.forEach((item) => {
-            ramSet.add(item.Ram);
-            colorSet.add(item.MauSac);
+            if (!ramSet.has(item.Ram)) {
+                ramSet.add(item.Ram);
+                ramList.push({
+                    Ram: item.Ram,
+                    IdDongSanPham: item.IdDongSanPham
+                });
+            }
+        
+            if (!colorSet.has(item.MauSac)) {
+                colorSet.add(item.MauSac);
+                colorList.push(item.MauSac);
+            }
         });
-
-        const ramList = [...new Set(product.map(item => item.Ram))].sort((a, b) => extractNumber(a) - extractNumber(b));
-            const colorList = [...new Set(product.map(item => item.MauSac))];
-
-            let htmlRam = '', htmlMauSac = '';
-            ramList.forEach(ram => htmlRam += `<span>${ram}</span>`);
-            colorList.forEach(color => htmlMauSac += `<span>${color}</span>`);
-
-            document.getElementById("modalProductRam").innerHTML = htmlRam;
-            document.getElementById("modalProductMauSac").innerHTML = htmlMauSac;
+        
+        // Sắp xếp ramList theo dung lượng RAM
+        ramList.sort((a, b) => extractNumber(a.Ram) - extractNumber(b.Ram));
+        
+        let htmlRam = '', htmlMauSac = '';
+        
+        // Render HTML cho RAM (có cả IdDongSanPham)
+        ramList.forEach(item => {
+            htmlRam += `<span idDSP="${item.IdDongSanPham}">${item.Ram}</span>`;
+        });
+        
+        // Render HTML cho màu sắc
+        colorList.forEach(color => {
+            htmlMauSac += `<span>${color}</span>`;
+        });
+        
+        document.getElementById("modalProductRam").innerHTML = htmlRam;
+        document.getElementById("modalProductMauSac").innerHTML = htmlMauSac;
+        
 
             handleSelectConfigItem(product);
 
         // Gán sự kiện
-        handleSelectConfigItem(product);
-
-
+        // handleSelectConfigItem(product);
     }
 
     function extractNumber(str) {
@@ -341,7 +360,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function setUpAfterSelectedColor(product,selectedColor,ram)
     {
-        console.log(ram);
         product.forEach((item)=>{
             if(item.Ram == ram && item.MauSac == selectedColor)
             {
@@ -376,6 +394,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleSelectConfigItem(product) {
+        console.log(product);
         var ram;
         const ramOptions = document.querySelectorAll('#modalProductRam span');
         ramOptions.forEach(option => {
@@ -387,7 +406,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 let htmlMauSac = '';
                 product.forEach((item) => {
                     if (item.Ram === selectedRam) {
-                        htmlMauSac += `<span>${item.MauSac}</span>`;
+                        htmlMauSac += `<span idchsp=${item.IdCHSP}>${item.MauSac}</span>`;
                     }
                 });
                 setUpAfterSelectedRam(product,selectedRam);
