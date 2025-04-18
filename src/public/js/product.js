@@ -269,48 +269,152 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         
 
-        document.getElementById("modalProductRam");
-        document.getElementById("modalProductMauSac")
-        htmlRam='';
-        htmlMauSac='';
-        product.forEach((item)=>{
-            htmlRam+=`<span>${item.Ram}</span>`;  
-            htmlMauSac+=`<span>${item.MauSac}</span>`;
-        });
-        
-        //set up ram va mau sac
-        document.getElementById("modalProductRam").innerHTML=htmlRam;
-        document.getElementById("modalProductMauSac").innerHTML=htmlMauSac;
 
-        //gan ham su kien cho ram va mau sac
-        handleSelectConfigItem();
+        // Tạo Set để lọc RAM và màu không bị trùng
+        const ramSet = new Set();
+        const colorSet = new Set();
+
+        product.forEach((item) => {
+            ramSet.add(item.Ram);
+            colorSet.add(item.MauSac);
+        });
+
+        const ramList = [...new Set(product.map(item => item.Ram))].sort((a, b) => extractNumber(a) - extractNumber(b));
+            const colorList = [...new Set(product.map(item => item.MauSac))];
+
+            let htmlRam = '', htmlMauSac = '';
+            ramList.forEach(ram => htmlRam += `<span>${ram}</span>`);
+            colorList.forEach(color => htmlMauSac += `<span>${color}</span>`);
+
+            document.getElementById("modalProductRam").innerHTML = htmlRam;
+            document.getElementById("modalProductMauSac").innerHTML = htmlMauSac;
+
+            handleSelectConfigItem(product);
+
+        // Gán sự kiện
+        handleSelectConfigItem(product);
+
+
     }
 
-    function handleSelectConfigItem()
+    function extractNumber(str) {
+        const match = str.match(/\d+/);
+        return match ? parseInt(match[0], 10) : 0;
+    }
+
+
+    function setUpAfterSelectedRam(product,selectedRam)
     {
+        product.forEach((item)=>{
+            if(item.Ram == selectedRam)
+            {
+                const giaGocNum = Number(item.Gia);
+                const giaGoc = !isNaN(giaGocNum) && item.Gia !== null ? `${giaGocNum.toLocaleString('vi-VN')} VNĐ` : 'N/A';
+                let priceHTML = '';
+                let discountText = '';
+                if (item.GiaGiam !== null && item.GiaGiam !== undefined) {
+                    const giaGiamNum = Number(item.GiaGiam);
+                    const giaGiam = !isNaN(giaGiamNum) ? `${giaGiamNum.toLocaleString('vi-VN')} VNĐ` : 'N/A';
+                    priceHTML = `<span class="text-decoration-line-through text-muted me-2">${giaGoc}</span> ${giaGiam}`;
+                    discountText = item.PhanTramGiam ? `Giảm ${item.PhanTramGiam}%` : '';
+                } else {
+                    priceHTML = giaGoc;
+                }
+                document.querySelector('#modalProductName').textContent = item.TenDong;
+                document.querySelector('#modalProductSpecs').textContent = `RAM: ${item.Ram || 'N/A'} - ROM: ${item.Rom || 'N/A'}`;
+                document.querySelector('#modalProductPrice').innerHTML = priceHTML;
+                document.querySelector('#modalProductDiscount').textContent = discountText;
+                document.querySelector('#modalProductPoints').textContent = '';
+                        
+                        // Điền thông số kỹ thuật
+                        // document.querySelector('#modalProductRam').textContent = product.ram || 'N/A';
+                document.querySelector('#modalProductRom').textContent = item.Rom || 'N/A';
+                document.querySelector('#modalProductManHinh').textContent = item.ManHinh || 'N/A';
+                document.querySelector('#modalProductPin').textContent = item.Pin || 'N/A';
+                        // document.querySelector('#modalProductMauSac').textContent = product.mauSac || 'N/A';
+                document.querySelector('#modalProductCamera').textContent = item.Camera || 'N/A';
+                document.querySelector('#modalProductTrangThai').textContent = item.SoLuong !== 0 ? 'Còn hàng' : 'Hết hàng';
+            }
+        });
+    }
+
+
+    function setUpAfterSelectedColor(product,selectedColor,ram)
+    {
+        console.log(ram);
+        product.forEach((item)=>{
+            if(item.Ram == ram && item.MauSac == selectedColor)
+            {
+                const giaGocNum = Number(item.Gia);
+                const giaGoc = !isNaN(giaGocNum) && item.Gia !== null ? `${giaGocNum.toLocaleString('vi-VN')} VNĐ` : 'N/A';
+                let priceHTML = '';
+                let discountText = '';
+                if (item.GiaGiam !== null && item.GiaGiam !== undefined) {
+                    const giaGiamNum = Number(item.GiaGiam);
+                    const giaGiam = !isNaN(giaGiamNum) ? `${giaGiamNum.toLocaleString('vi-VN')} VNĐ` : 'N/A';
+                    priceHTML = `<span class="text-decoration-line-through text-muted me-2">${giaGoc}</span> ${giaGiam}`;
+                    discountText = item.PhanTramGiam ? `Giảm ${item.PhanTramGiam}%` : '';
+                } else {
+                    priceHTML = giaGoc;
+                }
+                document.querySelector('#modalProductName').textContent = item.TenDong;
+                document.querySelector('#modalProductSpecs').textContent = `RAM: ${item.Ram || 'N/A'} - ROM: ${item.Rom || 'N/A'}`;
+                document.querySelector('#modalProductPrice').innerHTML = priceHTML;
+                document.querySelector('#modalProductDiscount').textContent = discountText;
+                document.querySelector('#modalProductPoints').textContent = '';
+                        
+                        // Điền thông số kỹ thuật
+                        // document.querySelector('#modalProductRam').textContent = product.ram || 'N/A';
+                document.querySelector('#modalProductRom').textContent = item.Rom || 'N/A';
+                document.querySelector('#modalProductManHinh').textContent = item.ManHinh || 'N/A';
+                document.querySelector('#modalProductPin').textContent = item.Pin || 'N/A';
+                        // document.querySelector('#modalProductMauSac').textContent = product.mauSac || 'N/A';
+                document.querySelector('#modalProductCamera').textContent = item.Camera || 'N/A';
+                document.querySelector('#modalProductTrangThai').textContent = item.SoLuong !== 0 ? 'Còn hàng' : 'Hết hàng';
+            }
+        });
+    }
+
+    function handleSelectConfigItem(product) {
+        var ram;
         const ramOptions = document.querySelectorAll('#modalProductRam span');
         ramOptions.forEach(option => {
-            option.addEventListener('click', () => {
-                // Xóa lớp 'selected' khỏi tất cả các thẻ span
+            option.addEventListener('click', (e) => {
+                // Lấy RAM được chọn
+                const selectedRam = e.currentTarget.innerText;
+    
+                // Tạo danh sách màu sắc phù hợp
+                let htmlMauSac = '';
+                product.forEach((item) => {
+                    if (item.Ram === selectedRam) {
+                        htmlMauSac += `<span>${item.MauSac}</span>`;
+                    }
+                });
+                setUpAfterSelectedRam(product,selectedRam);
+                ram=selectedRam;
+                // Render lại màu sắc
+                const colorContainer = document.getElementById("modalProductMauSac");
+                colorContainer.innerHTML = htmlMauSac;
+    
+                // Gán sự kiện cho màu sắc mới render
+                const mauSacOptions = colorContainer.querySelectorAll('span');
+                mauSacOptions.forEach(colorOption => {
+                    colorOption.addEventListener('click', (e) => {
+                        mauSacOptions.forEach(item => item.classList.remove('selected'));
+                        colorOption.classList.add('selected');
+                        const selectedColor = e.currentTarget.innerText;
+                        setUpAfterSelectedColor(product,selectedColor,ram)
+                    });
+
+                });
+    
+                // Cập nhật selected cho RAM
                 ramOptions.forEach(item => item.classList.remove('selected'));
-                
-                // Thêm lớp 'selected' vào thẻ span đã chọn
-                option.classList.add('selected');
-            });
-        });
-
-
-        const mauSacOptions = document.querySelectorAll('#modalProductMauSac span');
-        mauSacOptions.forEach(option => {
-            option.addEventListener('click', () => {
-                // Xóa lớp 'selected' khỏi tất cả các thẻ span
-                mauSacOptions.forEach(item => item.classList.remove('selected'));
-                
-                // Thêm lớp 'selected' vào thẻ span đã chọn
                 option.classList.add('selected');
             });
         });
     }
+    
 
 
 });
