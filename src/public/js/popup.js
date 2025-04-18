@@ -255,4 +255,23 @@ function showTab(tabName) {
     }
 }
 
+//tang so luong cua cart
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.btn-increase').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const input = this.previousElementSibling;
+            input.value = parseInt(input.value) + 1;
+        });
+    });
+
+    document.querySelectorAll('.btn-decrease').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const input = this.nextElementSibling;
+            let value = parseInt(input.value);
+            if (value > 1) {
+                input.value = value - 1;
+            }
+        });
+    });
+});
 
