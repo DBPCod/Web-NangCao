@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then(data => {
                     dataCookie = data;
                     xuliWarning(data.theloai);
-                    console.log(data);
+     
                     if (data.success) {
                         checkLoginStatus(data);
                     }
@@ -155,7 +155,6 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(response => response.json())
             .then(data =>{
                 xuliWarning(data.theloai);  
-                console.log(data);
                 if(data.success){
                     dataCookie=data;
                     toast({
@@ -213,7 +212,6 @@ document.addEventListener('DOMContentLoaded', function () {
     if (logoutLinkDesktop) {
         logoutLinkDesktop.addEventListener('click', function (e) {
             e.preventDefault();
-            console.log("a");
             logoutUser();
         });
     }
@@ -273,7 +271,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         updateProfileForm.addEventListener('submit', function (e) {
             e.preventDefault();
-            console.log(e);
             const fullName = document.getElementById('updateFullName').value;
             const phone = document.getElementById('updatePhone').value;
             const email = document.getElementById('updateEmail').value;
@@ -347,7 +344,6 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(response => response.json())
         .then(data =>{
-            console.log(data);
             if(data.success){
                 
                 toast({
@@ -390,7 +386,6 @@ document.addEventListener('DOMContentLoaded', function () {
             
             if(data.success)
             {
-                // console.log(CheckPass(taikhoan, currentPassword.value));
                 document.getElementById('currentPasswordError').style.display = 'none';
             }
             else {
@@ -530,7 +525,7 @@ function checkLoginStatus(data) {
             accountTextDesktop.textContent = data.user.hovaten || 'Tài khoản';
             accountDropdownDesktop.setAttribute('data-bs-toggle', 'dropdown');
         } else {
-            console.log("a");
+ 
             accountTextDesktop.textContent = 'Đăng nhập';
             accountDropdownDesktop.removeAttribute('data-bs-toggle');
         }
@@ -571,7 +566,7 @@ function logoutUser() {
     })
     .then(response => response.json())
     .then(data =>{
-        console.log(data);
+
         if(data.success){
             dataCookie=undefined;
             toast({

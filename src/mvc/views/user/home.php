@@ -21,6 +21,7 @@
         include 'registerForm.php';
         include 'updateProfile.php';
         include 'orderHistory.php';
+        include 'order.php';
     ?>
     <script src="../../../public/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="../../../public/js/jquery.js"></script>
@@ -28,4 +29,5 @@
     <script src="../../../public/js/popup.js"></script>
     <script src="../../../public/toast_message/main.js"></script>
     <script src="../../../public/js/auth.js"></script>
+    <script src="../../../public/js/order.js"></script>
 </body>
