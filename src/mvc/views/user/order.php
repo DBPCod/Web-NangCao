@@ -9,12 +9,13 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="container mt-3">
-                        <div class="row">
+                <div class="container mt-3">
+
+                        <!-- <div class="row">
                             <div class="col-md-6">
                                 <img src="https://via.placeholder.com/300x400" alt="iPhone 16 Pro Max" class="product-image">
                                 <h4 class="mt-3">iPhone 16 Pro Max</h4>
-                                <h3 class="text-success">30,190,000 đ</h3>
+                                <h3 class="text-success" data-price="30190000">30,190,000 đ</h3>
                                 <div class="config-container">
                                     <div class="config-item">
                                         <span class="config-label">RAM</span>
@@ -48,35 +49,40 @@
                                 <div class="mb-3">
                                     <label>Số lượng</label>
                                     <div class="quantity-selector">
-                                        <button>-</button>
-                                        <span>1</span>
-                                        <button>+</button>
+                                        <button class="btn-decrement">-</button>
+                                        <span class="quantity-value">1</span>
+                                        <button class="btn-increment">+</button>
                                     </div>
                                 </div>
+                                <div class="total-price" id="total-price">Tổng tiền: 30,190,000 đ</div>
                                 <div class="mb-3">
                                     <label>Họ và tên *</label>
-                                    <input type="text" class="form-control" placeholder="Họ và tên">
+                                    <input type="text" class="form-control" placeholder="Họ và tên" disabled>
                                 </div>
                                 <div class="mb-3">
                                     <label>Số điện thoại *</label>
-                                    <input type="text" class="form-control" placeholder="Số điện thoại">
+                                    <input type="text" class="form-control" placeholder="Số điện thoại" disabled>
                                     <label class="mt-2">Email *</label>
-                                    <input type="email" class="form-control" placeholder="Email">
+                                    <input type="email" class="form-control" placeholder="Email" disabled>
                                 </div>
                                 <div class="mb-3">
-                                    <label>Tỉnh/Thành phố *</label>
-                                    <select class="form-control">
-                                        <option>Cửa hàng</option>
-                                    </select>
+                                    <label>Địa chỉ *</label>
+                                    <input type="text" class="form-control" id="address-input" placeholder="Địa chỉ" disabled>
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input" type="radio" name="edit-address" id="edit-address" value="edit">
+                                        <label class="form-check-label" for="edit-address">
+                                            Chỉnh sửa địa chỉ
+                                        </label>
+                                    </div>
                                 </div>
 
                                 <button class="btn btn-secondary w-100">Thanh toán</button>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
 
 
-                    <!-- <div class="container mt-3">
+                    <div class="container mt-3">
                         <div class="row mb-4">
                             <div class="col-md-4">
                                 <label>Họ và tên *</label>
@@ -87,8 +93,16 @@
                                 <input type="email" class="form-control" placeholder="Email">
                             </div>
                             <div class="col-md-4">
-                                <label>Địa chỉ *</label>
-                                <input type="text" class="form-control" placeholder="Địa chỉ">
+                            <div class="mb-3">
+                                    <label>Địa chỉ *</label>
+                                    <input type="text" class="form-control" id="address-input" placeholder="Địa chỉ" disabled>
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input" type="radio" name="edit-address" id="edit-address" value="edit">
+                                        <label class="form-check-label" for="edit-address">
+                                            Chỉnh sửa địa chỉ
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -198,7 +212,8 @@
                                 <button class="btn checkout-btn w-100">Thanh toán</button>
                             </div>
                         </div>
-                    </div> -->
+                    </div>
+                    
                 </div>
             </div>
         </div>

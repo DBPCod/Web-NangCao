@@ -100,3 +100,44 @@ myModal.addEventListener('show.bs.modal', function (event) {
         // Ví dụ: hiện thông tin giỏ hàng để xác nhận
     }
 });
+
+// Handle address input editability
+const addressInput = document.getElementById('address-input');
+const editAddressRadio = document.getElementById('edit-address');
+
+editAddressRadio.addEventListener('change', () => {
+    if (editAddressRadio.checked) {
+        addressInput.disabled = false;
+    } else {
+        addressInput.disabled = true;
+    }
+});
+
+
+    const quantityElement = document.querySelector('.quantity-value');
+        const btnDecrement = document.querySelector('.btn-decrement');
+        const btnIncrement = document.querySelector('.btn-increment');
+
+        function updateQuantityButtons(value) {
+            btnDecrement.disabled = value <= 1;
+            btnIncrement.disabled = value >= 10;
+        }
+
+        btnDecrement.addEventListener('click', () => {
+            let value = parseInt(quantityElement.textContent);
+            if (value > 1) {
+                quantityElement.textContent = value - 1;
+                updateQuantityButtons(value - 1);
+                updateTotalPrice();
+            }
+        });
+
+        btnIncrement.addEventListener('click', () => {
+            let value = parseInt(quantityElement.textContent);
+            if (value < 10) {
+                quantityElement.textContent = value + 1;
+                updateQuantityButtons(value + 1);
+                updateTotalPrice();
+            }
+        });
+        updateQuantityButtons(1);
