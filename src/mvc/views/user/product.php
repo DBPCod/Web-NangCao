@@ -88,8 +88,8 @@
                         </div>
                         <!-- Nút MUA NGAY và THÊM VÀO GIỎ HÀNG -->
                         <div class="d-flex gap-2 mt-3">
-                            <button class="btn btn-success btn-buy-now">MUA NGAY</button>
-                            <button class="btn btn-primary btn-add-to-cart">THÊM VÀO GIỎ HÀNG</button>
+                        <button class="btn btn-success btn-buy-now" data-bs-toggle="modal" data-bs-target="#myModal" data-title="MuaNgay">MUA NGAY</button>                            
+                        <button class="btn btn-primary btn-add-to-cart">THÊM VÀO GIỎ HÀNG</button>
                         </div>
                     </div>
                 </div>
@@ -97,6 +97,7 @@
         </div>
     </div>
 </div>
+
 
                 <!-- Pagination -->
                 <nav aria-label="Page navigation">

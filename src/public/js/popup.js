@@ -32,11 +32,11 @@ document.addEventListener('DOMContentLoaded', function () {
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
     
         // Kiểm tra nếu giỏ hàng trống
-        console.log(cart.length);
+
         if (cart.length == 0) {
             document.querySelector(".cart-empty").style.display = "block";
             cartItemsContainer.style.display = "none";
-            console.log(cartItemsContainer);
+  
             document.getElementById("totalPrice").innerText=formatVND(0);
 
         } else {
@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Xử lý nút xóa
         document.querySelectorAll(".btn-danger").forEach((button, index) => {
             button.addEventListener("click", () => {
-                console.log("a");
+   
                 cart.splice(index, 1); // Xóa sản phẩm khỏi mảng
                 localStorage.setItem('cart', JSON.stringify(cart));
                 loadItemCountInCart(); // Tải lại giỏ hàng
@@ -145,7 +145,6 @@ document.addEventListener('DOMContentLoaded', function () {
             return response.json();
         })
         .then(data => {
-            console.log(data);
             const imageSrc = `data:image/jpeg;base64,${data[0].Anh}`;
             
             // Lấy giỏ hàng hiện tại từ localStorage (nếu có)
@@ -435,4 +434,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 });
+
+
 

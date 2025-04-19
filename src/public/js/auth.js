@@ -44,25 +44,8 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-
-
-    const defaultAddressRadio = document.getElementById("defaultAddress");
-    const otherAddressRadio = document.getElementById("otherAddress");
     const customAddressField = document.getElementById("customAddressField");
 
-    // Khi chọn "Chọn địa chỉ khác", hiển thị trường nhập
-    otherAddressRadio.addEventListener("change", function () {
-        if (this.checked) {
-            customAddressField.style.display = "block";
-        }
-    });
-
-    // Khi chọn "Sử dụng địa chỉ mặc định", ẩn trường nhập
-    defaultAddressRadio.addEventListener("change", function () {
-        if (this.checked) {
-            customAddressField.style.display = "none";
-        }
-    });
 
     //ham doi ki tu dac biet luu tren cookie thanh @
     function decodeEmail(encodedEmail) {
@@ -89,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then(data => {
                     dataCookie = data;
                     xuliWarning(data.theloai);
-                    console.log(data);
+     
                     if (data.success) {
                         checkLoginStatus(data);
                     }
@@ -155,7 +138,6 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(response => response.json())
             .then(data =>{
                 xuliWarning(data.theloai);  
-                console.log(data);
                 if(data.success){
                     dataCookie=data;
                     toast({
@@ -213,7 +195,6 @@ document.addEventListener('DOMContentLoaded', function () {
     if (logoutLinkDesktop) {
         logoutLinkDesktop.addEventListener('click', function (e) {
             e.preventDefault();
-            console.log("a");
             logoutUser();
         });
     }
@@ -263,6 +244,7 @@ document.addEventListener('DOMContentLoaded', function () {
         let cookie = getCookie('username');
         const updateProfileModal = document.getElementById('updateProfile');
         updateProfileModal.addEventListener('show.bs.modal', function () {
+            console.log(cookie);
             SetInfor(cookie);
             // document.getElementById('updateUsername').value = localStorage.getItem('username') || '';
             // document.getElementById('updateFullName').value = localStorage.getItem('fullName') || '';
@@ -273,7 +255,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         updateProfileForm.addEventListener('submit', function (e) {
             e.preventDefault();
-            console.log(e);
             const fullName = document.getElementById('updateFullName').value;
             const phone = document.getElementById('updatePhone').value;
             const email = document.getElementById('updateEmail').value;
@@ -347,7 +328,6 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(response => response.json())
         .then(data =>{
-            console.log(data);
             if(data.success){
                 
                 toast({
@@ -390,7 +370,6 @@ document.addEventListener('DOMContentLoaded', function () {
             
             if(data.success)
             {
-                // console.log(CheckPass(taikhoan, currentPassword.value));
                 document.getElementById('currentPasswordError').style.display = 'none';
             }
             else {
@@ -435,7 +414,7 @@ document.addEventListener('DOMContentLoaded', function () {
     //get thông tin khách hàng
     function SetInfor()
     {
-        fetch(`../../controllers/NguoiDungController.php?idNguoiDung=${dataCookie.user.idnguoidung}`)
+        fetch(`/smartstation/src/mvc/controllers/NguoiDungController.php?idNguoiDung=${dataCookie.user.idnguoidung}`)
         .then(response => response.json())
         .then(data =>{
             document.getElementById('updateFullName').value = data.HoVaTen || '';
@@ -530,7 +509,7 @@ function checkLoginStatus(data) {
             accountTextDesktop.textContent = data.user.hovaten || 'Tài khoản';
             accountDropdownDesktop.setAttribute('data-bs-toggle', 'dropdown');
         } else {
-            console.log("a");
+ 
             accountTextDesktop.textContent = 'Đăng nhập';
             accountDropdownDesktop.removeAttribute('data-bs-toggle');
         }
@@ -571,7 +550,7 @@ function logoutUser() {
     })
     .then(response => response.json())
     .then(data =>{
-        console.log(data);
+
         if(data.success){
             dataCookie=undefined;
             toast({

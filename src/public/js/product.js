@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // document.querySelector('#modalProductMauSac').textContent = product.mauSac || 'N/A';
                 document.querySelector('#modalProductCamera').textContent = product.camera || 'N/A';
                 document.querySelector('#modalProductTrangThai').textContent = product.trangThai === "1" ? 'Còn hàng' : 'Hết hàng';
-                console.log(product);
+               
                 // Gọi API để lấy tất cả ảnh của dòng sản phẩm
                 fetch(`/smartstation/src/mvc/controllers/AnhController.php?idDSP=${product.idDSP}`, {
                     method: 'GET',
@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 })
                 .then(images => {
                     loadCarouselImages(images,product)
-                    console.log(images);
+                   
                     let thumbnailHTML = '';
                     if (images && images.length > 0) {
                         images.forEach((image, index) => {
@@ -238,7 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
         product.forEach((item)=>{
             if(item.IdCHSP == idCHSP && item.IdDongSanPham == idDSP)
             {
-                console.log(item);
+                
                 const giaGocNum = Number(item.Gia);
                 const giaGoc = !isNaN(giaGocNum) && item.Gia !== null ? `${giaGocNum.toLocaleString('vi-VN')} VNĐ` : 'N/A';
                 let priceHTML = '';
@@ -394,7 +394,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleSelectConfigItem(product) {
-        console.log(product);
+
         var ram;
         const ramOptions = document.querySelectorAll('#modalProductRam span');
         ramOptions.forEach(option => {
