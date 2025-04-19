@@ -13,7 +13,7 @@
 
                         <div class="row">
                             <div class="col-md-6">
-                                <img src="https://via.placeholder.com/300x400" alt="iPhone 16 Pro Max" class="product-image">
+                                <!-- <img src="https://via.placeholder.com/300x400" alt="iPhone 16 Pro Max" class="product-image">
                                 <h4 class="mt-3">iPhone 16 Pro Max</h4>
                                 <h3 class="text-success" data-price="30190000">30,190,000 đ</h3>
                                 <div class="config-container">
@@ -41,7 +41,7 @@
                                         <span class="config-label">Độ phân giải</span>
                                         <span class="config-value">48MP</span>
                                     </div>
-                                </div>
+                                </div> -->
                             </div>
 
                             <div class="col-md-6">
@@ -57,13 +57,13 @@
                                 <div class="total-price" id="total-price">Tổng tiền: 30,190,000 đ</div>
                                 <div class="mb-3">
                                     <label>Họ và tên *</label>
-                                    <input type="text" class="form-control" placeholder="Họ và tên" disabled>
+                                    <input type="text" class="form-control" placeholder="Họ và tên" id="FullName" disabled>
                                 </div>
                                 <div class="mb-3">
                                     <label>Số điện thoại *</label>
-                                    <input type="text" class="form-control" placeholder="Số điện thoại" disabled>
+                                    <input type="text" class="form-control" placeholder="Số điện thoại" id="PhoneNumber" disabled>
                                     <label class="mt-2">Email *</label>
-                                    <input type="email" class="form-control" placeholder="Email" disabled>
+                                    <input type="email" class="form-control" placeholder="Email" id="Email" disabled>
                                 </div>
                                 <div class="mb-3">
                                     <label>Địa chỉ *</label>
