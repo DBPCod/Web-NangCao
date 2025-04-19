@@ -11,7 +11,7 @@
                 <div class="modal-body">
                 <div class="container mt-3">
 
-                        <!-- <div class="row">
+                        <div class="row">
                             <div class="col-md-6">
                                 <img src="https://via.placeholder.com/300x400" alt="iPhone 16 Pro Max" class="product-image">
                                 <h4 class="mt-3">iPhone 16 Pro Max</h4>
@@ -79,10 +79,10 @@
                                 <button class="btn btn-secondary w-100">Thanh toán</button>
                             </div>
                         </div>
-                    </div> -->
+                    </div>
 
 
-                    <div class="container mt-3">
+                    <!-- <div class="container mt-3">
                         <div class="row mb-4">
                             <div class="col-md-4">
                                 <label>Họ và tên *</label>
@@ -212,7 +212,7 @@
                                 <button class="btn checkout-btn w-100">Thanh toán</button>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                     
                 </div>
             </div>

@@ -44,25 +44,8 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-
-
-    const defaultAddressRadio = document.getElementById("defaultAddress");
-    const otherAddressRadio = document.getElementById("otherAddress");
     const customAddressField = document.getElementById("customAddressField");
 
-    // Khi chọn "Chọn địa chỉ khác", hiển thị trường nhập
-    otherAddressRadio.addEventListener("change", function () {
-        if (this.checked) {
-            customAddressField.style.display = "block";
-        }
-    });
-
-    // Khi chọn "Sử dụng địa chỉ mặc định", ẩn trường nhập
-    defaultAddressRadio.addEventListener("change", function () {
-        if (this.checked) {
-            customAddressField.style.display = "none";
-        }
-    });
 
     //ham doi ki tu dac biet luu tren cookie thanh @
     function decodeEmail(encodedEmail) {
@@ -261,6 +244,7 @@ document.addEventListener('DOMContentLoaded', function () {
         let cookie = getCookie('username');
         const updateProfileModal = document.getElementById('updateProfile');
         updateProfileModal.addEventListener('show.bs.modal', function () {
+            console.log(cookie);
             SetInfor(cookie);
             // document.getElementById('updateUsername').value = localStorage.getItem('username') || '';
             // document.getElementById('updateFullName').value = localStorage.getItem('fullName') || '';
@@ -430,7 +414,7 @@ document.addEventListener('DOMContentLoaded', function () {
     //get thông tin khách hàng
     function SetInfor()
     {
-        fetch(`../../controllers/NguoiDungController.php?idNguoiDung=${dataCookie.user.idnguoidung}`)
+        fetch(`/smartstation/src/mvc/controllers/NguoiDungController.php?idNguoiDung=${dataCookie.user.idnguoidung}`)
         .then(response => response.json())
         .then(data =>{
             document.getElementById('updateFullName').value = data.HoVaTen || '';
