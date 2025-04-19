@@ -49,7 +49,9 @@ include_once '../models/CookieManager.php';
                                 //luu vao cookie
                                 if(CookieManager::get('username') === null)
                                 {
+                                    $user = $this->model->GetInfo($username);
                                     CookieManager::set('username',$username,3600 * 24 * 30);
+                                    CookieManager::set('user',$user['idnguoidung'],3600 * 24 * 30);
                                 }
                                 
                             }
@@ -75,7 +77,7 @@ include_once '../models/CookieManager.php';
                                 //luu vao session
                                 SessionManager::start();
                                 SessionManager::set('user',$user);
-
+                                CookieManager::set('user',$user['idnguoidung'],3600 * 24 * 30);
                                 echo json_encode(["success" => true, "message" => "Đăng nhập thành công!","user" => $user]);
                             }
                             else{
@@ -91,6 +93,7 @@ include_once '../models/CookieManager.php';
                         SessionManager::destroyAll();
                         //set lại thời gian hết hạn cho cookie
                         setcookie('username', '', time() - 3600, '/');
+                        setcookie('user', '', time() - 3600, '/');
                         echo json_encode(["success" => true, "message" => "Đăng xuất thành công!"]);
                     }
                     break;

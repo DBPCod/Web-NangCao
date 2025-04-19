@@ -417,6 +417,7 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch(`/smartstation/src/mvc/controllers/NguoiDungController.php?idNguoiDung=${dataCookie.user.idnguoidung}`)
         .then(response => response.json())
         .then(data =>{
+            console.log(data);
             document.getElementById('updateFullName').value = data.HoVaTen || '';
             document.getElementById('updatePhone').value = data.SoDienThoai || '';
             document.getElementById('updateEmail').value = data.Email || '';
