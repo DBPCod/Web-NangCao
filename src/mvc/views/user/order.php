@@ -8,12 +8,12 @@
                     <h5 class="modal-title">Thanh toán</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body">
-                <div class="container mt-3">
+                <div class="modal-body" id="modalBody">
+                    <div class="container mt-3">
 
                         <div class="row">
                             <div class="col-md-6">
-                                <!-- <img src="https://via.placeholder.com/300x400" alt="iPhone 16 Pro Max" class="product-image">
+                                <img src="https://via.placeholder.com/300x400" alt="iPhone 16 Pro Max" class="product-image">
                                 <h4 class="mt-3">iPhone 16 Pro Max</h4>
                                 <h3 class="text-success" data-price="30190000">30,190,000 đ</h3>
                                 <div class="config-container">
@@ -41,7 +41,7 @@
                                         <span class="config-label">Độ phân giải</span>
                                         <span class="config-value">48MP</span>
                                     </div>
-                                </div> -->
+                                </div>
                             </div>
 
                             <div class="col-md-6">
