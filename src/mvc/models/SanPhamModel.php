@@ -9,18 +9,78 @@ class SanPhamModel {
     }
 
     public function getAllProducts() {
-        $result = $this->db->query("SELECT * FROM sanpham WHERE TrangThai = 1");
+        $result = $this->db->query("
+            SELECT sp.*, chsp.Ram, chsp.Rom, chsp.ManHinh, chsp.Pin, chsp.MauSac, chsp.Camera, dsp.TenDong,
+                   km.PhanTramGiam,
+                   CASE 
+                       WHEN km.PhanTramGiam IS NOT NULL 
+                       THEN sp.Gia - (sp.Gia * km.PhanTramGiam / 100) 
+                       ELSE NULL 
+                   END AS GiaGiam
+            FROM sanpham sp
+            JOIN CauHinhSanPham chsp ON sp.IdCHSP = chsp.IdCHSP
+            JOIN dongsanpham dsp ON sp.IdDongSanPham = dsp.IdDongSanPham
+            LEFT JOIN ctkhuyenmai ctkm ON dsp.IdDongSanPham = ctkm.IdDongSanPham
+            LEFT JOIN khuyenmai km ON ctkm.IdKhuyenMai = km.IdKhuyenMai 
+                AND km.NgayBatDau <= CURDATE() 
+                AND km.NgayKetThuc >= CURDATE() 
+                AND km.TrangThai != 0
+            WHERE sp.TrangThai = 1 AND chsp.TrangThai = 1 AND dsp.TrangThai = 1
+        ");
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
+    public function getProductsByDongSanPham($idDSP) {
+        $stmt = $this->db->prepare("
+            SELECT sp.IdCHSP, sp.IdDongSanPham, sp.Gia, sp.SoLuong, sp.TrangThai, 
+                   chsp.Ram, chsp.Rom, chsp.ManHinh, chsp.Pin, chsp.MauSac, chsp.Camera,
+                   dsp.TenDong,
+                   km.PhanTramGiam,
+                   CASE 
+                       WHEN km.PhanTramGiam IS NOT NULL 
+                       THEN sp.Gia - (sp.Gia * km.PhanTramGiam / 100) 
+                       ELSE NULL 
+                   END AS GiaGiam
+            FROM SanPham sp
+            JOIN CauHinhSanPham chsp ON sp.IdCHSP = chsp.IdCHSP
+            JOIN dongsanpham dsp ON sp.IdDongSanPham = dsp.IdDongSanPham
+            LEFT JOIN ctkhuyenmai ctkm ON dsp.IdDongSanPham = ctkm.IdDongSanPham
+            LEFT JOIN khuyenmai km ON ctkm.IdKhuyenMai = km.IdKhuyenMai 
+                AND km.NgayBatDau <= CURDATE() 
+                AND km.NgayKetThuc >= CURDATE() 
+                AND km.TrangThai != 0
+            WHERE sp.IdDongSanPham = ? AND sp.TrangThai = 1 AND chsp.TrangThai = 1 AND dsp.TrangThai = 1
+        ");
+        $stmt->bind_param("i", $idDSP);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+
     public function getProductById($idCHSP, $idDSP) {
-        $stmt = $this->db->prepare("SELECT * FROM sanpham WHERE IdCHSP = ? AND IdDongSanPham = ?");
+        $stmt = $this->db->prepare("
+            SELECT sp.*, chsp.Ram, chsp.Rom, chsp.ManHinh, chsp.Pin, chsp.MauSac, chsp.Camera,
+                   dsp.TenDong,
+                   km.PhanTramGiam,
+                   CASE 
+                       WHEN km.PhanTramGiam IS NOT NULL 
+                       THEN sp.Gia - (sp.Gia * km.PhanTramGiam / 100) 
+                       ELSE NULL 
+                   END AS GiaGiam
+            FROM sanpham sp
+            JOIN CauHinhSanPham chsp ON sp.IdCHSP = chsp.IdCHSP
+            JOIN dongsanpham dsp ON sp.IdDongSanPham = dsp.IdDongSanPham
+            LEFT JOIN ctkhuyenmai ctkm ON dsp.IdDongSanPham = ctkm.IdDongSanPham
+            LEFT JOIN khuyenmai km ON ctkm.IdKhuyenMai = km.IdKhuyenMai 
+                AND km.NgayBatDau <= CURDATE() 
+                AND km.NgayKetThuc >= CURDATE() 
+                AND km.TrangThai != 0
+            WHERE sp.IdCHSP = ? AND sp.IdDongSanPham = ? AND sp.TrangThai = 1 AND chsp.TrangThai = 1 AND dsp.TrangThai = 1
+        ");
         $stmt->bind_param("ii", $idCHSP, $idDSP);
         $stmt->execute();
         return $stmt->get_result()->fetch_assoc();
     }
 
-    // Hàm cập nhật số lượng trong dongsanpham dựa trên sanpham
     private function updateDongSanPhamQuantity($idDongSanPham) {
         $stmt = $this->db->prepare("
             SELECT SUM(SoLuong) as total 
@@ -44,7 +104,6 @@ class SanPhamModel {
     public function addProduct($data) {
         $this->db->begin_transaction();
         try {
-            // Kiểm tra xem sản phẩm với IdCHSP và IdDongSanPham đã tồn tại chưa
             $stmt = $this->db->prepare("
                 SELECT * FROM sanpham 
                 WHERE IdCHSP = ? AND IdDongSanPham = ?
@@ -55,10 +114,8 @@ class SanPhamModel {
 
             if ($existingProduct) {
                 if ($existingProduct['TrangThai'] == 1) {
-                    // Sản phẩm đã tồn tại và đang hoạt động
                     throw new Exception("Sản phẩm đã tồn tại và đang hoạt động.");
                 } else {
-                    // Sản phẩm tồn tại nhưng TrangThai = 0, cập nhật thành TrangThai = 1 và SoLuong = 0
                     $stmt = $this->db->prepare("
                         UPDATE sanpham 
                         SET TrangThai = 1,
@@ -71,7 +128,6 @@ class SanPhamModel {
                     $stmt->execute();
                 }
             } else {
-                // Nếu sản phẩm chưa tồn tại, thêm mới
                 $stmt = $this->db->prepare("
                     INSERT INTO sanpham (IdCHSP, IdDongSanPham, SoLuong, Gia, TrangThai) 
                     VALUES (?, ?, ?, ?, ?)
@@ -83,7 +139,6 @@ class SanPhamModel {
                 $stmt->execute();
             }
 
-            // Cập nhật số lượng trong dongsanpham
             $this->updateDongSanPhamQuantity($data['IdDongSanPham']);
 
             $this->db->commit();
@@ -105,7 +160,6 @@ class SanPhamModel {
             $stmt->bind_param("idiii", $soLuong, $gia, $trangThai, $idCHSP, $idDSP);
             $stmt->execute();
 
-            // Cập nhật số lượng trong dongsanpham
             $this->updateDongSanPhamQuantity($idDSP);
 
             $this->db->commit();
@@ -127,7 +181,6 @@ class SanPhamModel {
             $stmt->bind_param("ii", $idCHSP, $idDSP);
             $stmt->execute();
 
-            // Cập nhật số lượng trong dongsanpham
             $this->updateDongSanPhamQuantity($idDSP);
 
             $this->db->commit();
