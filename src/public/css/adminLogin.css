@@ -1,0 +1,111 @@
+body {
+    background: linear-gradient(135deg, #28a745, #6dcc1f);
+    /* Gradient background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.login-container {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    max-width: 800px;
+    width: 100%;
+    display: flex;
+}
+
+.illustration-side {
+    flex: 1;
+    background: #f8f9fa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+}
+
+.illustration {
+    max-width: 100%;
+    height: auto;
+}
+
+.form-side {
+    flex: 1;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.form-side h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-control {
+    border-radius: 25px;
+    padding: 0.75rem 1rem;
+    background-color: #f1f1f1;
+    border: none;
+}
+
+.btn-login {
+    background-color: #28a745;
+    border: none;
+    border-radius: 25px;
+    padding: 0.75rem;
+    font-weight: bold;
+    color: white;
+}
+
+.btn-login:hover {
+    background-color: #218838;
+}
+
+.forgot-link {
+    display: block;
+    text-align: center;
+    margin-top: 1rem;
+    color: #6c757d;
+    text-decoration: none;
+}
+
+.forgot-link:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .login-container {
+        flex-direction: column; /* Chuyển thành cột khi nhỏ */
+        max-width: 90%; /* Thu nhỏ chiều rộng */
+        margin: 1rem; /* Thêm lề */
+    }
+
+    .illustration-side, .form-side {
+        flex: none; /* Bỏ flex cố định */
+        width: 100%; /* Chiếm toàn bộ chiều ngang */
+        padding: 1rem; /* Giảm padding */
+    }
+
+    .illustration {
+        max-width: 80%; /* Thu nhỏ ảnh */
+    }
+
+    .form-side h2 {
+        font-size: 1.2rem; /* Giảm kích thước chữ */
+    }
+
+    .form-control, .btn-login {
+        padding: 0.5rem; /* Giảm padding */
+    }
+}
+
+
+.text-danger {
+    color: #dc3545;
+    font-size: 14px;
+    text-align: center;
+}

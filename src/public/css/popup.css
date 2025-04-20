@@ -1,0 +1,211 @@
+/* Tùy chỉnh modal */
+.modal {
+    z-index: 1060;
+}
+
+/* Tùy chỉnh backdrop */
+.modal-backdrop {
+    z-index: 1050;
+    opacity: 0.3 !important; /* Làm backdrop mờ nhẹ hơn */
+}
+
+/* Tùy chỉnh modal-content */
+.custom-modal {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+/* Tùy chỉnh nút đóng */
+.custom-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 1.2rem;
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+    z-index: 1065;
+}
+
+.custom-close:hover {
+    opacity: 1;
+}
+
+/* Tùy chỉnh modal-body */
+.modal-body {
+    padding: 30px;
+}
+
+/* Tùy chỉnh tiêu đề */
+.modal-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333;    
+}
+
+/* Tùy chỉnh input */
+.custom-input {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 0.95rem;
+    transition: border-color 0.3s ease;
+}
+
+.custom-input:focus {
+    border-color: #007bff;
+    box-shadow: none;
+}
+
+/* Tùy chỉnh nút */
+.custom-btn {
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 1rem;
+    font-weight: 500;
+    background-color: #00AA00;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+.custom-btn:hover {
+    background-color: #138a13;
+}
+
+/* Định dạng cart-item trong giỏ hàng */
+.cart-item {
+    display: flex;
+    justify-content: space-between;  /* Căn đều các phần tử */
+    align-items: center;  /* Căn giữa theo chiều dọc */
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    padding: 12px 16px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    transition: background-color 0.3s ease;
+}
+
+.cart-item:hover {
+    background-color: #f1f1f1;
+}
+
+.cart-item img {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.cart-item-info {
+    display: flex;
+    align-items: center;
+}
+
+.cart-item-info h6 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: #333;
+}
+
+.cart-item-info span {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 8px;
+    display: inline-block;
+}
+
+/* Canh chỉnh phần input số lượng */
+.input-group.quantity-group {
+    width: 110px;
+}
+
+.quantity-input {
+    height: 32px;
+    font-size: 0.9rem;
+}
+
+.btn-decrease,
+.btn-increase {
+    padding: 4px 10px;
+    font-size: 0.9rem;
+}
+
+/* Nút xóa nhỏ gọn */
+.cart-item .btn-danger {
+    font-size: 0.8rem;
+    padding: 4px 10px;
+    white-space: nowrap;
+}
+
+/* Căn giữa phần các điều khiển trong cart-item */
+.cart-item-controls {
+    display: flex;
+    align-items: center;
+}
+
+/* Tổng cộng căn phải rõ ràng */
+.modal-body p.text-end strong {
+    font-size: 1.1rem;
+    color: #222;
+}
+
+
+/* Tùy chỉnh lại input-group chứa nút +/- và ô nhập số lượng */
+.quantity-group {
+    width: 110px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+/* Tùy chỉnh ô nhập số */
+.quantity-input {
+    width: 40px;
+    height: 32px;
+    border: none;
+    text-align: center;
+    font-size: 0.95rem;
+    padding: 0;
+    outline: none;
+}
+
+/* Ẩn mũi tên tăng giảm mặc định trong input[type=number] */
+.quantity-input::-webkit-outer-spin-button,
+.quantity-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.quantity-input[type=number] {
+    -moz-appearance: textfield; /* Firefox */
+}
+
+/* Nút tăng giảm */
+.btn-decrease,
+.btn-increase {
+    display: flex; /* thêm dòng này để bật flex */
+    align-items: center; /* canh giữa theo chiều dọc */
+    justify-content: center; /* canh giữa theo chiều ngang */
+    background-color: #f0f0f0;
+    border: none;
+    font-size: 1rem;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    color: #333;
+    transition: background-color 0.3s ease;
+}
+
+
+.btn-decrease:hover,
+.btn-increase:hover {
+    background-color: #dcdcdc;
+    color: #000;
+}
