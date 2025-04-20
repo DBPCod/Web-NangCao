@@ -23,17 +23,13 @@ class SanPhamChiTietModel {
     public function addSanPhamChiTiet($data) {
         $this->db->begin_transaction();
         try {
-            // Kiểm tra IMEI duy nhất
             $existing = $this->getSanPhamChiTietByImei($data['Imei']);
             if ($existing) {
                 throw new Exception("IMEI đã tồn tại");
             }
-
-            // Đảm bảo IdPhieuNhap được truyền vào
             if (!isset($data['IdPhieuNhap'])) {
                 throw new Exception("Thiếu IdPhieuNhap");
             }
-
             $stmt = $this->db->prepare("INSERT INTO sanphamchitiet (Imei, TrangThai, IdCHSP, IdDongSanPham, IdBaoHanh, IdPhieuNhap) VALUES (?, ?, ?, ?, ?, ?)");
             $stmt->bind_param("siiiii", $data['Imei'], $data['TrangThai'], $data['IdCHSP'], $data['IdDongSanPham'], $data['IdBaoHanh'], $data['IdPhieuNhap']);
             $stmt->execute();
@@ -75,6 +71,38 @@ class SanPhamChiTietModel {
         } catch (Exception $e) {
             $this->db->rollback();
             throw new Exception("Lỗi xóa sản phẩm chi tiết: " . $e->getMessage());
+        }
+    }
+
+    public function getAndLockSanPhamChiTietByCHSPandDSP($idCHSP, $idDongSanPham) {
+        // $this->db->begin_transaction();
+        try {
+            $stmt = $this->db->prepare("
+                SELECT * 
+                FROM sanphamchitiet 
+                WHERE IdCHSP = ? AND IdDongSanPham = ? AND TrangThai = 1 
+                LIMIT 1
+            ");
+            $stmt->bind_param("ii", $idCHSP, $idDongSanPham);
+            $stmt->execute();
+            $result = $stmt->get_result()->fetch_assoc();
+            if (!$result) {
+                throw new Exception("Không tìm thấy sản phẩm chi tiết phù hợp");
+            }
+
+            $stmt = $this->db->prepare("
+                UPDATE sanphamchitiet 
+                SET TrangThai = 0 
+                WHERE Imei = ?
+            ");
+            $stmt->bind_param("s", $result['Imei']);
+            $stmt->execute();
+
+            $this->db->commit();
+            return $result;
+        } catch (Exception $e) {
+            $this->db->rollback();
+            throw new Exception("Lỗi khi lấy và khóa sản phẩm chi tiết: " . $e->getMessage());
         }
     }
 }

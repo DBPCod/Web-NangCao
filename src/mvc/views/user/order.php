@@ -76,7 +76,7 @@
                                     </div>
                                 </div>
 
-                                <button class="btn btn-secondary w-100">Thanh toán</button>
+                                <button class="btn btn-secondary w-100" onclick="handleCheckout()">Thanh toán</button>
                             </div>
                         </div>
                     </div>

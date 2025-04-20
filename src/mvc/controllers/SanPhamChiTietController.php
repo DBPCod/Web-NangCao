@@ -17,10 +17,19 @@ class SanPhamChiTietController {
             case 'GET':
                 if (isset($_GET['imei'])) {
                     $data = $this->model->getSanPhamChiTietByImei($_GET['imei']);
+                    echo json_encode($data);
+                } else if (isset($_GET['idCHSP']) && isset($_GET['idDongSanPham'])) {
+                    try {
+                        $data = $this->model->getAndLockSanPhamChiTietByCHSPandDSP($_GET['idCHSP'], $_GET['idDongSanPham']);
+                        echo json_encode($data);
+                    } catch (Exception $e) {
+                        http_response_code(500);
+                        echo json_encode(["message" => $e->getMessage()]);
+                    }
                 } else {
                     $data = $this->model->getAllSanPhamChiTiet();
+                    echo json_encode($data);
                 }
-                echo json_encode($data);
                 break;
 
             case 'POST':

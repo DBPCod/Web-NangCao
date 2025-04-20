@@ -60,7 +60,7 @@
                     <div class="col-md-7">
                         <h5 id="modalProductName" class="product-name"></h5>
                         <p id="modalProductSpecs" class="product-specs"></p>
-                        <p id="modalProductPrice" class="product-price"></p>
+                        <p id="modalProductPrice" class="product-price" id="productPrice"></p>
                         <p id="modalProductDiscount" class="product-discount text-warning"></p>
                         <p id="modalProductPoints" class="product-points"></p>
                         <!-- Thông số kỹ thuật -->

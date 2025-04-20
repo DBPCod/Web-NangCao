@@ -367,6 +367,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const giaGoc = !isNaN(giaGocNum) && item.Gia !== null ? `${giaGocNum.toLocaleString('vi-VN')} VNĐ` : 'N/A';
                 let priceHTML = '';
                 let discountText = '';
+                console.log("A");
                 if (item.GiaGiam !== null && item.GiaGiam !== undefined) {
                     const giaGiamNum = Number(item.GiaGiam);
                     const giaGiam = !isNaN(giaGiamNum) ? `${giaGiamNum.toLocaleString('vi-VN')} VNĐ` : 'N/A';

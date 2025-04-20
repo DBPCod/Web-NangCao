@@ -3,6 +3,7 @@ const quantityElement = modal.querySelector('.quantity-value');
 const btnDecrement = modal.querySelector('.btn-decrement');
 const btnIncrement = modal.querySelector('.btn-increment');
 var priceElement = modal.querySelector('.text-success');
+var idNguoiDung = getCookieValue('user');
 // Function to format price with commas
 function formatPrice(price) {
     return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " đ";
@@ -189,7 +190,8 @@ function handleClickMuaNgay()
         // const actionType = this.getAttribute('data-title');
             var idDSP = elementDSP.getAttribute('iddsp');
             var idCHSP = elementCHSP.getAttribute('idchsp');
-            var priceProduct = document.querySelector('.product-price').innerText;
+            var priceProduct = document.querySelector('#modalProductPrice').innerText;
+            console.log(document.querySelector('#modalProductPrice').innerText);
             getAnh(idCHSP,idDSP,priceProduct);
     }
     else
@@ -214,6 +216,7 @@ function getAnh(idCHSP,idDSP,priceProduct)
         return response.json();
     })
     .then(data => {
+        console.log(data);
         if(data.length!=0)
         {
             imageSrc = `data:image/jpeg;base64,${data[0].Anh}`;
@@ -239,59 +242,168 @@ function getAnh(idCHSP,idDSP,priceProduct)
 }
 
 // Get customer information and set
-function SetInfor(product) {
+async function SetInfor(product) {
+    try {
+        const userResponse = await fetch(`/smartstation/src/mvc/controllers/NguoiDungController.php?idNguoiDung=${idNguoiDung}`);
+        const userData = await userResponse.json();
+        document.getElementById('FullName').value = userData.HoVaTen || '';
+        document.getElementById('PhoneNumber').value = userData.SoDienThoai || '';
+        document.getElementById('Email').value = userData.Email || '';
+        document.getElementById('address-input').value = userData.DiaChi || '';
 
-    var idNguoiDung = getCookieValue('user');
-    fetch(`/smartstation/src/mvc/controllers/NguoiDungController.php?idNguoiDung=${idNguoiDung}`)
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('FullName').value = data.HoVaTen || '';
-            document.getElementById('PhoneNumber').value = data.SoDienThoai || '';
-            document.getElementById('Email').value = data.Email || '';
-            document.getElementById('address-input').value = data.DiaChi || '';
+        const productResponse = await fetch(`/smartstation/src/mvc/controllers/SanPhamController.php?idDSP=${product.idDSP}&idCHSP=${product.idCHSP}`);
+        const productData = await productResponse.json();
+
+        const html = `
+            <img src="${product.img}" alt="" class="product-image">
+            <h4 class="mt-3">${productData.TenDong}</h4>
+            <h3 class="text-success" data-price="${product.price}">${product.price}</h3>
+            <div class="config-container">
+                <div class="config-item">
+                    <span class="config-label">RAM</span>
+                    <span class="config-value">${productData.Ram}</span>
+                </div>
+                <div class="config-item">
+                    <span class="config-label">Bộ nhớ trong</span>
+                    <span class="config-value">${productData.Rom}</span>
+                </div>
+                <div class="config-item">
+                    <span class="config-label">Màn hình</span>
+                    <span class="config-value">${productData.ManHinh}</span>
+                </div>
+                <div class="config-item">
+                    <span class="config-label">Dung lượng pin</span>
+                    <span class="config-value">${productData.Pin}</span>
+                </div>
+                <div class="config-item">
+                    <span class="config-label">Màu sắc</span>
+                    <span class="config-value">${productData.MauSac}</span>
+                </div>
+                <div class="config-item">
+                    <span class="config-label">Độ phân giải</span>
+                    <span class="config-value">${productData.Camera}</span>
+                </div>
+            </div>`;
+        
+        const productContainer = document.querySelector(".col-md-6");
+        productContainer.innerHTML = html;
+        productContainer.dataset.idCHSP = product.idCHSP;
+        productContainer.dataset.idDSP = product.idDSP;
+        document.querySelector('.modal-body .total-price').innerText = `Tổng tiền: ${product.price}`;
+        setupModalQuantitySelectors();
+        quantityElement.innerText = 1;
+
+        const myModal = new bootstrap.Modal(document.getElementById('myModal'));
+        myModal.show();
+        document.getElementById('edit-address').checked=false;
+        document.getElementById('address-input').disabled = true;
+
+    } catch (error) {
+        console.error("Lỗi khi thiết lập thông tin:", error);
+        alert("Lỗi: " + error.message);
+    }
+}
+
+
+async function getIdTaiKhoan(idNguoiDung) {
+    try {
+        const response = await fetch(`/smartstation/src/mvc/controllers/TaiKhoanController.php?idNguoiDung=${idNguoiDung}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
         });
+        const data = await response.json();
+        if (data && data.IdTaiKhoan) {
+            return data.IdTaiKhoan;
+        }
+        throw new Error("Không tìm thấy IdTaiKhoan cho IdNguoiDung: " + idNguoiDung);
+    } catch (error) {
+        console.error("Lỗi khi lấy IdTaiKhoan:", error);
+        throw error;
+    }
+}
 
-        fetch(`/smartstation/src/mvc/controllers/SanPhamController.php?idDSP=${product.idDSP}&idCHSP=${product.idCHSP}`)
-        .then(response => response.json())
-        .then(data => {
+async function handleCheckout() {
+    try {
+        const radioBtn = document.getElementById('edit-address');
+        const newAddress = document.getElementById('address-input').value;
+        const quantity = parseInt(quantityElement.textContent) || 1;
+        const priceElement = modal.querySelector('.text-success');
+        const totalPrice = parseFormattedPrice(priceElement.dataset.price.replace("đ", "").trim()) * quantity;
+        const idCHSP = modal.querySelector('.col-md-6').dataset.idCHSP;
+        const idDongSanPham = modal.querySelector('.col-md-6').dataset.idDSP;
+        const currentDate = new Date().toISOString().slice(0, 10);
 
-            html=`<img src="${product.img}" alt="" class="product-image">
-                                <h4 class="mt-3">${data.TenDong}</h4>
-                                <h3 class="text-success" data-price="${product.price}">${product.price}</h3>
-                                <div class="config-container">
-                                    <div class="config-item">
-                                        <span class="config-label">RAM</span>
-                                        <span class="config-value">${data.Ram}</span>
-                                    </div>
-                                    <div class="config-item">
-                                        <span class="config-label">Bộ nhớ trong</span>
-                                        <span class="config-value">${data.Rom}</span>
-                                    </div>
-                                    <div class="config-item">
-                                        <span class="config-label">Màn hình</span>
-                                        <span class="config-value">${data.ManHinh}</span>
-                                    </div>
-                                    <div class="config-item">
-                                        <span class="config-label">Dung lượng pin</span>
-                                        <span class="config-value">${data.Pin}</span>
-                                    </div>
-                                    <div class="config-item">
-                                        <span class="config-label">Màu sắc</span>
-                                        <span class="config-value">${data.MauSac}</span>
-                                    </div>
-                                    <div class="config-item">
-                                        <span class="config-label">Độ phân giải</span>
-                                        <span class="config-value">${data.Camera}</span>
-                                    </div>
-                                </div>`;
-            
+        const idTaiKhoan = await getIdTaiKhoan(idNguoiDung);
 
-            document.querySelector(".col-md-6").innerHTML = html;
-            document.querySelector('.modal-body .total-price').innerText=`Tổng tiền: ${product.price}`;
-            setupModalQuantitySelectors();
-            quantityElement.innerText=1;
-            const myModal = new bootstrap.Modal(document.getElementById('myModal'));
-            myModal.show();
+        
+        if (radioBtn.checked && newAddress) {
+            console.log(newAddress);
+            const response = await fetch(`/smartstation/src/mvc/controllers/NguoiDungController.php?idNguoiDung=${idNguoiDung}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ DiaChi: newAddress })
+            });
+            const data = await response.json();
+            if (!data.success) {
+                throw new Error("Cập nhật địa chỉ thất bại");
+            }
+        }
+console.log(idCHSP, idDongSanPham);
+        const response = await fetch(`/smartstation/src/mvc/controllers/SanPhamChiTietController.php?idCHSP=${idCHSP}&idDongSanPham=${idDongSanPham}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
         });
+        const data = await response.json();
+        if (!data || !data.Imei) {
+            throw new Error("Không tìm thấy sản phẩm chi tiết hoặc đã hết hàng");
+        }
+        const imei = data.Imei;
+        console.log(totalPrice);
+        const hoaDonData = {
+            IdTaiKhoan: idTaiKhoan,
+            NgayTao: currentDate,
+            ThanhTien: totalPrice,
+            TrangThai: 1,
+            IdTinhTrang: 1,
+            SoLuong: quantity,
+            IdCHSP: idCHSP,
+            IdDongSanPham: idDongSanPham
+        };
+
+        const hoaDonResponse = await fetch('/smartstation/src/mvc/controllers/HoaDonController.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(hoaDonData)
+        });
+        const hoaDonDataResult = await hoaDonResponse.json();
+        if (!hoaDonDataResult.HoaDon) {
+            throw new Error("Thêm hóa đơn thất bại");
+        }
+        const idHoaDon = hoaDonDataResult.HoaDon.IdHoaDon;
+
+        const ctHoaDonData = {
+            IdHoaDon: idHoaDon,
+            GiaTien: totalPrice / quantity,
+            SoLuong: quantity,
+            Imei: imei
+        };
+
+        const ctHoaDonResponse = await fetch('/smartstation/src/mvc/controllers/CTHoaDonController.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(ctHoaDonData)
+        });
+        const ctHoaDonResult = await ctHoaDonResponse.json();
+        if (ctHoaDonResult.message.includes("thành công")) {
+            alert("Thanh toán thành công!");
+            const myModal = bootstrap.Modal.getInstance(document.getElementById('myModal'));
+            myModal.hide();
+        } else {
+            throw new Error("Thêm chi tiết hóa đơn thất bại");
+        }
+    } catch (error) {
+        console.error("Lỗi thanh toán:", error);
+        alert("Lỗi thanh toán: " + error.message);
+    }
 }
 
