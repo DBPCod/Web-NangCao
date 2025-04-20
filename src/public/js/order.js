@@ -15,18 +15,18 @@ function parseFormattedPrice(formattedPrice) {
 }
 
 // Function to calculate and update total price
-function updateTotalPrice() {
-    let total = 0;
-    const productDetail = document.querySelectorAll('.product-details');
-    if (productDetail.length !== 0) {
-        productDetail.forEach(product => {
-            const price = parseInt(product.dataset.price);
-            const quantity = parseInt(product.querySelector('.quantity-value').textContent);
-            total += price * quantity;
-        });
-        document.getElementById('total-price').textContent = `Tổng tiền: ${formatPrice(total)}`;
-    }
-}
+// function updateTotalPrice() {
+//     let total = 0;
+//     const productDetail = document.querySelectorAll('.product-details');
+//     if (productDetail.length !== 0) {
+//         productDetail.forEach(product => {
+//             const price = parseInt(product.dataset.price);
+//             const quantity = parseInt(product.querySelector('.quantity-value').textContent);
+//             total += price * quantity;
+//         });
+//         document.getElementById('total-price').textContent = `Tổng tiền: ${formatPrice(total)}`;
+//     }
+// }
 
 // Function to update total price in modal
 //dùng cho 1 sản phẩm
