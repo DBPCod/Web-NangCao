@@ -13,26 +13,7 @@
     <!-- Filter content -->
     <div class="filter-section collapse d-md-block" id="filterCollapse">
         <h5>LỰA CHỌN HÃNG</h5>
-        <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="apple" />
-            <label class="form-check-label" for="apple">Apple</label>
-        </div>
-        <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="samsung" />
-            <label class="form-check-label" for="samsung">Samsung</label>
-        </div>
-        <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="xiaomi" />
-            <label class="form-check-label" for="xiaomi">Xiaomi</label>
-        </div>
-        <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="tecno" />
-            <label class="form-check-label" for="tecno">Tecno</label>
-        </div>
-        <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="oppo" />
-            <label class="form-check-label" for="oppo">Oppo</label>
-        </div>
+        <div class="brand-list"></div>
         <h5 class="mt-4">MỨC GIÁ</h5>
         <div class="price-range">
             <input
@@ -50,7 +31,7 @@
         <h5 class="mt-4"></h5>
         <div class="form-check">
             <input class="form-check-input" type="checkbox" id="app1" />
-            <label class="form-check-label" for="app1">Dưới 3triệu</label>
+            <label class="form-check-label" for="app1">Dưới 3 triệu</label>
         </div>
         <div class="form-check">
             <input class="form-check-input" type="checkbox" id="app2" />
@@ -62,12 +43,13 @@
         </div>
         <div class="form-check">
             <input class="form-check-input" type="checkbox" id="app4" />
-            <label class="form-check-label" for="app3">6 đến 10 triệu</label>
+            <label class="form-check-label" for="app4">6 đến 10 triệu</label>
         </div>
         <div class="form-check">
             <input class="form-check-input" type="checkbox" id="app5" />
-            <label class="form-check-label" for="app3">Trên 10 triệu</label>
-        </div><!-- Filter Dung lượng RAM -->
+            <label class="form-check-label" for="app5">Trên 10 triệu</label>
+        </div>
+        <!-- Filter Dung lượng RAM -->
         <h5 class="mt-4">DUNG LƯỢNG RAM</h5>
         <div class="form-check">
             <input class="form-check-input" type="checkbox" id="ram1" />
