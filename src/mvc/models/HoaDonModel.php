@@ -8,7 +8,6 @@ class HoaDonModel {
         $this->db = (new DB())->conn;
     }
 
-    // Lấy tất cả hóa đơn với bộ lọc, chỉ lấy TrangThai = 1
     public function getAllHoaDon($filters = []) {
         $query = "
             SELECT h.*, nd.HoVaTen 
@@ -20,28 +19,21 @@ class HoaDonModel {
         $params = [];
         $types = "";
 
-        // Lọc theo tình trạng
         if (!empty($filters['tinhTrang'])) {
             $query .= " AND h.IdTinhTrang = ?";
             $params[] = $filters['tinhTrang'];
             $types .= "i";
         }
-
-        // Lọc theo ngày bắt đầu
         if (!empty($filters['fromDate'])) {
             $query .= " AND h.NgayTao >= ?";
             $params[] = $filters['fromDate'];
             $types .= "s";
         }
-
-        // Lọc theo ngày kết thúc
         if (!empty($filters['toDate'])) {
             $query .= " AND h.NgayTao <= ?";
             $params[] = $filters['toDate'];
             $types .= "s";
         }
-
-        // Lọc theo địa chỉ (tìm kiếm trong DiaChi của nguoidung)
         if (!empty($filters['diaChi'])) {
             $query .= " AND nd.DiaChi LIKE ?";
             $params[] = "%" . $filters['diaChi'] . "%";
@@ -56,7 +48,6 @@ class HoaDonModel {
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
 
-    // Lấy hóa đơn theo IdHoaDon
     public function getHoaDonById($idHoaDon) {
         $stmt = $this->db->prepare("
             SELECT h.*, nd.HoVaTen 
@@ -70,28 +61,127 @@ class HoaDonModel {
         return $stmt->get_result()->fetch_assoc();
     }
 
-    // Thêm hóa đơn mới
     public function addHoaDon($data) {
-        $stmt = $this->db->prepare("INSERT INTO hoadon (IdTaiKhoan, NgayTao, ThanhTien, TrangThai, IdTinhTrang) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("isdis", $data['IdTaiKhoan'], $data['NgayTao'], $data['ThanhTien'], $data['TrangThai'], $data['IdTinhTrang']);
-        $stmt->execute();
-        return $this->getHoaDonById($this->db->insert_id);
+        $this->db->begin_transaction();
+        try {
+            $stmt = $this->db->prepare("
+                INSERT INTO hoadon (IdTaiKhoan, NgayTao, ThanhTien, TrangThai, IdTinhTrang) 
+                VALUES (?, ?, ?, ?, ?)
+            ");
+            $stmt->bind_param("isdis", 
+                $data['IdTaiKhoan'], 
+                $data['NgayTao'], 
+                $data['ThanhTien'], 
+                $data['TrangThai'], 
+                $data['IdTinhTrang']
+            );
+            $stmt->execute();
+            $idHoaDon = $this->db->insert_id;
+
+            $stmt = $this->db->prepare("
+                UPDATE sanpham 
+                SET SoLuong = SoLuong - ? 
+                WHERE IdCHSP = ? AND IdDongSanPham = ? AND SoLuong >= ?
+            ");
+            $stmt->bind_param("iiii", 
+                $data['SoLuong'], 
+                $data['IdCHSP'], 
+                $data['IdDongSanPham'], 
+                $data['SoLuong']
+            );
+            $stmt->execute();
+
+            if ($stmt->affected_rows === 0) {
+                throw new Exception("Số lượng sản phẩm không đủ hoặc sản phẩm không tồn tại");
+            }
+
+            $stmt = $this->db->prepare("
+                UPDATE dongsanpham 
+                SET SoLuong = (
+                    SELECT SUM(SoLuong) 
+                    FROM sanpham 
+                    WHERE IdDongSanPham = ? AND TrangThai = 1
+                )
+                WHERE IdDongSanPham = ?
+            ");
+            $stmt->bind_param("ii", $data['IdDongSanPham'], $data['IdDongSanPham']);
+            $stmt->execute();
+
+            $this->db->commit();
+            return $this->getHoaDonById($idHoaDon);
+        } catch (Exception $e) {
+            $this->db->rollback();
+            throw new Exception("Lỗi thêm hóa đơn: " . $e->getMessage());
+        }
     }
 
-    // Cập nhật hóa đơn
+    public function addMultiProductHoaDon($data) {
+        $this->db->begin_transaction();
+        try {
+            // Insert into hoadon
+            $stmt = $this->db->prepare("
+                INSERT INTO hoadon (IdTaiKhoan, NgayTao, ThanhTien, TrangThai, IdTinhTrang) 
+                VALUES (?, ?, ?, ?, ?)
+            ");
+            $stmt->bind_param("isdis", 
+                $data['IdTaiKhoan'], 
+                $data['NgayTao'], 
+                $data['ThanhTien'], 
+                $data['TrangThai'], 
+                $data['IdTinhTrang']
+            );
+            $stmt->execute();
+            $idHoaDon = $this->db->insert_id;
+
+            // Update inventory for each product
+            foreach ($data['products'] as $product) {
+                $stmt = $this->db->prepare("
+                    UPDATE sanpham 
+                    SET SoLuong = SoLuong - ? 
+                    WHERE IdCHSP = ? AND IdDongSanPham = ? AND SoLuong >= ?
+                ");
+                $stmt->bind_param("iiii", 
+                    $product['SoLuong'], 
+                    $product['IdCHSP'], 
+                    $product['IdDongSanPham'], 
+                    $product['SoLuong']
+                );
+                $stmt->execute();
+
+                if ($stmt->affected_rows === 0) {
+                    throw new Exception("Số lượng sản phẩm không đủ hoặc sản phẩm không tồn tại cho IdCHSP: {$product['IdCHSP']}");
+                }
+
+                $stmt = $this->db->prepare("
+                    UPDATE dongsanpham 
+                    SET SoLuong = (
+                        SELECT SUM(SoLuong) 
+                        FROM sanpham 
+                        WHERE IdDongSanPham = ? AND TrangThai = 1
+                    )
+                    WHERE IdDongSanPham = ?
+                ");
+                $stmt->bind_param("ii", $product['IdDongSanPham'], $product['IdDongSanPham']);
+                $stmt->execute();
+            }
+
+            $this->db->commit();
+            return $this->getHoaDonById($idHoaDon);
+        } catch (Exception $e) {
+            $this->db->rollback();
+            throw new Exception("Lỗi thêm hóa đơn nhiều sản phẩm: " . $e->getMessage());
+        }
+    }
+
     public function updateHoaDon($idHoaDon, $data) {
         $this->db->begin_transaction();
         try {
-            // Cập nhật IdTinhTrang của hóa đơn
             $stmt = $this->db->prepare("UPDATE hoadon SET IdTinhTrang = ? WHERE IdHoaDon = ?");
             $stmt->bind_param("ii", $data['IdTinhTrang'], $idHoaDon);
             $stmt->execute();
 
-            // Xử lý dựa trên IdTinhTrang mới
             $newTinhTrang = $data['IdTinhTrang'];
-
-            if ($newTinhTrang == 4) { // Đơn hàng bị hủy
-                // Lấy chi tiết hóa đơn để biết sản phẩm và số lượng
+            if ($newTinhTrang == 4) {
                 $stmt = $this->db->prepare("
                     SELECT ct.Imei, ct.SoLuong, spct.IdCHSP, spct.IdDongSanPham
                     FROM cthoadon ct
@@ -108,7 +198,6 @@ class HoaDonModel {
                     $idCHSP = $ct['IdCHSP'];
                     $idDongSanPham = $ct['IdDongSanPham'];
 
-                    // Cập nhật số lượng trong sanpham
                     $stmt = $this->db->prepare("
                         UPDATE sanpham 
                         SET SoLuong = SoLuong + ?
@@ -117,7 +206,6 @@ class HoaDonModel {
                     $stmt->bind_param("iii", $soLuong, $idCHSP, $idDongSanPham);
                     $stmt->execute();
 
-                    // Cập nhật số lượng trong dongsanpham
                     $stmt = $this->db->prepare("
                         UPDATE dongsanpham 
                         SET SoLuong = (
@@ -130,8 +218,7 @@ class HoaDonModel {
                     $stmt->bind_param("ii", $idDongSanPham, $idDongSanPham);
                     $stmt->execute();
                 }
-            } elseif ($newTinhTrang == 3) { // Giao hàng thành công
-                // Cập nhật TrangThai của sanphamchitiet thành 0
+            } elseif ($newTinhTrang == 3) {
                 $stmt = $this->db->prepare("
                     UPDATE sanphamchitiet spct
                     JOIN cthoadon ct ON spct.Imei = ct.Imei
@@ -150,10 +237,10 @@ class HoaDonModel {
         }
     }
 
-    // Xóa hóa đơn (ẩn hóa đơn bằng cách thay đổi trạng thái)
     public function deleteHoaDon($idHoaDon) {
         $stmt = $this->db->prepare("UPDATE hoadon SET TrangThai = 0 WHERE IdHoaDon = ?");
         $stmt->bind_param("i", $idHoaDon);
         return $stmt->execute();
     }
 }
+?>

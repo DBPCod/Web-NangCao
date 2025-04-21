@@ -3,6 +3,9 @@ const quantityElement = modal.querySelector('.quantity-value');
 const btnDecrement = modal.querySelector('.btn-decrement');
 const btnIncrement = modal.querySelector('.btn-increment');
 var priceElement = modal.querySelector('.text-success');
+var idNguoiDung = getCookieValue('user');
+let isQuantitySelectorsSetup = false;
+
 // Function to format price with commas
 function formatPrice(price) {
     return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " đ";
@@ -14,18 +17,18 @@ function parseFormattedPrice(formattedPrice) {
 }
 
 // Function to calculate and update total price
-function updateTotalPrice() {
-    let total = 0;
-    const productDetail = document.querySelectorAll('.product-details');
-    if (productDetail.length !== 0) {
-        productDetail.forEach(product => {
-            const price = parseInt(product.dataset.price);
-            const quantity = parseInt(product.querySelector('.quantity-value').textContent);
-            total += price * quantity;
-        });
-        document.getElementById('total-price').textContent = `Tổng tiền: ${formatPrice(total)}`;
-    }
-}
+// function updateTotalPrice() {
+//     let total = 0;
+//     const productDetail = document.querySelectorAll('.product-details');
+//     if (productDetail.length !== 0) {
+//         productDetail.forEach(product => {
+//             const price = parseInt(product.dataset.price);
+//             const quantity = parseInt(product.querySelector('.quantity-value').textContent);
+//             total += price * quantity;
+//         });
+//         document.getElementById('total-price').textContent = `Tổng tiền: ${formatPrice(total)}`;
+//     }
+// }
 
 // Function to update total price in modal
 //dùng cho 1 sản phẩm
@@ -38,96 +41,119 @@ function updateModalTotalPrice(price, quantity) {
     }
 }
 
-// Handle quantity selectors, delete, and details for all products
-document.querySelectorAll('.product-details').forEach(product => {
-    const deleteBtn = product.querySelector('.delete-btn');
-    const detailsBtn = product.querySelector('.details-btn');
+// function handleQuantityButton()
+// {
+//     // Handle quantity selectors, delete, and details for all products
+//     document.querySelectorAll('.product-details').forEach(product => {
+//         const deleteBtn = product.querySelector('.delete-btn');
+//         const detailsBtn = product.querySelector('.details-btn');
 
-    function updateQuantityButtons(value) {
-        btnDecrement.disabled = value <= 1;
-        btnIncrement.disabled = value >= 10;
-    }
+//         function updateQuantityButtons(value) {
+//             btnDecrement.disabled = value <= 1;
+//             btnIncrement.disabled = value >= 10;
+//         }
 
-    btnDecrement.addEventListener('click', () => {
-        let value = parseInt(quantityElement.textContent);
-        if (value > 1) {
-            quantityElement.textContent = value - 1;
-            updateQuantityButtons(value - 1);
-            updateTotalPrice();
-        }
-    });
+//         btnDecrement.addEventListener('click', () => {
+//             let value = parseInt(quantityElement.textContent);
+//             if (value > 1) {
+//                 quantityElement.textContent = value - 1;
+//                 updateQuantityButtons(value - 1);
+//                 updateTotalPrice();
+//             }
+//         });
 
-    btnIncrement.addEventListener('click', () => {
-        let value = parseInt(quantityElement.textContent);
-        if (value < 10) {
-            quantityElement.textContent = value + 1;
-            updateQuantityButtons(value + 1);
-            updateTotalPrice();
-        }
-    });
+//         btnIncrement.addEventListener('click', () => {
+//             let value = parseInt(quantityElement.textContent);
+//             if (value < 10) {
+//                 quantityElement.textContent = value + 1;
+//                 updateQuantityButtons(value + 1);
+//                 updateTotalPrice();
+//             }
+//         });
 
-    deleteBtn.addEventListener('click', () => {
-        product.remove();
-        updateTotalPrice();
-        const configContainer = document.getElementById('config-container');
-        if (configContainer.dataset.currentProduct === product.dataset.config) {
-            configContainer.innerHTML = '<p>Chọn một sản phẩm để xem chi tiết cấu hình.</p>';
-        }
-    });
+//         deleteBtn.addEventListener('click', () => {
+//             product.remove();
+//             updateTotalPrice();
+//             const configContainer = document.getElementById('config-container');
+//             if (configContainer.dataset.currentProduct === product.dataset.config) {
+//                 configContainer.innerHTML = '<p>Chọn một sản phẩm để xem chi tiết cấu hình.</p>';
+//             }
+//         });
 
-    detailsBtn.addEventListener('click', () => {
-        const config = JSON.parse(product.dataset.config);
-        const configContainer = document.getElementById('config-container');
-        configContainer.innerHTML = ''; // Clear previous config
-        configContainer.dataset.currentProduct = JSON.stringify(config); // Track the current product config
+//         detailsBtn.addEventListener('click', () => {
+//             const config = JSON.parse(product.dataset.config);
+//             const configContainer = document.getElementById('config-container');
+//             configContainer.innerHTML = ''; // Clear previous config
+//             configContainer.dataset.currentProduct = JSON.stringify(config); // Track the current product config
 
-        for (const [label, value] of Object.entries(config)) {
-            const configItem = document.createElement('div');
-            configItem.className = 'config-item';
-            configItem.innerHTML = `
-                <span class="config-label">${label}</span>
-                <span class="config-value">${value}</span>
-            `;
-            configContainer.appendChild(configItem);
-        }
-    });
+//             for (const [label, value] of Object.entries(config)) {
+//                 const configItem = document.createElement('div');
+//                 configItem.className = 'config-item';
+//                 configItem.innerHTML = `
+//                     <span class="config-label">${label}</span>
+//                     <span class="config-value">${value}</span>
+//                 `;
+//                 configContainer.appendChild(configItem);
+//             }
+//         });
 
-    // Initial button state
-    updateQuantityButtons(1);
-});
+//         // Initial button state
+//         updateQuantityButtons(1);
+//     });
+// }
+
+
+function handleCloseModal()
+{
+    const myModal = bootstrap.Modal.getInstance(document.getElementById('myModal'));
+    myModal.hide();
+}
 
 // Handle modal quantity selectors
 //
-//dung cho nhieu san pham
-function setupModalQuantitySelectors() {
-    priceElement = modal.querySelector('.text-success');
-    console.log(priceElement);
-    const price = parseFormattedPrice((priceElement.dataset.price).replace("đ", "").trim());
-    function updateQuantityButtons(value) {
-        btnDecrement.disabled = value <= 1;
-        btnIncrement.disabled = value >= 10;
-    }
+//dung cho mot san pham
 
-    btnDecrement.addEventListener('click', () => {
-        let value = parseInt(quantityElement.textContent);
-        if (value > 1) {
-            quantityElement.textContent = value - 1;
-            updateQuantityButtons(value - 1);
-            updateModalTotalPrice(price, value - 1);
-        }
-    });
+function updateQuantityButtons(value) {
+    btnDecrement.disabled = value <= 1;
+    btnIncrement.disabled = value >= 10;
+}
+
+
+function setupModalQuantitySelectors() {
+
+    // // Initial button state
+    updateQuantityButtons(1);
+    if (isQuantitySelectorsSetup) return;
+    priceElement = modal.querySelector('.text-success');
+    const price = parseFormattedPrice((priceElement.dataset.price).replace("đ", "").trim());
+
+    
+
 
     btnIncrement.addEventListener('click', () => {
+        console.log("a");
         let value = parseInt(quantityElement.textContent);
         if (value < 10) {
+            console.log(quantityElement.textContent);
             quantityElement.textContent = value + 1;
+            console.log(value + 1 +' tăng');
             updateQuantityButtons(value + 1);
             updateModalTotalPrice(price, value + 1);
         }
     });
 
-    // Initial button state
-    updateQuantityButtons(1);
+    btnDecrement.addEventListener('click', () => {
+        let value = parseInt(quantityElement.textContent);
+        if (value > 1) {
+            quantityElement.textContent = value - 1;
+            console.log(value - 1 +' giảm');
+            updateQuantityButtons(value - 1);
+            updateModalTotalPrice(price, value - 1);
+        }
+    });
+
+    isQuantitySelectorsSetup = true;
+    
 }
 
 // Call setup for modal quantity selectors when modal is shown
@@ -163,10 +189,6 @@ function handleAddressInput()
     });
 }
 
-// Initial total price calculation
-// updateTotalPrice();
-handleAddressInput();
-// setupModalQuantitySelectors();
 
 
 function getCookieValue(name) 
@@ -189,7 +211,7 @@ function handleClickMuaNgay()
         // const actionType = this.getAttribute('data-title');
             var idDSP = elementDSP.getAttribute('iddsp');
             var idCHSP = elementCHSP.getAttribute('idchsp');
-            var priceProduct = document.querySelector('.product-price').innerText;
+            var priceProduct = document.querySelector('#modalProductPrice').innerText;
             getAnh(idCHSP,idDSP,priceProduct);
     }
     else
@@ -238,60 +260,226 @@ function getAnh(idCHSP,idDSP,priceProduct)
     });
 }
 
-// Get customer information and set
-function SetInfor(product) {
-
-    var idNguoiDung = getCookieValue('user');
-    fetch(`/smartstation/src/mvc/controllers/NguoiDungController.php?idNguoiDung=${idNguoiDung}`)
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('FullName').value = data.HoVaTen || '';
-            document.getElementById('PhoneNumber').value = data.SoDienThoai || '';
-            document.getElementById('Email').value = data.Email || '';
-            document.getElementById('address-input').value = data.DiaChi || '';
-        });
-
-        fetch(`/smartstation/src/mvc/controllers/SanPhamController.php?idDSP=${product.idDSP}&idCHSP=${product.idCHSP}`)
-        .then(response => response.json())
-        .then(data => {
-
-            html=`<img src="${product.img}" alt="" class="product-image">
-                                <h4 class="mt-3">${data.TenDong}</h4>
-                                <h3 class="text-success" data-price="${product.price}">${product.price}</h3>
-                                <div class="config-container">
-                                    <div class="config-item">
-                                        <span class="config-label">RAM</span>
-                                        <span class="config-value">${data.Ram}</span>
+function checkLoadDataBuyNow()
+{
+    if(document.getElementById('FullName')==null)
+        {
+            var html = `<div class="container mt-3">
+    
+                            <div class="row">
+                                <div class="col-md-6">
+                                    
+                                </div>
+    
+                                <div class="col-md-6">
+                                    <h3>Đặt hàng sản phẩm</h3>
+                                    <div class="mb-3">
+                                        <label>Số lượng</label>
+                                        <div class="quantity-selector">
+                                            <button class="btn-decrement">-</button>
+                                            <span class="quantity-value">1</span>
+                                            <button class="btn-increment">+</button>
+                                        </div>
                                     </div>
-                                    <div class="config-item">
-                                        <span class="config-label">Bộ nhớ trong</span>
-                                        <span class="config-value">${data.Rom}</span>
+                                    <div class="total-price" id="total-price">Tổng tiền: 30,190,000 đ</div>
+                                    <div class="mb-3">
+                                        <label>Họ và tên *</label>
+                                        <input type="text" class="form-control" placeholder="Họ và tên" id="FullName" disabled>
                                     </div>
-                                    <div class="config-item">
-                                        <span class="config-label">Màn hình</span>
-                                        <span class="config-value">${data.ManHinh}</span>
+                                    <div class="mb-3">
+                                        <label>Số điện thoại *</label>
+                                        <input type="text" class="form-control" placeholder="Số điện thoại" id="PhoneNumber" disabled>
+                                        <label class="mt-2">Email *</label>
+                                        <input type="email" class="form-control" placeholder="Email" id="Email" disabled>
                                     </div>
-                                    <div class="config-item">
-                                        <span class="config-label">Dung lượng pin</span>
-                                        <span class="config-value">${data.Pin}</span>
+                                    <div class="mb-3">
+                                        <label>Địa chỉ *</label>
+                                        <input type="text" class="form-control" id="address-input" placeholder="Địa chỉ" disabled>
+                                        <div class="form-check mt-2">
+                                            <input class="form-check-input" type="radio" name="edit-address" id="edit-address" value="edit">
+                                            <label class="form-check-label" for="edit-address">
+                                                Chỉnh sửa địa chỉ
+                                            </label>
+                                        </div>
                                     </div>
-                                    <div class="config-item">
-                                        <span class="config-label">Màu sắc</span>
-                                        <span class="config-value">${data.MauSac}</span>
-                                    </div>
-                                    <div class="config-item">
-                                        <span class="config-label">Độ phân giải</span>
-                                        <span class="config-value">${data.Camera}</span>
-                                    </div>
-                                </div>`;
-            
-
-            document.querySelector(".col-md-6").innerHTML = html;
-            document.querySelector('.modal-body .total-price').innerText=`Tổng tiền: ${product.price}`;
-            setupModalQuantitySelectors();
-            quantityElement.innerText=1;
-            const myModal = new bootstrap.Modal(document.getElementById('myModal'));
-            myModal.show();
-        });
+    
+                                    <button class="btn btn-secondary w-100" onclick="handleClickBuyNow()">Thanh toán</button>
+                                </div>
+                            </div>
+                        </div>`
+    
+            var modalBody = document.getElementById('modalbody');
+            modalBody.innerHTML = html;
+            return true;
+        }
+        return false;
 }
+
+// Get customer information and set
+async function SetInfor(product) {  
+    
+    checkLoadDataBuyNow();
+    try {
+        const userResponse = await fetch(`/smartstation/src/mvc/controllers/NguoiDungController.php?idNguoiDung=${idNguoiDung}`);
+        const userData = await userResponse.json();
+        document.getElementById('FullName').value = userData.HoVaTen || '';
+        document.getElementById('PhoneNumber').value = userData.SoDienThoai || '';
+        document.getElementById('Email').value = userData.Email || '';
+        document.getElementById('address-input').value = userData.DiaChi || '';
+
+        const productResponse = await fetch(`/smartstation/src/mvc/controllers/SanPhamController.php?idDSP=${product.idDSP}&idCHSP=${product.idCHSP}`);
+        const productData = await productResponse.json();
+
+        const html = `
+            <img src="${product.img}" alt="" class="product-image">
+            <h4 class="mt-3">${productData.TenDong}</h4>
+            <h3 class="text-success" data-price="${product.price}">${product.price}</h3>
+            <div class="config-container">
+                <div class="config-item">
+                    <span class="config-label">RAM</span>
+                    <span class="config-value">${productData.Ram}</span>
+                </div>
+                <div class="config-item">
+                    <span class="config-label">Bộ nhớ trong</span>
+                    <span class="config-value">${productData.Rom}</span>
+                </div>
+                <div class="config-item">
+                    <span class="config-label">Màn hình</span>
+                    <span class="config-value">${productData.ManHinh}</span>
+                </div>
+                <div class="config-item">
+                    <span class="config-label">Dung lượng pin</span>
+                    <span class="config-value">${productData.Pin}</span>
+                </div>
+                <div class="config-item">
+                    <span class="config-label">Màu sắc</span>
+                    <span class="config-value">${productData.MauSac}</span>
+                </div>
+                <div class="config-item">
+                    <span class="config-label">Độ phân giải</span>
+                    <span class="config-value">${productData.Camera}</span>
+                </div>
+            </div>`;
+        const productContainer = document.querySelector(".col-md-6");
+        productContainer.innerHTML = html;
+        productContainer.dataset.idCHSP = product.idCHSP;
+        productContainer.dataset.idDSP = product.idDSP;
+        document.querySelector('.modal-body .total-price').innerText = `Tổng tiền: ${product.price}`;
+        quantityElement.innerText = 1;
+
+        const myModal = new bootstrap.Modal(document.getElementById('myModal'));
+        myModal.show();
+        setupModalQuantitySelectors();
+        document.getElementById('edit-address').checked=false;
+        document.getElementById('address-input').disabled = true;
+
+    } catch (error) {
+        console.error("Lỗi khi thiết lập thông tin:", error);
+        alert("Lỗi: " + error.message);
+    }
+}
+
+
+async function getIdTaiKhoan(idNguoiDung) {
+    try {
+        const response = await fetch(`/smartstation/src/mvc/controllers/TaiKhoanController.php?idNguoiDung=${idNguoiDung}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        const data = await response.json();
+        if (data && data.IdTaiKhoan) {
+            return data.IdTaiKhoan;
+        }
+        throw new Error("Không tìm thấy IdTaiKhoan cho IdNguoiDung: " + idNguoiDung);
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function handleCheckout() {
+    try {
+        const radioBtn = document.getElementById('edit-address');
+        const newAddress = document.getElementById('address-input').value;
+        const quantity = parseInt(quantityElement.textContent) || 1;
+        const priceElement = modal.querySelector('.text-success');
+        const totalPrice = parseFormattedPrice(priceElement.dataset.price.replace("đ", "").trim()) * quantity;
+        const idCHSP = modal.querySelector('.col-md-6').dataset.idCHSP;
+        const idDongSanPham = modal.querySelector('.col-md-6').dataset.idDSP;
+        const currentDate = new Date().toISOString().slice(0, 10);
+        const idTaiKhoan = await getIdTaiKhoan(idNguoiDung);
+        const response = await fetch(`/smartstation/src/mvc/controllers/SanPhamChiTietController.php?idCHSP=${idCHSP}&idDongSanPham=${idDongSanPham}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        const data = await response.json();
+        if (!data || !data.Imei) {
+            throw new Error("Không tìm thấy sản phẩm chi tiết hoặc đã hết hàng");
+        }
+        const imei = data.Imei;
+        const hoaDonData = {
+            IdTaiKhoan: idTaiKhoan,
+            NgayTao: currentDate,
+            ThanhTien: totalPrice,
+            TrangThai: 1,
+            IdTinhTrang: 1,
+            SoLuong: quantity,
+            IdCHSP: idCHSP,
+            IdDongSanPham: idDongSanPham
+        };
+
+        const hoaDonResponse = await fetch('/smartstation/src/mvc/controllers/HoaDonController.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(hoaDonData)
+        });
+        const hoaDonDataResult = await hoaDonResponse.json();
+        if (!hoaDonDataResult.HoaDon) {
+            throw new Error("Thêm hóa đơn thất bại");
+        }
+        if (radioBtn.checked && newAddress) {
+            const response = await fetch(`/smartstation/src/mvc/controllers/NguoiDungController.php?idNguoiDung=${idNguoiDung}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ DiaChi: newAddress })
+            });
+            const data = await response.json();
+            if (!data.success) {
+                throw new Error("Cập nhật địa chỉ thất bại");
+            }
+        }
+        const idHoaDon = hoaDonDataResult.HoaDon.IdHoaDon;
+
+        const ctHoaDonData = {
+            IdHoaDon: idHoaDon,
+            GiaTien: totalPrice / quantity,
+            SoLuong: quantity,
+            Imei: imei
+        };
+
+        const ctHoaDonResponse = await fetch('/smartstation/src/mvc/controllers/CTHoaDonController.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(ctHoaDonData)
+        });
+        const ctHoaDonResult = await ctHoaDonResponse.json();
+        if (ctHoaDonResult.message.includes("thành công")) {
+            alert("Thanh toán thành công!");
+            const myModal = bootstrap.Modal.getInstance(document.getElementById('myModal'));
+            myModal.hide();
+        } else {
+            throw new Error("Thêm chi tiết hóa đơn thất bại");
+        }
+    } catch (error) {
+        console.error("Lỗi thanh toán:", error);
+        alert("Lỗi thanh toán: " + error.message);
+    }
+
+}
+
+function handleClickBuyNow()
+{
+    handleClickMuaNgay();
+    handleAddressInput();;
+}
+
 

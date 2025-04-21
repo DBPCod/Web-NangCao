@@ -39,11 +39,19 @@ class HoaDonController {
                 break;
 
             case 'POST':
-                $newHoaDon = $this->model->addHoaDon($input);
-                echo json_encode([
-                    "message" => "Thêm hóa đơn thành công",
-                    "HoaDon" => $newHoaDon
-                ]);
+                if (isset($input['products']) && is_array($input['products'])) {
+                    $newHoaDon = $this->model->addMultiProductHoaDon($input);
+                    echo json_encode([
+                        "message" => "Thêm hóa đơn nhiều sản phẩm thành công",
+                        "HoaDon" => $newHoaDon
+                    ]);
+                } else {
+                    $newHoaDon = $this->model->addHoaDon($input);
+                    echo json_encode([
+                        "message" => "Thêm hóa đơn thành công",
+                        "HoaDon" => $newHoaDon
+                    ]);
+                }
                 break;
 
             case 'PUT':

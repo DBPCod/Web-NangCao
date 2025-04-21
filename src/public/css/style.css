@@ -963,3 +963,9 @@ footer ul li a:hover {
     text-align: right;
     margin-top: 10px;
 }
+
+.btn:hover {
+    color: var(--bs-btn-hover-color);
+    background-color: #28a745;
+    border-color: var(--bs-btn-hover-border-color);
+}
