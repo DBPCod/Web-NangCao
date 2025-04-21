@@ -115,6 +115,64 @@ class HoaDonModel {
         }
     }
 
+    public function addMultiProductHoaDon($data) {
+        $this->db->begin_transaction();
+        try {
+            // Insert into hoadon
+            $stmt = $this->db->prepare("
+                INSERT INTO hoadon (IdTaiKhoan, NgayTao, ThanhTien, TrangThai, IdTinhTrang) 
+                VALUES (?, ?, ?, ?, ?)
+            ");
+            $stmt->bind_param("isdis", 
+                $data['IdTaiKhoan'], 
+                $data['NgayTao'], 
+                $data['ThanhTien'], 
+                $data['TrangThai'], 
+                $data['IdTinhTrang']
+            );
+            $stmt->execute();
+            $idHoaDon = $this->db->insert_id;
+
+            // Update inventory for each product
+            foreach ($data['products'] as $product) {
+                $stmt = $this->db->prepare("
+                    UPDATE sanpham 
+                    SET SoLuong = SoLuong - ? 
+                    WHERE IdCHSP = ? AND IdDongSanPham = ? AND SoLuong >= ?
+                ");
+                $stmt->bind_param("iiii", 
+                    $product['SoLuong'], 
+                    $product['IdCHSP'], 
+                    $product['IdDongSanPham'], 
+                    $product['SoLuong']
+                );
+                $stmt->execute();
+
+                if ($stmt->affected_rows === 0) {
+                    throw new Exception("Số lượng sản phẩm không đủ hoặc sản phẩm không tồn tại cho IdCHSP: {$product['IdCHSP']}");
+                }
+
+                $stmt = $this->db->prepare("
+                    UPDATE dongsanpham 
+                    SET SoLuong = (
+                        SELECT SUM(SoLuong) 
+                        FROM sanpham 
+                        WHERE IdDongSanPham = ? AND TrangThai = 1
+                    )
+                    WHERE IdDongSanPham = ?
+                ");
+                $stmt->bind_param("ii", $product['IdDongSanPham'], $product['IdDongSanPham']);
+                $stmt->execute();
+            }
+
+            $this->db->commit();
+            return $this->getHoaDonById($idHoaDon);
+        } catch (Exception $e) {
+            $this->db->rollback();
+            throw new Exception("Lỗi thêm hóa đơn nhiều sản phẩm: " . $e->getMessage());
+        }
+    }
+
     public function updateHoaDon($idHoaDon, $data) {
         $this->db->begin_transaction();
         try {

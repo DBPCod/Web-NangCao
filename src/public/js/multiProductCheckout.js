@@ -1,6 +1,6 @@
 const checkoutModal = document.getElementById('checkoutModal');
 const productList = checkoutModal.querySelector('#product-list');
-// const idNguoiDung = getCookieValue('user');
+// const idNguoiDung = getCookie('user');
 let isQuantitySelectorsSetup = false;
 
 // Format price with commas (e.g., 30190000 -> 30,190,000 đ)
@@ -23,24 +23,22 @@ function parseFormattedPrice(formattedPrice) {
 }
 
 // Get cookie value by name
-function getCookieValue(name) {
-    const regex = new RegExp(`(^| )${name}=([^;]+)`);
-    const match = document.cookie.match(regex);
-    return match ? match[2] : null;
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return null;
 }
 
 // Update total price of all products
 function updateTotalPrice() {
     let total = 0;
     const products = productList.querySelectorAll('.product-details');
-    console.log("aa");
-    console.log(products);
     products.forEach(product => {
         const price = parseFormattedPrice(product.dataset.price);
         const quantity = parseInt(product.querySelector('.quantity-value').textContent);
         total += price * quantity;
     });
-    console.log(total);
     const totalPriceElement = checkoutModal.querySelector('#total-price-products');
     totalPriceElement.innerText = `Tổng tiền: ${formatPrice(total)}`;
 }
@@ -119,7 +117,7 @@ function setupProductDetails() {
                         <span class="config-value">${value}</span>
                     </div>`;
             }
-            productList.innerHTML = html;
+            configContainer.innerHTML = html; // Gán vào config-container thay vì productList
         });
     });
 }
@@ -164,6 +162,7 @@ async function setUserInfo() {
     try {
         const response = await fetch(`/smartstation/src/mvc/controllers/NguoiDungController.php?idNguoiDung=${idNguoiDung}`);
         const userData = await response.json();
+        document.getElementById('checkoutTel').value = userData.SoDienThoai || '';
         document.getElementById('checkoutFullName').value = userData.HoVaTen || '';
         document.getElementById('checkoutEmail').value = userData.Email || '';
         document.getElementById('checkoutAddressInput').value = userData.DiaChi || '';
@@ -199,37 +198,34 @@ async function handleMultiProductCheckout() {
         const products = productList.querySelectorAll('.product-details');
         const currentDate = new Date().toISOString().slice(0, 10);
         const idTaiKhoan = await getIdTaiKhoan(idNguoiDung);
-
         if (products.length === 0) {
             throw new Error("Giỏ hàng trống!");
         }
 
         // Calculate total price and collect product data
         let totalPrice = 0;
-        let totalQuantity = 0;
         const productData = [];
         for (const product of products) {
             const price = parseFormattedPrice(product.dataset.price);
             const quantity = parseInt(product.querySelector('.quantity-value').textContent);
-            const idCHSP = product.dataset.idCHSP;
-            const idDSP = product.dataset.idDSP;
+            const idCHSP = product.dataset.idchsp; // Fixed: Use camelCase to match dataset
+            const idDSP = product.dataset.iddsp;   // Fixed: Use camelCase to match dataset
             totalPrice += price * quantity;
-            totalQuantity += quantity;
             productData.push({ price, quantity, idCHSP, idDSP });
         }
-
-        // Create invoice (HoaDon)
+        // Create invoice (HoaDon) with all products
         const hoaDonData = {
             IdTaiKhoan: idTaiKhoan,
             NgayTao: currentDate,
             ThanhTien: totalPrice,
             TrangThai: 1,
             IdTinhTrang: 1,
-            SoLuong: totalQuantity,
-            IdCHSP: productData[0].idCHSP, // For compatibility with single product
-            IdDongSanPham: productData[0].idDSP // For compatibility with single product
+            products: productData.map(p => ({
+                IdCHSP: p.idCHSP,
+                IdDongSanPham: p.idDSP,
+                SoLuong: p.quantity
+            }))
         };
-
         const hoaDonResponse = await fetch('/smartstation/src/mvc/controllers/HoaDonController.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -255,7 +251,7 @@ async function handleMultiProductCheckout() {
             }
         }
 
-        // Process each product
+        // Process each product for CTHoaDon
         for (let i = 0; i < productData.length; i++) {
             const { price, quantity, idCHSP, idDSP } = productData[i];
 
@@ -282,6 +278,7 @@ async function handleMultiProductCheckout() {
                     Imei: imei
                 };
 
+                
                 const ctHoaDonResponse = await fetch('/smartstation/src/mvc/controllers/CTHoaDonController.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -314,65 +311,49 @@ function handleCloseModal(modalId) {
     isQuantitySelectorsSetup = false; // Reset state
 }
 
-// Initialize modal when shown
-// checkoutModal.addEventListener('show.bs.modal', async () => {
-//     await setUserInfo();
-//     setupQuantitySelectors();
-//     setupProductDetails();
-//     setupProductDeletion();
-//     handleAddressInput('checkoutModal');
-//     document.getElementById('checkoutEditAddress').checked = false;
-//     document.getElementById('checkoutAddressInput').disabled = true;
-// });
-
-// // Reset state when modal closes
-// checkoutModal.addEventListener('hidden.bs.modal', () => {
-//     isQuantitySelectorsSetup = false;
-// });
-
-
-function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-  }
-
-function loadListProduct()
-{
-    let cart = JSON.parse(localStorage.getItem("cart"));
+// Load product list from localStorage
+function loadListProduct() {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
     let html = '';
     cart.forEach((product) => {
-        html+=`<div class="product-details" data-config='{
-                                    "RAM": "${product.ram}",
-                                    "Bộ nhớ trong": "${product.rom}",
-                                    "Màn hình": "${product.screenSize}",
-                                    "Dung lượng pin": "${product.pin}",
-                                    "Màu sắc": "${product.color}",
-                                    "Độ phân giải": "${product.camera}"
-                                    }' data-price="${product.price}" data-idCHSP="${product.idCHSP}" data-idDSP="${product.idDSP}">
-                                    <img src="${product.img}" alt="${product.name}" class="product-image" style="width: 80px;">
-                                    <div class="flex-grow-1">
-                                        <h6>${product.name}</h6>
-                                        <p class="text-success mb-0">${product.price}</p>
-                                    </div>
-                                    <div class="quantity-selector">
-                                        <button class="btn-decrement">-</button>
-                                        <span class="quantity-value">${product.quantity}</span>
-                                        <button class="btn-increment">+</button>
-                                    </div>
-                                    <button class="details-btn">Xem chi tiết</button>
-                                    <button class="delete-btn">Xóa</button>
-                                </div>`;
+        html += `
+            <div class="product-details" data-config='{
+                "RAM": "${product.ram || 'N/A'}",
+                "Bộ nhớ trong": "${product.rom || 'N/A'}",
+                "Màn hình": "${product.screenSize || 'N/A'}",
+                "Dung lượng pin": "${product.pin || 'N/A'}",
+                "Màu sắc": "${product.color || 'N/A'}",
+                "Độ phân giải": "${product.camera || 'N/A'}"
+            }' data-price="${parseFormattedPrice(product.price)}" data-idCHSP="${product.idCHSP}" data-idDSP="${product.idDSP}">
+                <img src="${product.img}" alt="${product.name}" class="product-image" style="width: 80px;">
+                <div class="flex-grow-1">
+                    <h6>${product.name}</h6>
+                    <p class="text-success mb-0">${product.price}</p>
+                </div>
+                <div class="quantity-selector">
+                    <button class="btn-decrement">-</button>
+                    <span class="quantity-value">${product.quantity || 1}</span>
+                    <button class="btn-increment">+</button>
+                </div>
+                <button class="details-btn">Xem chi tiết</button>
+                <button class="delete-btn">Xóa</button>
+            </div>`;
     });
     productList.innerHTML = html;
     updateTotalPrice();
 }
 
-function handleClickCheckout()
-{
-        const myModal = new bootstrap.Modal(checkoutModal);
-        myModal.show();
-        loadListProduct();
+// Handle click checkout button
+function handleClickCheckout() {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    if (cart.length === 0) {
+        alert("Giỏ hàng trống!");
+        return;
+    }
+
+    const myModal = new bootstrap.Modal(checkoutModal);
+    myModal.show();
+    loadListProduct();
     setUserInfo();
     setupQuantitySelectors();
     setupProductDetails();

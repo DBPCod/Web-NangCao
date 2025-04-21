@@ -9,15 +9,19 @@
             <div class="modal-body" id="checkoutModalBody">
                 <div class="container mt-3">
                     <div class="row mb-4">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label>Họ và tên *</label>
-                            <input type="text" class="form-control" placeholder="Họ và tên" id="checkoutFullName">
+                            <input type="text" class="form-control" placeholder="Họ và tên" id="checkoutFullName" disabled>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label>Email *</label>
-                            <input type="email" class="form-control" placeholder="Email" id="checkoutEmail">
+                            <input type="email" class="form-control" placeholder="Email" id="checkoutEmail" disabled>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
+                            <label>Số điện thoại *</label>
+                            <input type="tel" class="form-control" placeholder="Nhập số điện thoại" id="checkoutTel" disabled>
+                        </div>
+                        <div class="col-md-3">
                             <div class="mb-3">
                                 <label>Địa chỉ *</label>
                                 <input type="text" class="form-control" id="checkoutAddressInput" placeholder="Địa chỉ" disabled>
