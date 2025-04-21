@@ -39,7 +39,7 @@
                                     "Dung lượng pin": "4000mAh",
                                     "Màu sắc": "Xanh",
                                     "Độ phân giải": "48MP"
-                                }' data-price="30190000" data-idCHSP="1" data-idDSP="1">
+                                    }' data-price="30190000" data-idCHSP="1" data-idDSP="1">
                                     <img src="https://via.placeholder.com/80x100" alt="iPhone 16 Pro Max" class="product-image" style="width: 80px;">
                                     <div class="flex-grow-1">
                                         <h6>iPhone 16 Pro Max</h6>

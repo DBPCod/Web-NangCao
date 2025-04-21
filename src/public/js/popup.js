@@ -51,6 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }, 0);
             document.getElementById("totalPrice").innerText=formatVND(totalPrice);
             cart.forEach((product, index) => {
+                console.log(product);
                 html += `
                     <div class="cart-item d-flex align-items-center mb-3" data-index="${index}">
                         <div class="cart-item-info d-flex align-items-center">
@@ -118,6 +119,10 @@ document.addEventListener('DOMContentLoaded', function () {
     //Xử lý sự kiện click thêm vào giỏ hàng
     var btnAddCart = document.querySelector(".btn-add-to-cart");
     btnAddCart.addEventListener("click", () => {
+        var rom = document.querySelector("#modalProductRom").innerText;
+        var screenSize= document.querySelector("#modalProductManHinh").innerText;
+        var camera= document.querySelector("#modalProductCamera").innerText;
+        var pin= document.querySelector("#modalProductPin").innerText;
         var nameSP = document.querySelector("#modalProductName").innerText;
         var ramSP = document.querySelector("#modalProductRam .selected").innerText;
         var colorSP = document.querySelector("#modalProductMauSac .selected").innerText;
@@ -160,6 +165,10 @@ document.addEventListener('DOMContentLoaded', function () {
     
             // Tạo đối tượng sản phẩm
             const product = {
+                rom: rom,
+                screenSize: screenSize,
+                camera: camera,
+                pin: pin,
                 img: imageSrc,
                 name: nameSP,
                 ram: ramSP,

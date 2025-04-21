@@ -1,5 +1,4 @@
 const checkoutModal = document.getElementById('checkoutModal');
-console.log(checkoutModal);
 const productList = checkoutModal.querySelector('#product-list');
 // const idNguoiDung = getCookieValue('user');
 let isQuantitySelectorsSetup = false;
@@ -34,11 +33,14 @@ function getCookieValue(name) {
 function updateTotalPrice() {
     let total = 0;
     const products = productList.querySelectorAll('.product-details');
+    console.log("aa");
+    console.log(products);
     products.forEach(product => {
         const price = parseFormattedPrice(product.dataset.price);
         const quantity = parseInt(product.querySelector('.quantity-value').textContent);
         total += price * quantity;
     });
+    console.log(total);
     const totalPriceElement = checkoutModal.querySelector('#total-price-products');
     totalPriceElement.innerText = `Tổng tiền: ${formatPrice(total)}`;
 }
@@ -56,10 +58,13 @@ function setupQuantitySelectors() {
     if (isQuantitySelectorsSetup) return;
 
     const products = productList.querySelectorAll('.product-details');
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
     products.forEach(product => {
         const btnDecrement = product.querySelector('.btn-decrement');
         const btnIncrement = product.querySelector('.btn-increment');
         const quantityElement = product.querySelector('.quantity-value');
+        const idCHSP = product.dataset.idCHSP;
 
         updateProductQuantityButtons(product, parseInt(quantityElement.textContent));
 
@@ -68,6 +73,12 @@ function setupQuantitySelectors() {
             if (value < 10) {
                 quantityElement.textContent = value + 1;
                 updateProductQuantityButtons(product, value + 1);
+                // Update quantity in localStorage
+                const cartItem = cart.find(item => item.idCHSP === idCHSP);
+                if (cartItem) {
+                    cartItem.quantity = value + 1;
+                    localStorage.setItem('cart', JSON.stringify(cart));
+                }
                 updateTotalPrice();
             }
         });
@@ -77,6 +88,12 @@ function setupQuantitySelectors() {
             if (value > 1) {
                 quantityElement.textContent = value - 1;
                 updateProductQuantityButtons(product, value - 1);
+                // Update quantity in localStorage
+                const cartItem = cart.find(item => item.idCHSP === idCHSP);
+                if (cartItem) {
+                    cartItem.quantity = value - 1;
+                    localStorage.setItem('cart', JSON.stringify(cart));
+                }
                 updateTotalPrice();
             }
         });
@@ -102,7 +119,7 @@ function setupProductDetails() {
                         <span class="config-value">${value}</span>
                     </div>`;
             }
-            configContainer.innerHTML = html;
+            productList.innerHTML = html;
         });
     });
 }
@@ -110,10 +127,17 @@ function setupProductDetails() {
 // Setup product deletion
 function setupProductDeletion() {
     const products = productList.querySelectorAll('.product-details');
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
     products.forEach(product => {
         const deleteBtn = product.querySelector('.delete-btn');
+        const idCHSP = product.dataset.idCHSP;
+
         deleteBtn.addEventListener('click', () => {
             product.remove();
+            // Remove from localStorage
+            cart = cart.filter(item => item.idCHSP !== idCHSP);
+            localStorage.setItem('cart', JSON.stringify(cart));
             updateTotalPrice();
             if (productList.children.length === 0) {
                 checkoutModal.querySelector('#config-container').innerHTML = '<p>Không còn sản phẩm trong giỏ hàng.</p>';
@@ -290,29 +314,70 @@ function handleCloseModal(modalId) {
     isQuantitySelectorsSetup = false; // Reset state
 }
 
-function loadDataCheckoutManyProducts()
+// Initialize modal when shown
+// checkoutModal.addEventListener('show.bs.modal', async () => {
+//     await setUserInfo();
+//     setupQuantitySelectors();
+//     setupProductDetails();
+//     setupProductDeletion();
+//     handleAddressInput('checkoutModal');
+//     document.getElementById('checkoutEditAddress').checked = false;
+//     document.getElementById('checkoutAddressInput').disabled = true;
+// });
+
+// // Reset state when modal closes
+// checkoutModal.addEventListener('hidden.bs.modal', () => {
+//     isQuantitySelectorsSetup = false;
+// });
+
+
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+  }
+
+function loadListProduct()
 {
-    var checkoutModalBody = document.getElementById('checkoutModalBody');
-    console.log(checkoutModalBody);
+    let cart = JSON.parse(localStorage.getItem("cart"));
+    let html = '';
+    cart.forEach((product) => {
+        html+=`<div class="product-details" data-config='{
+                                    "RAM": "${product.ram}",
+                                    "Bộ nhớ trong": "${product.rom}",
+                                    "Màn hình": "${product.screenSize}",
+                                    "Dung lượng pin": "${product.pin}",
+                                    "Màu sắc": "${product.color}",
+                                    "Độ phân giải": "${product.camera}"
+                                    }' data-price="${product.price}" data-idCHSP="${product.idCHSP}" data-idDSP="${product.idDSP}">
+                                    <img src="${product.img}" alt="${product.name}" class="product-image" style="width: 80px;">
+                                    <div class="flex-grow-1">
+                                        <h6>${product.name}</h6>
+                                        <p class="text-success mb-0">${product.price}</p>
+                                    </div>
+                                    <div class="quantity-selector">
+                                        <button class="btn-decrement">-</button>
+                                        <span class="quantity-value">${product.quantity}</span>
+                                        <button class="btn-increment">+</button>
+                                    </div>
+                                    <button class="details-btn">Xem chi tiết</button>
+                                    <button class="delete-btn">Xóa</button>
+                                </div>`;
+    });
+    productList.innerHTML = html;
+    updateTotalPrice();
 }
+
 function handleClickCheckout()
 {
         const myModal = new bootstrap.Modal(checkoutModal);
         myModal.show();
-        loadDataCheckoutManyProducts();
-        setUserInfo();
-        setupQuantitySelectors();
-        setupProductDetails();
-        setupProductDeletion();
-        handleAddressInput('checkoutModal');
-        document.getElementById('checkoutEditAddress').checked = false;
-        document.getElementById('checkoutAddressInput').disabled = true;
+        loadListProduct();
+    setUserInfo();
+    setupQuantitySelectors();
+    setupProductDetails();
+    setupProductDeletion();
+    handleAddressInput('checkoutModal');
+    document.getElementById('checkoutEditAddress').checked = false;
+    document.getElementById('checkoutAddressInput').disabled = true;
 }
-
-// Initialize modal when shown
-
-
-// Reset state when modal closes
-checkoutModal.addEventListener('hidden.bs.modal', () => {
-    isQuantitySelectorsSetup = false;
-});
