@@ -31,4 +31,5 @@
     <script src="../../../public/toast_message/main.js"></script>
     <script src="../../../public/js/auth.js"></script>
     <script src="../../../public/js/singleProductCheckout.js"></script>
+    <script src="../../../public/js/multiProductCheckout.js"></script>
 </body>
