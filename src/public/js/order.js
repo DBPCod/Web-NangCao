@@ -4,6 +4,8 @@ const btnDecrement = modal.querySelector('.btn-decrement');
 const btnIncrement = modal.querySelector('.btn-increment');
 var priceElement = modal.querySelector('.text-success');
 var idNguoiDung = getCookieValue('user');
+let isQuantitySelectorsSetup = false;
+
 // Function to format price with commas
 function formatPrice(price) {
     return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " đ";
@@ -39,96 +41,119 @@ function updateModalTotalPrice(price, quantity) {
     }
 }
 
-// Handle quantity selectors, delete, and details for all products
-document.querySelectorAll('.product-details').forEach(product => {
-    const deleteBtn = product.querySelector('.delete-btn');
-    const detailsBtn = product.querySelector('.details-btn');
+// function handleQuantityButton()
+// {
+//     // Handle quantity selectors, delete, and details for all products
+//     document.querySelectorAll('.product-details').forEach(product => {
+//         const deleteBtn = product.querySelector('.delete-btn');
+//         const detailsBtn = product.querySelector('.details-btn');
 
-    function updateQuantityButtons(value) {
-        btnDecrement.disabled = value <= 1;
-        btnIncrement.disabled = value >= 10;
-    }
+//         function updateQuantityButtons(value) {
+//             btnDecrement.disabled = value <= 1;
+//             btnIncrement.disabled = value >= 10;
+//         }
 
-    btnDecrement.addEventListener('click', () => {
-        let value = parseInt(quantityElement.textContent);
-        if (value > 1) {
-            quantityElement.textContent = value - 1;
-            updateQuantityButtons(value - 1);
-            updateTotalPrice();
-        }
-    });
+//         btnDecrement.addEventListener('click', () => {
+//             let value = parseInt(quantityElement.textContent);
+//             if (value > 1) {
+//                 quantityElement.textContent = value - 1;
+//                 updateQuantityButtons(value - 1);
+//                 updateTotalPrice();
+//             }
+//         });
 
-    btnIncrement.addEventListener('click', () => {
-        let value = parseInt(quantityElement.textContent);
-        if (value < 10) {
-            quantityElement.textContent = value + 1;
-            updateQuantityButtons(value + 1);
-            updateTotalPrice();
-        }
-    });
+//         btnIncrement.addEventListener('click', () => {
+//             let value = parseInt(quantityElement.textContent);
+//             if (value < 10) {
+//                 quantityElement.textContent = value + 1;
+//                 updateQuantityButtons(value + 1);
+//                 updateTotalPrice();
+//             }
+//         });
 
-    deleteBtn.addEventListener('click', () => {
-        product.remove();
-        updateTotalPrice();
-        const configContainer = document.getElementById('config-container');
-        if (configContainer.dataset.currentProduct === product.dataset.config) {
-            configContainer.innerHTML = '<p>Chọn một sản phẩm để xem chi tiết cấu hình.</p>';
-        }
-    });
+//         deleteBtn.addEventListener('click', () => {
+//             product.remove();
+//             updateTotalPrice();
+//             const configContainer = document.getElementById('config-container');
+//             if (configContainer.dataset.currentProduct === product.dataset.config) {
+//                 configContainer.innerHTML = '<p>Chọn một sản phẩm để xem chi tiết cấu hình.</p>';
+//             }
+//         });
 
-    detailsBtn.addEventListener('click', () => {
-        const config = JSON.parse(product.dataset.config);
-        const configContainer = document.getElementById('config-container');
-        configContainer.innerHTML = ''; // Clear previous config
-        configContainer.dataset.currentProduct = JSON.stringify(config); // Track the current product config
+//         detailsBtn.addEventListener('click', () => {
+//             const config = JSON.parse(product.dataset.config);
+//             const configContainer = document.getElementById('config-container');
+//             configContainer.innerHTML = ''; // Clear previous config
+//             configContainer.dataset.currentProduct = JSON.stringify(config); // Track the current product config
 
-        for (const [label, value] of Object.entries(config)) {
-            const configItem = document.createElement('div');
-            configItem.className = 'config-item';
-            configItem.innerHTML = `
-                <span class="config-label">${label}</span>
-                <span class="config-value">${value}</span>
-            `;
-            configContainer.appendChild(configItem);
-        }
-    });
+//             for (const [label, value] of Object.entries(config)) {
+//                 const configItem = document.createElement('div');
+//                 configItem.className = 'config-item';
+//                 configItem.innerHTML = `
+//                     <span class="config-label">${label}</span>
+//                     <span class="config-value">${value}</span>
+//                 `;
+//                 configContainer.appendChild(configItem);
+//             }
+//         });
 
-    // Initial button state
-    updateQuantityButtons(1);
-});
+//         // Initial button state
+//         updateQuantityButtons(1);
+//     });
+// }
+
+
+function handleCloseModal()
+{
+    const myModal = bootstrap.Modal.getInstance(document.getElementById('myModal'));
+    myModal.hide();
+}
 
 // Handle modal quantity selectors
 //
-//dung cho nhieu san pham
-function setupModalQuantitySelectors() {
-    priceElement = modal.querySelector('.text-success');
-    console.log(priceElement);
-    const price = parseFormattedPrice((priceElement.dataset.price).replace("đ", "").trim());
-    function updateQuantityButtons(value) {
-        btnDecrement.disabled = value <= 1;
-        btnIncrement.disabled = value >= 10;
-    }
+//dung cho mot san pham
 
-    btnDecrement.addEventListener('click', () => {
-        let value = parseInt(quantityElement.textContent);
-        if (value > 1) {
-            quantityElement.textContent = value - 1;
-            updateQuantityButtons(value - 1);
-            updateModalTotalPrice(price, value - 1);
-        }
-    });
+function updateQuantityButtons(value) {
+    btnDecrement.disabled = value <= 1;
+    btnIncrement.disabled = value >= 10;
+}
+
+
+function setupModalQuantitySelectors() {
+
+    // // Initial button state
+    updateQuantityButtons(1);
+    if (isQuantitySelectorsSetup) return;
+    priceElement = modal.querySelector('.text-success');
+    const price = parseFormattedPrice((priceElement.dataset.price).replace("đ", "").trim());
+
+    
+
 
     btnIncrement.addEventListener('click', () => {
+        console.log("a");
         let value = parseInt(quantityElement.textContent);
         if (value < 10) {
+            console.log(quantityElement.textContent);
             quantityElement.textContent = value + 1;
+            console.log(value + 1 +' tăng');
             updateQuantityButtons(value + 1);
             updateModalTotalPrice(price, value + 1);
         }
     });
 
-    // Initial button state
-    updateQuantityButtons(1);
+    btnDecrement.addEventListener('click', () => {
+        let value = parseInt(quantityElement.textContent);
+        if (value > 1) {
+            quantityElement.textContent = value - 1;
+            console.log(value - 1 +' giảm');
+            updateQuantityButtons(value - 1);
+            updateModalTotalPrice(price, value - 1);
+        }
+    });
+
+    isQuantitySelectorsSetup = true;
+    
 }
 
 // Call setup for modal quantity selectors when modal is shown
@@ -164,10 +189,6 @@ function handleAddressInput()
     });
 }
 
-// Initial total price calculation
-// updateTotalPrice();
-handleAddressInput();
-// setupModalQuantitySelectors();
 
 
 function getCookieValue(name) 
@@ -191,7 +212,6 @@ function handleClickMuaNgay()
             var idDSP = elementDSP.getAttribute('iddsp');
             var idCHSP = elementCHSP.getAttribute('idchsp');
             var priceProduct = document.querySelector('#modalProductPrice').innerText;
-            console.log(document.querySelector('#modalProductPrice').innerText);
             getAnh(idCHSP,idDSP,priceProduct);
     }
     else
@@ -216,7 +236,6 @@ function getAnh(idCHSP,idDSP,priceProduct)
         return response.json();
     })
     .then(data => {
-        console.log(data);
         if(data.length!=0)
         {
             imageSrc = `data:image/jpeg;base64,${data[0].Anh}`;
@@ -290,11 +309,11 @@ async function SetInfor(product) {
         productContainer.dataset.idCHSP = product.idCHSP;
         productContainer.dataset.idDSP = product.idDSP;
         document.querySelector('.modal-body .total-price').innerText = `Tổng tiền: ${product.price}`;
-        setupModalQuantitySelectors();
         quantityElement.innerText = 1;
 
         const myModal = new bootstrap.Modal(document.getElementById('myModal'));
         myModal.show();
+        setupModalQuantitySelectors();
         document.getElementById('edit-address').checked=false;
         document.getElementById('address-input').disabled = true;
 
@@ -317,7 +336,6 @@ async function getIdTaiKhoan(idNguoiDung) {
         }
         throw new Error("Không tìm thấy IdTaiKhoan cho IdNguoiDung: " + idNguoiDung);
     } catch (error) {
-        console.error("Lỗi khi lấy IdTaiKhoan:", error);
         throw error;
     }
 }
@@ -332,23 +350,7 @@ async function handleCheckout() {
         const idCHSP = modal.querySelector('.col-md-6').dataset.idCHSP;
         const idDongSanPham = modal.querySelector('.col-md-6').dataset.idDSP;
         const currentDate = new Date().toISOString().slice(0, 10);
-
         const idTaiKhoan = await getIdTaiKhoan(idNguoiDung);
-
-        
-        if (radioBtn.checked && newAddress) {
-            console.log(newAddress);
-            const response = await fetch(`/smartstation/src/mvc/controllers/NguoiDungController.php?idNguoiDung=${idNguoiDung}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ DiaChi: newAddress })
-            });
-            const data = await response.json();
-            if (!data.success) {
-                throw new Error("Cập nhật địa chỉ thất bại");
-            }
-        }
-console.log(idCHSP, idDongSanPham);
         const response = await fetch(`/smartstation/src/mvc/controllers/SanPhamChiTietController.php?idCHSP=${idCHSP}&idDongSanPham=${idDongSanPham}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' }
@@ -358,7 +360,6 @@ console.log(idCHSP, idDongSanPham);
             throw new Error("Không tìm thấy sản phẩm chi tiết hoặc đã hết hàng");
         }
         const imei = data.Imei;
-        console.log(totalPrice);
         const hoaDonData = {
             IdTaiKhoan: idTaiKhoan,
             NgayTao: currentDate,
@@ -378,6 +379,17 @@ console.log(idCHSP, idDongSanPham);
         const hoaDonDataResult = await hoaDonResponse.json();
         if (!hoaDonDataResult.HoaDon) {
             throw new Error("Thêm hóa đơn thất bại");
+        }
+        if (radioBtn.checked && newAddress) {
+            const response = await fetch(`/smartstation/src/mvc/controllers/NguoiDungController.php?idNguoiDung=${idNguoiDung}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ DiaChi: newAddress })
+            });
+            const data = await response.json();
+            if (!data.success) {
+                throw new Error("Cập nhật địa chỉ thất bại");
+            }
         }
         const idHoaDon = hoaDonDataResult.HoaDon.IdHoaDon;
 
@@ -405,5 +417,12 @@ console.log(idCHSP, idDongSanPham);
         console.error("Lỗi thanh toán:", error);
         alert("Lỗi thanh toán: " + error.message);
     }
+
 }
 
+
+function handleClickBuyNow()
+{
+    handleClickMuaNgay();
+    handleAddressInput();;
+}

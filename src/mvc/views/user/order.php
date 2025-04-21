@@ -6,7 +6,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Thanh toán</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close" onclick="handleCloseModal()" ></button>
                 </div>
                 <div class="modal-body">
                 <div class="container mt-3">
@@ -76,7 +76,7 @@
                                     </div>
                                 </div>
 
-                                <button class="btn btn-secondary w-100" onclick="handleCheckout()">Thanh toán</button>
+                                <button class="btn btn-secondary w-100" onclick="handleClickBuyNow()">Thanh toán</button>
                             </div>
                         </div>
                     </div>
