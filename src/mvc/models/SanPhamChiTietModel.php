@@ -75,7 +75,7 @@ class SanPhamChiTietModel {
     }
 
     public function getAndLockSanPhamChiTietByCHSPandDSP($idCHSP, $idDongSanPham) {
-        // $this->db->begin_transaction();
+        $this->db->begin_transaction();
         try {
             $stmt = $this->db->prepare("
                 SELECT * 
@@ -103,6 +103,43 @@ class SanPhamChiTietModel {
         } catch (Exception $e) {
             $this->db->rollback();
             throw new Exception("Lỗi khi lấy và khóa sản phẩm chi tiết: " . $e->getMessage());
+        }
+    }
+
+    public function getAndLockMultipleSanPhamChiTiet($idCHSP, $idDongSanPham, $quantity) {
+        $this->db->begin_transaction();
+        try {
+            // Lấy số lượng bản ghi yêu cầu
+            $stmt = $this->db->prepare("
+                SELECT * 
+                FROM sanphamchitiet 
+                WHERE IdCHSP = ? AND IdDongSanPham = ? AND TrangThai = 1 
+                LIMIT ?
+            ");
+            $stmt->bind_param("iii", $idCHSP, $idDongSanPham, $quantity);
+            $stmt->execute();
+            $result = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+
+            if (count($result) < $quantity) {
+                throw new Exception("Chỉ còn " . count($result) . " sản phẩm trong kho, không đủ " . $quantity . " sản phẩm yêu cầu");
+            }
+
+            // Khóa tất cả bản ghi bằng cách cập nhật TrangThai = 0
+            foreach ($result as $item) {
+                $stmt = $this->db->prepare("
+                    UPDATE sanphamchitiet 
+                    SET TrangThai = 0 
+                    WHERE Imei = ?
+                ");
+                $stmt->bind_param("s", $item['Imei']);
+                $stmt->execute();
+            }
+
+            $this->db->commit();
+            return $result;
+        } catch (Exception $e) {
+            $this->db->rollback();
+            throw new Exception("Lỗi khi lấy và khóa nhiều sản phẩm chi tiết: " . $e->getMessage());
         }
     }
 }

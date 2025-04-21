@@ -20,8 +20,15 @@ class SanPhamChiTietController {
                     echo json_encode($data);
                 } else if (isset($_GET['idCHSP']) && isset($_GET['idDongSanPham'])) {
                     try {
-                        $data = $this->model->getAndLockSanPhamChiTietByCHSPandDSP($_GET['idCHSP'], $_GET['idDongSanPham']);
-                        echo json_encode($data);
+                        if (isset($_GET['quantity']) && is_numeric($_GET['quantity']) && $_GET['quantity'] > 0) {
+                            // Lấy nhiều IMEI
+                            $data = $this->model->getAndLockMultipleSanPhamChiTiet($_GET['idCHSP'], $_GET['idDongSanPham'], (int)$_GET['quantity']);
+                            echo json_encode(['Imeis' => array_column($data, 'Imei')]);
+                        } else {
+                            // Lấy một IMEI
+                            $data = $this->model->getAndLockSanPhamChiTietByCHSPandDSP($_GET['idCHSP'], $_GET['idDongSanPham']);
+                            echo json_encode($data);
+                        }
                     } catch (Exception $e) {
                         http_response_code(500);
                         echo json_encode(["message" => $e->getMessage()]);
