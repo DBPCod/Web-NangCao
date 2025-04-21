@@ -17,6 +17,8 @@ class HoaDonController {
             case 'GET':
                 if (isset($_GET['idHoaDon'])) {
                     $data = $this->model->getHoaDonById($_GET['idHoaDon']);
+                } elseif (isset($_GET['idNguoiDung'])) {
+                    $data = $this->model->getHoaDonByNguoiDung($_GET['idNguoiDung']);
                 } else {
                     // Lấy các tham số lọc
                     $filters = [];
@@ -32,7 +34,6 @@ class HoaDonController {
                     if (isset($_GET['diaChi']) && $_GET['diaChi'] !== '') {
                         $filters['diaChi'] = $_GET['diaChi'];
                     }
-                    // Gọi getAllHoaDon với bộ lọc
                     $data = $this->model->getAllHoaDon($filters);
                 }
                 echo json_encode($data);

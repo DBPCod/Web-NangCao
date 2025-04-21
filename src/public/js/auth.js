@@ -426,46 +426,46 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Xử lý modal lịch sử mua hàng
-    const orderHistoryModal = document.getElementById('orderHistory');
-    if (orderHistoryModal) {
-        orderHistoryModal.addEventListener('show.bs.modal', function () {
-            const orderHistoryList = document.getElementById('orderHistoryList');
-            const orderHistoryEmpty = document.getElementById('orderHistoryEmpty');
-            const username = localStorage.getItem('username');
-            const orders = JSON.parse(localStorage.getItem(`orders_${username}`)) || [];
+    // const orderHistoryModal = document.getElementById('orderHistory');
+    // if (orderHistoryModal) {
+    //     orderHistoryModal.addEventListener('show.bs.modal', function () {
+    //         const orderHistoryList = document.getElementById('orderHistoryList');
+    //         const orderHistoryEmpty = document.getElementById('orderHistoryEmpty');
+    //         const username = localStorage.getItem('username');
+    //         const orders = JSON.parse(localStorage.getItem(`orders_${username}`)) || [];
 
-            if (orders.length === 0) {
-                orderHistoryList.innerHTML = '';
-                orderHistoryList.style.display = 'none';
-                orderHistoryEmpty.style.display = 'block';
-            } else {
-                orderHistoryEmpty.style.display = 'none';
-                orderHistoryList.style.display = 'block';
-                orderHistoryList.innerHTML = `
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Mã đơn hàng</th>
-                                <th>Ngày đặt</th>
-                                <th>Tổng tiền</th>
-                                <th>Trạng thái</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${orders.map(order => `
-                                <tr>
-                                    <td>${order.orderId}</td>
-                                    <td>${order.date}</td>
-                                    <td>${order.total.toLocaleString('vi-VN')}đ</td>
-                                    <td>${order.status}</td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                `;
-            }
-        });
-    }
+    //         if (orders.length === 0) {
+    //             orderHistoryList.innerHTML = '';
+    //             orderHistoryList.style.display = 'none';
+    //             orderHistoryEmpty.style.display = 'block';
+    //         } else {
+    //             orderHistoryEmpty.style.display = 'none';
+    //             orderHistoryList.style.display = 'block';
+    //             orderHistoryList.innerHTML = `
+    //                 <table class="table table-bordered">
+    //                     <thead>
+    //                         <tr>
+    //                             <th>Mã đơn hàng</th>
+    //                             <th>Ngày đặt</th>
+    //                             <th>Tổng tiền</th>
+    //                             <th>Trạng thái</th>
+    //                         </tr>
+    //                     </thead>
+    //                     <tbody>
+    //                         ${orders.map(order => `
+    //                             <tr>
+    //                                 <td>${order.orderId}</td>
+    //                                 <td>${order.date}</td>
+    //                                 <td>${order.total.toLocaleString('vi-VN')}đ</td>
+    //                                 <td>${order.status}</td>
+    //                             </tr>
+    //                         `).join('')}
+    //                     </tbody>
+    //                 </table>
+    //             `;
+    //         }
+    //     });
+    // }
 });
 
 

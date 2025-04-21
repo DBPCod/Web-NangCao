@@ -16,7 +16,7 @@ class SanPhamChiTietController {
         switch ($method) {
             case 'GET':
                 if (isset($_GET['imei'])) {
-                    $data = $this->model->getSanPhamChiTietByImei($_GET['imei']);
+                    $data = $this->model->getSanPhamChiTietWithDetailsByImei($_GET['imei']);
                     echo json_encode($data);
                 } else if (isset($_GET['idCHSP']) && isset($_GET['idDongSanPham'])) {
                     try {
