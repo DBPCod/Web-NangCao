@@ -44,11 +44,20 @@ class SanPhamAPI {
             $priceRanges = isset($filters['priceRanges']) && $filters['priceRanges'] !== '' ? array_map('trim', explode(',', filter_var($filters['priceRanges'], FILTER_SANITIZE_STRING))) : [];
             $priceMin = isset($filters['priceMin']) && $filters['priceMin'] !== '' ? (float)filter_var($filters['priceMin'], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION) : null;
             $priceMax = isset($filters['priceMax']) && $filters['priceMax'] !== '' ? (float)filter_var($filters['priceMax'], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION) : null;
-            $rams = isset($filters['rams']) && $filters['rams'] !== '' ? array_map('trim', explode(',', filter_var($filters['rams'], FILTER_SANITIZE_STRING))) : [];
+            $rams = isset($filters['rams']) && $filters['rams'] !== '' ? array_map('trim', explode(',', filter_var(urldecode($filters['rams']), FILTER_SANITIZE_STRING))) : [];
             $pins = isset($filters['pins']) && $filters['pins'] !== '' ? array_map('trim', explode(',', filter_var($filters['pins'], FILTER_SANITIZE_STRING))) : [];
 
+            // Xử lý đặc biệt cho "12GB trở lên"
+            $hasRam12GBPlus = in_array('12GB trở lên', $rams) || in_array('12GB+', $rams);
+            if ($hasRam12GBPlus) {
+                // Loại bỏ "12GB trở lên" hoặc "12GB+" khỏi mảng rams để xử lý riêng
+                $rams = array_filter($rams, function($ram) {
+                    return $ram !== '12GB trở lên' && $ram !== '12GB+';
+                });
+            }
+
             // Kiểm tra xem có bộ lọc nào được áp dụng không
-            $hasFilters = !empty($brands) || !empty($priceRanges) || $priceMin !== null || $priceMax !== null || !empty($rams) || !empty($pins);
+            $hasFilters = !empty($brands) || !empty($priceRanges) || $priceMin !== null || $priceMax !== null || !empty($rams) || $hasRam12GBPlus || !empty($pins);
 
             // Bước 1: Lấy toàn bộ dữ liệu cần thiết
             $sanPhams = $this->sanPhamModel->getAllProducts();
@@ -141,7 +150,6 @@ class SanPhamAPI {
                     'soLuong' => $sanPham['SoLuong'],
                     'thuongHieu' => $tenThuongHieu,
                     'image' => $image
-                    
                 ];
             }, $sanPhams);
 
@@ -153,7 +161,6 @@ class SanPhamAPI {
 
             // Log số lượng sản phẩm ban đầu
             error_log('Initial products count: ' . count($products));
-
 
             // Bước 3: Lọc theo thương hiệu (brands)
             if ($hasFilters && !empty($brands)) {
@@ -199,20 +206,29 @@ class SanPhamAPI {
             }
 
             // Bước 6: Lọc theo RAM
-            // if ($hasFilters && !empty($rams)) {
-            //     $products = array_filter($products, function($product) use ($rams) {
-            //         return in_array($product['ram'], $rams);
-            //     });
-            //     $products = array_values($products);
-            //     error_log('Products count after rams filter: ' . count($products));
-            // }
+            if ($hasFilters && (!empty($rams) || $hasRam12GBPlus)) {
+                $products = array_filter($products, function($product) use ($rams, $hasRam12GBPlus) {
+                    $ramValue = isset($product['ram']) ? (int)preg_replace('/[^0-9]/', '', $product['ram']) : 0;
+                    // Kiểm tra khớp chính xác với các giá trị RAM cụ thể
+                    if (!empty($rams) && in_array($product['ram'], $rams)) {
+                        return true;
+                    }
+                    // Kiểm tra "12GB trở lên"
+                    if ($hasRam12GBPlus && $ramValue >= 12) {
+                        return true;
+                    }
+                    return false;
+                });
+                $products = array_values($products);
+                error_log('Products count after rams filter: ' . count($products));
+            }
 
             // Bước 7: Lọc theo pin
             if ($hasFilters && !empty($pins)) {
                 $products = array_filter($products, function($product) use ($pins) {
                     $pinValue = isset($product['pin']) ? (int)preg_replace('/[^0-9]/', '', $product['pin']) : 0;
                     foreach ($pins as $pinRange) {
-                        list($min, $max) = explode('-', $pinRange);
+                        list($min, $max) = explode('-', $pinRange); // Sửa lỗi: dùng $pinRange thay vì $range
                         $min = (int)$min;
                         $max = $max === '' ? PHP_INT_MAX : (int)$max;
                         if ($pinValue >= $min && $pinValue <= $max) {
