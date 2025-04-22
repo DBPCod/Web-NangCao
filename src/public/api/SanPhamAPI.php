@@ -208,22 +208,22 @@ class SanPhamAPI {
             // }
 
             // Bước 7: Lọc theo pin
-            // if ($hasFilters && !empty($pins)) {
-            //     $products = array_filter($products, function($product) use ($pins) {
-            //         $pinValue = isset($product['pin']) ? (int)preg_replace('/[^0-9]/', '', $product['pin']) : 0;
-            //         foreach ($pins as $pinRange) {
-            //             list($min, $max) = explode('-', $pinRange);
-            //             $min = (int)$min;
-            //             $max = $max === '' ? PHP_INT_MAX : (int)$max;
-            //             if ($pinValue >= $min && $pinValue <= $max) {
-            //                 return true;
-            //             }
-            //         }
-            //         return false;
-            //     });
-            //     $products = array_values($products);
-            //     error_log('Products count after pins filter: ' . count($products));
-            // }
+            if ($hasFilters && !empty($pins)) {
+                $products = array_filter($products, function($product) use ($pins) {
+                    $pinValue = isset($product['pin']) ? (int)preg_replace('/[^0-9]/', '', $product['pin']) : 0;
+                    foreach ($pins as $pinRange) {
+                        list($min, $max) = explode('-', $pinRange);
+                        $min = (int)$min;
+                        $max = $max === '' ? PHP_INT_MAX : (int)$max;
+                        if ($pinValue >= $min && $pinValue <= $max) {
+                            return true;
+                        }
+                    }
+                    return false;
+                });
+                $products = array_values($products);
+                error_log('Products count after pins filter: ' . count($products));
+            }
 
             // Log số lượng sản phẩm cuối cùng
             error_log('Final products count: ' . count($products));
