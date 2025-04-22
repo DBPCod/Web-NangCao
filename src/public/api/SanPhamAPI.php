@@ -183,20 +183,20 @@ class SanPhamAPI {
             // }
 
             // Bước 5: Lọc theo priceMin và priceMax
-            // if ($hasFilters && ($priceMin !== null || $priceMax !== null)) {
-            //     $products = array_filter($products, function($product) use ($priceMin, $priceMax) {
-            //         $effectivePrice = $product['giaGiam'] !== null ? $product['giaGiam'] : $product['giaGoc'];
-            //         if ($priceMin !== null && $effectivePrice < $priceMin) {
-            //             return false;
-            //         }
-            //         if ($priceMax !== null && $effectivePrice > $priceMax) {
-            //             return false;
-            //         }
-            //         return true;
-            //     });
-            //     $products = array_values($products);
-            //     error_log('Products count after priceMin/priceMax filter: ' . count($products));
-            // }
+            if ($hasFilters && ($priceMin !== null || $priceMax !== null)) {
+                $products = array_filter($products, function($product) use ($priceMin, $priceMax) {
+                    $effectivePrice = $product['giaGiam'] !== null ? $product['giaGiam'] : $product['giaGoc'];
+                    if ($priceMin !== null && $effectivePrice < $priceMin) {
+                        return false;
+                    }
+                    if ($priceMax !== null && $effectivePrice > $priceMax) {
+                        return false;
+                    }
+                    return true;
+                });
+                $products = array_values($products);
+                error_log('Products count after priceMin/priceMax filter: ' . count($products));
+            }
 
             // Bước 6: Lọc theo RAM
             // if ($hasFilters && !empty($rams)) {
