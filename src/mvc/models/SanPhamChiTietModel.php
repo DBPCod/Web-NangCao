@@ -16,6 +16,19 @@ class SanPhamChiTietModel {
     public function getSanPhamChiTietByImei($imei) {
         $stmt = $this->db->prepare("SELECT * FROM sanphamchitiet WHERE Imei = ?");
         $stmt->bind_param("s", $imei);
+        $stmt->execute();   
+        return $stmt->get_result()->fetch_assoc();
+    }
+
+    public function getSanPhamChiTietWithDetailsByImei($imei) {
+        $stmt = $this->db->prepare("
+            SELECT spct.*, dsp.TenDong, chsp.Ram, chsp.Rom, chsp.MauSac
+            FROM sanphamchitiet spct
+            LEFT JOIN dongsanpham dsp ON spct.IdDongSanPham = dsp.IdDongSanPham
+            LEFT JOIN CauHinhSanPham chsp ON spct.IdCHSP = chsp.IdCHSP
+            WHERE spct.Imei = ?
+        ");
+        $stmt->bind_param("s", $imei);
         $stmt->execute();
         return $stmt->get_result()->fetch_assoc();
     }

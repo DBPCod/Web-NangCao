@@ -34,7 +34,7 @@ class SanPhamModel {
         $stmt = $this->db->prepare("
             SELECT sp.IdCHSP, sp.IdDongSanPham, sp.Gia, sp.SoLuong, sp.TrangThai, 
                    chsp.Ram, chsp.Rom, chsp.ManHinh, chsp.Pin, chsp.MauSac, chsp.Camera,
-                   dsp.TenDong,
+                   dsp.TenDong, dsp.IdThuongHieu,
                    km.PhanTramGiam,
                    CASE 
                        WHEN km.PhanTramGiam IS NOT NULL 

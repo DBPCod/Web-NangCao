@@ -18,8 +18,10 @@ function renderBrands() {
         return response.json();
     })
     .then(brands => {
+        console.log(brands);
         let html = '';
         brands.forEach(brand => {
+            // Chuyển TenThuongHieu thành id hợp lệ (lowercase, loại bỏ ký tự đặc biệt)
             const brandId = brand.TenThuongHieu.toLowerCase().replace(/[^a-z0-9]/g, '');
             html += `
                 <div class="form-check">
@@ -27,17 +29,11 @@ function renderBrands() {
                     <label class="form-check-label" for="${brandId}">${brand.TenThuongHieu}</label>
                 </div>`;
         });
-        const brandList = document.querySelector('.brand-list');
-        if (brandList) {
-            brandList.innerHTML = html;
-        }
+        document.querySelector('.brand-list').innerHTML = html;
     })
     .catch(error => {
         console.error('Lỗi render thương hiệu:', error);
-        const brandList = document.querySelector('.brand-list');
-        if (brandList) {
-            brandList.innerHTML = '<div class="text-danger">Lỗi tải danh sách thương hiệu</div>';
-        }
+        document.querySelector('.brand-list').innerHTML = '<div class="text-danger">Lỗi tải danh sách thương hiệu</div>';
     });
 }
 
@@ -52,23 +48,25 @@ function collectFilters() {
         pins: []
     };
 
+    // Lấy các hãng được chọn
     document.querySelectorAll('.filter-section .form-check-input[data-brand]').forEach(checkbox => {
         if (checkbox.checked) {
             filters.brands.push(checkbox.getAttribute('data-brand'));
         }
     });
 
-    if (document.querySelector('#app1')?.checked) filters.priceRanges.push('0-3000000');
-    if (document.querySelector('#app2')?.checked) filters.priceRanges.push('3000000-6000000');
-    if (document.querySelector('#app3')?.checked || document.querySelector('#app4')?.checked) filters.priceRanges.push('6000000-10000000');
-    if (document.querySelector('#app5')?.checked) filters.priceRanges.push('10000000-');
+    // Lấy khoảng giá từ checkbox
+    if (document.querySelector('#app1').checked) filters.priceRanges.push('0-3000000');
+    if (document.querySelector('#app2').checked) filters.priceRanges.push('3000000-6000000');
+    if (document.querySelector('#app3').checked || document.querySelector('#app4').checked) filters.priceRanges.push('6000000-10000000');
+    if (document.querySelector('#app5').checked) filters.priceRanges.push('10000000-');
 
+    // Lấy giá từ thanh trượt
     const priceSlider = document.querySelector('.price-range .form-range');
-    if (priceSlider) {
-        filters.priceMin = parseInt(priceSlider.value);
-        filters.priceMax = parseInt(priceSlider.max);
-    }
+    filters.priceMin = parseInt(priceSlider.value);
+    filters.priceMax = parseInt(priceSlider.max);
 
+    // Lấy RAM
     document.querySelectorAll('.filter-section .form-check-input[id^="ram"]').forEach(checkbox => {
         if (checkbox.checked) {
             const ramValue = checkbox.nextElementSibling.textContent;
@@ -76,6 +74,7 @@ function collectFilters() {
         }
     });
 
+    // Lấy Pin
     document.querySelectorAll('.filter-section .form-check-input[id^="pin"]').forEach(checkbox => {
         if (checkbox.checked) {
             const pinLabel = checkbox.nextElementSibling.textContent;
@@ -85,7 +84,7 @@ function collectFilters() {
             else if (pinLabel === '5000mAh trở lên') filters.pins.push('5000-');
         }
     });
-
+    console.log(filters);
     return filters;
 }
 
@@ -116,7 +115,7 @@ function buildQueryString(filters, page) {
     return params.toString();
 }
 
-// Hàm tải sản phẩm
+// Hàm tải sản phẩm với bộ lọc
 function loadProducts(page = 1, filters = null) {
     const queryString = filters ? buildQueryString(filters, page) : `page=${page}`;
     console.log(queryString);
@@ -126,17 +125,18 @@ function loadProducts(page = 1, filters = null) {
             'Content-Type': 'application/json'
         }
     })
-    .then(response => {
+    .then(response => { 
         if (!response.ok) {
             throw new Error('Lỗi mạng');
         }
         return response.json();
     })
     .then(data => {
-        console.log(data);
         const products = data.products;
         let productHTML = '';
+
         if (products && products.length > 0) {
+            console.log(products);
             products.forEach(product => {
                 const productName = product.name || 'Sản phẩm không xác định';
                 const giaGocNum = Number(product.giaGoc);
@@ -163,11 +163,10 @@ function loadProducts(page = 1, filters = null) {
         } else {
             productHTML = '<div class="col text-center">Không có sản phẩm nào.</div>';
         }
-        const productGrid = document.querySelector('.product-grid');
-        if (productGrid) {
-            productGrid.innerHTML = productHTML;
-        }
 
+        document.querySelector('.product-grid').innerHTML = productHTML;
+
+        // Cập nhật phân trang
         const totalPages = Math.ceil(data.total / data.limit);
         let paginationHTML = '';
         for (let i = 1; i <= totalPages; i++) {
@@ -177,23 +176,48 @@ function loadProducts(page = 1, filters = null) {
                 </li>
             `;
         }
-        const pagination = document.querySelector('.pagination');
-        if (pagination) {
-            pagination.innerHTML = paginationHTML;
-        }
+        document.querySelector('.pagination').innerHTML = paginationHTML;
 
+        // Gắn sự kiện cho các thẻ sản phẩm
         attachProductCardListeners();
     })
     .catch(error => {
         console.error('Lỗi tải sản phẩm:', error);
-        const productGrid = document.querySelector('.product-grid');
-        if (productGrid) {
-            productGrid.innerHTML = '<div class="col text-center">Lỗi tải sản phẩm.</div>';
-        }
+        document.querySelector('.product-grid').innerHTML = '<div class="col text-center">Lỗi tải sản phẩm.</div>';
     });
 }
+// Khởi tạo khi DOM được tải
+document.addEventListener('DOMContentLoaded', () => {
+    // Render danh sách thương hiệu
+    renderBrands();
+    // Tải sản phẩm mặc định (không lọc)
+    loadProducts(1);
 
-// Hàm gắn sự kiện cho thẻ sản phẩm
+    // Xử lý sự kiện nút LỌC
+    document.getElementById('applyFilterBtn').addEventListener('click', () => {
+        const filters = collectFilters();
+        loadProducts(1, filters);
+    });
+
+    // Xử lý sự kiện thay đổi thanh trượt giá
+    const priceSlider = document.querySelector('.price-range .form-range');
+    priceSlider.addEventListener('input', () => {
+        const value = parseInt(priceSlider.value);
+        document.querySelector('.price-range .d-flex span:first-child').textContent = formatPrice(value);
+    });
+
+    // Xử lý sự kiện click vào phân trang
+    document.querySelector('.pagination').addEventListener('click', (e) => {
+        e.preventDefault();
+        if (e.target.classList.contains('page-btn')) {
+            const page = parseInt(e.target.dataset.page);
+            const filters = collectFilters();
+            loadProducts(page, filters);
+        }
+    });
+});
+
+// Các hàm khác (tái sử dụng từ mã hiện có)
 function attachProductCardListeners() {
     document.querySelectorAll('.product-card').forEach(card => {
         card.addEventListener('click', () => {
@@ -213,37 +237,18 @@ function attachProductCardListeners() {
             }
             loadConfigItem(product.idDSP, product.idCHSP);
             const imageSrc = product.image ? `data:image/jpeg;base64,${product.image}` : '/smartstation/src/public/img/default.png';
+            document.querySelector('#modalProductName').textContent = productName;
+            document.querySelector('#modalProductSpecs').textContent = `RAM: ${product.ram || 'N/A'} - ROM: ${product.rom || 'N/A'}`;
+            document.querySelector('#modalProductPrice').innerHTML = priceHTML;
+            document.querySelector('#modalProductDiscount').textContent = discountText;
+            document.querySelector('#modalProductPoints').textContent = '';
+            document.querySelector('#modalProductRom').textContent = product.rom || 'N/A';
+            document.querySelector('#modalProductManHinh').textContent = product.manHinh || 'N/A';
+            document.querySelector('#modalProductPin').textContent = product.pin || 'N/A';
+            document.querySelector('#modalProductCamera').textContent = product.camera || 'N/A';
+            document.querySelector('#modalProductTrangThai').textContent = product.trangThai === "1" ? 'Còn hàng' : 'Hết hàng';
 
-            const modalProductName = document.querySelector('#modalProductName');
-            if (modalProductName) modalProductName.textContent = productName;
-
-            const modalProductSpecs = document.querySelector('#modalProductSpecs');
-            if (modalProductSpecs) modalProductSpecs.textContent = `RAM: ${product.ram || 'N/A'} - ROM: ${product.rom || 'N/A'}`;
-
-            const modalProductPrice = document.querySelector('#modalProductPrice');
-            if (modalProductPrice) modalProductPrice.innerHTML = priceHTML;
-
-            const modalProductDiscount = document.querySelector('#modalProductDiscount');
-            if (modalProductDiscount) modalProductDiscount.textContent = discountText;
-
-            const modalProductPoints = document.querySelector('#modalProductPoints');
-            if (modalProductPoints) modalProductPoints.textContent = '';
-
-            const modalProductRom = document.querySelector('#modalProductRom');
-            if (modalProductRom) modalProductRom.textContent = product.rom || 'N/A';
-
-            const modalProductManHinh = document.querySelector('#modalProductManHinh');
-            if (modalProductManHinh) modalProductManHinh.textContent = product.manHinh || 'N/A';
-
-            const modalProductPin = document.querySelector('#modalProductPin');
-            if (modalProductPin) modalProductPin.textContent = product.pin || 'N/A';
-
-            const modalProductCamera = document.querySelector('#modalProductCamera');
-            if (modalProductCamera) modalProductCamera.textContent = product.camera || 'N/A';
-
-            const modalProductTrangThai = document.querySelector('#modalProductTrangThai');
-            if (modalProductTrangThai) modalProductTrangThai.textContent = product.trangThai === "1" ? 'Còn hàng' : 'Hết hàng';
-
+            // Tải ảnh carousel
             fetch(`/smartstation/src/mvc/controllers/AnhController.php?idDSP=${product.idDSP}`, {
                 method: 'GET',
                 headers: {
@@ -271,10 +276,7 @@ function attachProductCardListeners() {
                         <img src="${imageSrc}" alt="${productName} thumbnail" class="thumbnail-image active" data-index="0">
                     `;
                 }
-                const thumbnailGallery = document.querySelector('.thumbnail-gallery');
-                if (thumbnailGallery) {
-                    thumbnailGallery.innerHTML = thumbnailHTML;
-                }
+                document.querySelector('.thumbnail-gallery').innerHTML = thumbnailHTML;
                 attachThumbnailListeners();
             })
             .catch(error => {
@@ -282,17 +284,13 @@ function attachProductCardListeners() {
                 const thumbnailHTML = `
                     <img src="${imageSrc}" alt="${productName} thumbnail" class="thumbnail-image active" data-index="0">
                 `;
-                const thumbnailGallery = document.querySelector('.thumbnail-gallery');
-                if (thumbnailGallery) {
-                    thumbnailGallery.innerHTML = thumbnailHTML;
-                }
+                document.querySelector('.thumbnail-gallery').innerHTML = thumbnailHTML;
                 attachThumbnailListeners();
             });
         });
     });
 }
 
-// Hàm tải ảnh carousel
 function loadCarouselImages(data, product) {
     const carousel = document.querySelectorAll(".carousel-inner")[1];
     let html = '';
@@ -307,12 +305,9 @@ function loadCarouselImages(data, product) {
                     </div>`;
         }
     });
-    if (carousel) {
-        carousel.innerHTML = html;
-    }
+    carousel.innerHTML = html;
 }
 
-// Hàm gắn sự kiện cho ảnh thu nhỏ
 function attachThumbnailListeners() {
     const listImg = document.querySelectorAll("#carouselExampleControls .carousel-inner .carousel-item");
     document.querySelectorAll('.thumbnail-image').forEach(thumbnail => {
@@ -328,7 +323,6 @@ function attachThumbnailListeners() {
     });
 }
 
-// Hàm tải cấu hình sản phẩm
 function loadConfigItem(idDSP, idCHSP) {
     fetch(`/smartstation/src/mvc/controllers/SanPhamController.php?idDSP=${idDSP}`, {
         method: 'GET',
@@ -344,13 +338,9 @@ function loadConfigItem(idDSP, idCHSP) {
     })
     .then(configs => {
         setUpDataConfigItem(configs, idDSP, idCHSP);
-    })
-    .catch(error => {
-        console.error('Lỗi tải cấu hình:', error);
     });
 }
 
-// Hàm thiết lập dữ liệu cấu hình sản phẩm
 function setUpDataConfigItem(product, idDSP, idCHSP) {
     product.forEach((item) => {
         if (item.IdCHSP == idCHSP && item.IdDongSanPham == idDSP) {
@@ -366,35 +356,16 @@ function setUpDataConfigItem(product, idDSP, idCHSP) {
             } else {
                 priceHTML = giaGoc;
             }
-            const modalProductName = document.querySelector('#modalProductName');
-            if (modalProductName) modalProductName.textContent = item.TenDong;
-
-            const modalProductSpecs = document.querySelector('#modalProductSpecs');
-            if (modalProductSpecs) modalProductSpecs.textContent = `RAM: ${item.Ram || 'N/A'} - ROM: ${item.Rom || 'N/A'}`;
-
-            const modalProductPrice = document.querySelector('#modalProductPrice');
-            if (modalProductPrice) modalProductPrice.innerHTML = priceHTML;
-
-            const modalProductDiscount = document.querySelector('#modalProductDiscount');
-            if (modalProductDiscount) modalProductDiscount.textContent = discountText;
-
-            const modalProductPoints = document.querySelector('#modalProductPoints');
-            if (modalProductPoints) modalProductPoints.textContent = '';
-
-            const modalProductRom = document.querySelector('#modalProductRom');
-            if (modalProductRom) modalProductRom.textContent = item.Rom || 'N/A';
-
-            const modalProductManHinh = document.querySelector('#modalProductManHinh');
-            if (modalProductManHinh) modalProductManHinh.textContent = item.ManHinh || 'N/A';
-
-            const modalProductPin = document.querySelector('#modalProductPin');
-            if (modalProductPin) modalProductPin.textContent = item.Pin || 'N/A';
-
-            const modalProductCamera = document.querySelector('#modalProductCamera');
-            if (modalProductCamera) modalProductCamera.textContent = item.Camera || 'N/A';
-
-            const modalProductTrangThai = document.querySelector('#modalProductTrangThai');
-            if (modalProductTrangThai) modalProductTrangThai.textContent = item.SoLuong !== 0 ? 'Còn hàng' : 'Hết hàng';
+            document.querySelector('#modalProductName').textContent = item.TenDong;
+            document.querySelector('#modalProductSpecs').textContent = `RAM: ${item.Ram || 'N/A'} - ROM: ${item.Rom || 'N/A'}`;
+            document.querySelector('#modalProductPrice').innerHTML = priceHTML;
+            document.querySelector('#modalProductDiscount').textContent = discountText;
+            document.querySelector('#modalProductPoints').textContent = '';
+            document.querySelector('#modalProductRom').textContent = item.Rom || 'N/A';
+            document.querySelector('#modalProductManHinh').textContent = item.ManHinh || 'N/A';
+            document.querySelector('#modalProductPin').textContent = item.Pin || 'N/A';
+            document.querySelector('#modalProductCamera').textContent = item.Camera || 'N/A';
+            document.querySelector('#modalProductTrangThai').textContent = item.SoLuong !== 0 ? 'Còn hàng' : 'Hết hàng';
         }
     });
 
@@ -427,22 +398,17 @@ function setUpDataConfigItem(product, idDSP, idCHSP) {
         htmlMauSac += `<span>${color}</span>`;
     });
 
-    const modalProductRam = document.getElementById("modalProductRam");
-    if (modalProductRam) modalProductRam.innerHTML = htmlRam;
-
-    const modalProductMauSac = document.getElementById("modalProductMauSac");
-    if (modalProductMauSac) modalProductMauSac.innerHTML = htmlMauSac;
+    document.getElementById("modalProductRam").innerHTML = htmlRam;
+    document.getElementById("modalProductMauSac").innerHTML = htmlMauSac;
 
     handleSelectConfigItem(product);
 }
 
-// Hàm trích xuất số từ chuỗi
 function extractNumber(str) {
     const match = str.match(/\d+/);
     return match ? parseInt(match[0], 10) : 0;
 }
 
-// Hàm thiết lập sau khi chọn RAM
 function setUpAfterSelectedRam(product, selectedRam) {
     product.forEach((item) => {
         if (item.Ram == selectedRam) {
@@ -458,40 +424,20 @@ function setUpAfterSelectedRam(product, selectedRam) {
             } else {
                 priceHTML = giaGoc;
             }
-            const modalProductName = document.querySelector('#modalProductName');
-            if (modalProductName) modalProductName.textContent = item.TenDong;
-
-            const modalProductSpecs = document.querySelector('#modalProductSpecs');
-            if (modalProductSpecs) modalProductSpecs.textContent = `RAM: ${item.Ram || 'N/A'} - ROM: ${item.Rom || 'N/A'}`;
-
-            const modalProductPrice = document.querySelector('#modalProductPrice');
-            if (modalProductPrice) modalProductPrice.innerHTML = priceHTML;
-
-            const modalProductDiscount = document.querySelector('#modalProductDiscount');
-            if (modalProductDiscount) modalProductDiscount.textContent = discountText;
-
-            const modalProductPoints = document.querySelector('#modalProductPoints');
-            if (modalProductPoints) modalProductPoints.textContent = '';
-
-            const modalProductRom = document.querySelector('#modalProductRom');
-            if (modalProductRom) modalProductRom.textContent = item.Rom || 'N/A';
-
-            const modalProductManHinh = document.querySelector('#modalProductManHinh');
-            if (modalProductManHinh) modalProductManHinh.textContent = item.ManHinh || 'N/A';
-
-            const modalProductPin = document.querySelector('#modalProductPin');
-            if (modalProductPin) modalProductPin.textContent = item.Pin || 'N/A';
-
-            const modalProductCamera = document.querySelector('#modalProductCamera');
-            if (modalProductCamera) modalProductCamera.textContent = item.Camera || 'N/A';
-
-            const modalProductTrangThai = document.querySelector('#modalProductTrangThai');
-            if (modalProductTrangThai) modalProductTrangThai.textContent = item.SoLuong !== 0 ? 'Còn hàng' : 'Hết hàng';
+            document.querySelector('#modalProductName').textContent = item.TenDong;
+            document.querySelector('#modalProductSpecs').textContent = `RAM: ${item.Ram || 'N/A'} - ROM: ${item.Rom || 'N/A'}`;
+            document.querySelector('#modalProductPrice').innerHTML = priceHTML;
+            document.querySelector('#modalProductDiscount').textContent = discountText;
+            document.querySelector('#modalProductPoints').textContent = '';
+            document.querySelector('#modalProductRom').textContent = item.Rom || 'N/A';
+            document.querySelector('#modalProductManHinh').textContent = item.ManHinh || 'N/A';
+            document.querySelector('#modalProductPin').textContent = item.Pin || 'N/A';
+            document.querySelector('#modalProductCamera').textContent = item.Camera || 'N/A';
+            document.querySelector('#modalProductTrangThai').textContent = item.SoLuong !== 0 ? 'Còn hàng' : 'Hết hàng';
         }
     });
 }
 
-// Hàm thiết lập sau khi chọn màu sắc
 function setUpAfterSelectedColor(product, selectedColor, ram) {
     product.forEach((item) => {
         if (item.Ram == ram && item.MauSac == selectedColor) {
@@ -507,40 +453,20 @@ function setUpAfterSelectedColor(product, selectedColor, ram) {
             } else {
                 priceHTML = giaGoc;
             }
-            const modalProductName = document.querySelector('#modalProductName');
-            if (modalProductName) modalProductName.textContent = item.TenDong;
-
-            const modalProductSpecs = document.querySelector('#modalProductSpecs');
-            if (modalProductSpecs) modalProductSpecs.textContent = `RAM: ${item.Ram || 'N/A'} - ROM: ${item.Rom || 'N/A'}`;
-
-            const modalProductPrice = document.querySelector('#modalProductPrice');
-            if (modalProductPrice) modalProductPrice.innerHTML = priceHTML;
-
-            const modalProductDiscount = document.querySelector('#modalProductDiscount');
-            if (modalProductDiscount) modalProductDiscount.textContent = discountText;
-
-            const modalProductPoints = document.querySelector('#modalProductPoints');
-            if (modalProductPoints) modalProductPoints.textContent = '';
-
-            const modalProductRom = document.querySelector('#modalProductRom');
-            if (modalProductRom) modalProductRom.textContent = item.Rom || 'N/A';
-
-            const modalProductManHinh = document.querySelector('#modalProductManHinh');
-            if (modalProductManHinh) modalProductManHinh.textContent = item.ManHinh || 'N/A';
-
-            const modalProductPin = document.querySelector('#modalProductPin');
-            if (modalProductPin) modalProductPin.textContent = item.Pin || 'N/A';
-
-            const modalProductCamera = document.querySelector('#modalProductCamera');
-            if (modalProductCamera) modalProductCamera.textContent = item.Camera || 'N/A';
-
-            const modalProductTrangThai = document.querySelector('#modalProductTrangThai');
-            if (modalProductTrangThai) modalProductTrangThai.textContent = item.SoLuong !== 0 ? 'Còn hàng' : 'Hết hàng';
+            document.querySelector('#modalProductName').textContent = item.TenDong;
+            document.querySelector('#modalProductSpecs').textContent = `RAM: ${item.Ram || 'N/A'} - ROM: ${item.Rom || 'N/A'}`;
+            document.querySelector('#modalProductPrice').innerHTML = priceHTML;
+            document.querySelector('#modalProductDiscount').textContent = discountText;
+            document.querySelector('#modalProductPoints').textContent = '';
+            document.querySelector('#modalProductRom').textContent = item.Rom || 'N/A';
+            document.querySelector('#modalProductManHinh').textContent = item.ManHinh || 'N/A';
+            document.querySelector('#modalProductPin').textContent = item.Pin || 'N/A';
+            document.querySelector('#modalProductCamera').textContent = item.Camera || 'N/A';
+            document.querySelector('#modalProductTrangThai').textContent = item.SoLuong !== 0 ? 'Còn hàng' : 'Hết hàng';
         }
     });
 }
 
-// Hàm xử lý chọn cấu hình
 function handleSelectConfigItem(product) {
     let ram;
     const ramOptions = document.querySelectorAll('#modalProductRam span');
@@ -556,11 +482,9 @@ function handleSelectConfigItem(product) {
             setUpAfterSelectedRam(product, selectedRam);
             ram = selectedRam;
             const colorContainer = document.getElementById("modalProductMauSac");
-            if (colorContainer) {
-                colorContainer.innerHTML = htmlMauSac;
-            }
-            const mauSacOptions = colorContainer?.querySelectorAll('span');
-            mauSacOptions?.forEach(colorOption => {
+            colorContainer.innerHTML = htmlMauSac;
+            const mauSacOptions = colorContainer.querySelectorAll('span');
+            mauSacOptions.forEach(colorOption => {
                 colorOption.addEventListener('click', (e) => {
                     mauSacOptions.forEach(item => item.classList.remove('selected'));
                     colorOption.classList.add('selected');
@@ -573,48 +497,3 @@ function handleSelectConfigItem(product) {
         });
     });
 }
-
-// Khởi tạo khi DOM được tải
-document.addEventListener('DOMContentLoaded', () => {
-    renderBrands();
-    loadProducts(1);
-
-    const applyFilterBtn = document.getElementById('applyFilterBtn');
-    if (applyFilterBtn) {
-        applyFilterBtn.addEventListener('click', () => {
-            const filters = collectFilters();
-            console.log(filters);
-            loadProducts(1, filters);
-        });
-    }
-
-    const priceSlider = document.querySelector('.price-range .form-range');
-    if (priceSlider) {
-        priceSlider.addEventListener('input', () => {
-            const value = parseInt(priceSlider.value);
-            const priceDisplay = document.querySelector('.price-range .d-flex span:first-child');
-            if (priceDisplay) {
-                priceDisplay.textContent = formatPrice(value);
-            }
-        });
-    }
-
-    const pagination = document.querySelector('.pagination');
-    if (pagination) {
-        pagination.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (e.target.classList.contains('page-btn')) {
-                const page = parseInt(e.target.dataset.page);
-                const filters = collectFilters();
-                loadProducts(page, filters);
-            }
-        });
-    }
-});
-
-
-
-
-
-
-

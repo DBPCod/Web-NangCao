@@ -118,7 +118,6 @@ class HoaDonModel {
     public function addMultiProductHoaDon($data) {
         $this->db->begin_transaction();
         try {
-            // Insert into hoadon
             $stmt = $this->db->prepare("
                 INSERT INTO hoadon (IdTaiKhoan, NgayTao, ThanhTien, TrangThai, IdTinhTrang) 
                 VALUES (?, ?, ?, ?, ?)
@@ -133,7 +132,6 @@ class HoaDonModel {
             $stmt->execute();
             $idHoaDon = $this->db->insert_id;
 
-            // Update inventory for each product
             foreach ($data['products'] as $product) {
                 $stmt = $this->db->prepare("
                     UPDATE sanpham 
@@ -241,6 +239,20 @@ class HoaDonModel {
         $stmt = $this->db->prepare("UPDATE hoadon SET TrangThai = 0 WHERE IdHoaDon = ?");
         $stmt->bind_param("i", $idHoaDon);
         return $stmt->execute();
+    }
+
+    public function getHoaDonByNguoiDung($idNguoiDung) {
+        $query = "
+            SELECT h.*, nd.HoVaTen 
+            FROM hoadon h
+            LEFT JOIN TaiKhoan tk ON h.IdTaiKhoan = tk.IdTaiKhoan
+            LEFT JOIN nguoidung nd ON tk.IdNguoiDung = nd.IdNguoiDung
+            WHERE h.TrangThai = 1 AND nd.IdNguoiDung = ?
+        ";
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param("i", $idNguoiDung);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
 }
 ?>
