@@ -33,5 +33,6 @@
     <script src="../../../public/js/singleProductCheckout.js"></script>
     <script src="../../../public/js/multiProductCheckout.js"></script>
     <script src="../../../public/js/orderHistory.js"></script>
-    <!-- <script src="../../../public/js/filter.js"></script> -->
+    <script src="../../../public/js/search.js"></script>
+    
 </body>

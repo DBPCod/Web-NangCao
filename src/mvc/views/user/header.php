@@ -23,7 +23,7 @@
             <div class="mx-auto d-flex justify-content-center flex-grow-1">
                 <div class="input-group search-bar">
                     <input type="text" class="form-control" placeholder="Hôm nay bạn muốn tìm kiếm gì?" />
-                    <button class="btn btn-outline-secondary" type="button" aria-label="Tìm kiếm">
+                    <button class="btn btn-outline-secondary" type="button" aria-label="Tìm kiếm" onclick="handleClickSearch()">
                         <i class="bi bi-search"></i>
                     </button>
                 </div>

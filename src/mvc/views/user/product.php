@@ -6,18 +6,15 @@
         <div class="row">
             <!-- Filter -->
              <?php include 'filter.php' ?>
-
             <!-- Product Grid -->
             <div class="col-lg-9 col-md-8">
                 <!-- Sorting Options -->
                 <?php include 'sortPrice.php' ?>
-
                 <!-- Product Grid -->
                 <div
                     class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 product-grid">
                     <!-- Sản phẩm sẽ được load bằng AJAX -->
                 </div>
-
                 <!-- Modal -->
                 <!-- Modal -->
 <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
