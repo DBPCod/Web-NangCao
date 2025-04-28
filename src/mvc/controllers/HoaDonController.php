@@ -17,6 +17,8 @@ class HoaDonController {
             case 'GET':
                 if (isset($_GET['idHoaDon'])) {
                     $data = $this->model->getHoaDonById($_GET['idHoaDon']);
+                } elseif (isset($_GET['idNguoiDung'])) {
+                    $data = $this->model->getHoaDonByNguoiDung($_GET['idNguoiDung']);
                 } else {
                     // Lấy các tham số lọc
                     $filters = [];
@@ -32,18 +34,25 @@ class HoaDonController {
                     if (isset($_GET['diaChi']) && $_GET['diaChi'] !== '') {
                         $filters['diaChi'] = $_GET['diaChi'];
                     }
-                    // Gọi getAllHoaDon với bộ lọc
                     $data = $this->model->getAllHoaDon($filters);
                 }
                 echo json_encode($data);
                 break;
 
             case 'POST':
-                $newHoaDon = $this->model->addHoaDon($input);
-                echo json_encode([
-                    "message" => "Thêm hóa đơn thành công",
-                    "HoaDon" => $newHoaDon
-                ]);
+                if (isset($input['products']) && is_array($input['products'])) {
+                    $newHoaDon = $this->model->addMultiProductHoaDon($input);
+                    echo json_encode([
+                        "message" => "Thêm hóa đơn nhiều sản phẩm thành công",
+                        "HoaDon" => $newHoaDon
+                    ]);
+                } else {
+                    $newHoaDon = $this->model->addHoaDon($input);
+                    echo json_encode([
+                        "message" => "Thêm hóa đơn thành công",
+                        "HoaDon" => $newHoaDon
+                    ]);
+                }
                 break;
 
             case 'PUT':

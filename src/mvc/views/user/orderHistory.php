@@ -1,18 +1,84 @@
-<!-- views/orderhistory.php -->
+
 <div id="orderHistory" class="modal fade" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content custom-modal">
-            <button type="button" class="btn-close custom-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title">Lịch sử mua hàng</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
             <div class="modal-body">
-                <div class="text-center mb-4">
-                    <h5 class="modal-title mt-2">Lịch sử mua hàng</h5>
-                </div>
-                <div id="orderHistoryList">
-                    <!-- Danh sách đơn hàng sẽ được thêm bằng JavaScript -->
-                </div>
+                <!-- Bảng đơn hàng -->
+                <table class="table table-bordered table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Ngày tạo</th>
+                            <th>Tổng tiền</th>
+                            <th>Tình trạng</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orderHistoryTableBody"></tbody>
+                </table>
                 <div id="orderHistoryEmpty" class="text-center" style="display: none;">
                     <p>Bạn chưa có đơn hàng nào.</p>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Chi tiết Hóa đơn -->
+<div class="modal fade" id="viewOrderModal" tabindex="-1" aria-labelledby="viewOrderModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title" id="viewOrderModalLabel">Chi tiết hóa đơn</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">ID Hóa đơn</label>
+                    <input type="text" class="form-control" id="viewIdHoaDon" readonly>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Khách hàng</label>
+                    <input type="text" class="form-control" id="viewTenKhachHang" readonly>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Ngày tạo</label>
+                    <input type="text" class="form-control" id="viewNgayTao" readonly>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Tổng tiền</label>
+                    <input type="text" class="form-control" id="viewThanhTien" readonly>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Trạng thái</label>
+                    <input type="text" class="form-control" id="viewTrangThai" readonly>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Tình trạng đơn hàng</label>
+                    <input type="text" class="form-control" id="viewTinhTrang" readonly>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Danh sách sản phẩm</label>
+                    <table class="table table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Dòng sản phẩm</th>
+                                <th>Cấu hình</th>
+                                <th>IMEI</th>
+                                <th>Số lượng</th>
+                                <th>Giá bán</th>
+                                <th>Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody id="viewProductList"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
             </div>
         </div>
     </div>

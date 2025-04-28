@@ -963,3 +963,46 @@ footer ul li a:hover {
     text-align: right;
     margin-top: 10px;
 }
+
+.btn:hover {
+    color: var(--bs-btn-hover-color);
+    background-color: #28a745;
+    border-color: var(--bs-btn-hover-border-color);
+}
+
+
+
+
+.modal-content {
+    border-radius: 10px;
+}
+.modal-header {
+    border-bottom: none;
+}
+.modal-footer {
+    border-top: none;
+}
+tr:hover {
+    background-color: #f8f9fa;
+}
+.form-label {
+    font-size: 14px;
+    color: #333;
+}
+.form-control, .form-select {
+    font-size: 14px;
+}
+.table th, .table td {
+    vertical-align: middle;
+}
+/* Màu sắc cho trạng thái trong bảng */
+.status-1 { color: #6c757d; font-weight: bold; } /* Chưa xác nhận */
+.status-2 { color: #007bff; font-weight: bold; } /* Đã xác nhận */
+.status-3 { color: #28a745; font-weight: bold; } /* Thành công */
+.status-4 { color: #dc3545; font-weight: bold; } /* Hủy */
+/* Nút hành động */
+.action-btn {
+    margin-right: 5px;
+    font-size: 12px;
+    padding: 4px 8px;
+}

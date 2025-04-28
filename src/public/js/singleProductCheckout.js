@@ -1,0 +1,350 @@
+const buyNowModal = document.getElementById('buyNowModal');
+const buyNowQuantityElement = buyNowModal.querySelector('.quantity-value');
+const buyNowBtnDecrement = buyNowModal.querySelector('.btn-decrement');
+const buyNowBtnIncrement = buyNowModal.querySelector('.btn-increment');
+let buyNowPriceElement = buyNowModal.querySelector('.text-success');
+const idNguoiDung = getCookieValue('user');
+let isBuyNowQuantitySelectorsSetup = false;
+let price; // Biến toàn cục để lưu giá sản phẩm đơn vị
+
+// Format price with commas (e.g., 30190000 -> 30,190,000 đ)
+function formatPrice(price) {
+    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " đ";
+}
+
+// Parse formatted price (e.g., "30,190,000 đ" -> 30190000)
+function parseFormattedPrice(formattedPrice) {
+    try {
+        if (!formattedPrice) throw new Error("Giá không được cung cấp");
+        const cleanedPrice = formattedPrice.replace(/\./g, '').replace(/\s?VNĐ|đ/i, '').trim();
+        const price = parseInt(cleanedPrice);
+        if (isNaN(price)) throw new Error("Giá không hợp lệ");
+        return price;
+    } catch (error) {
+        console.error("Lỗi khi phân tích giá:", error);
+        return 0;
+    }
+}
+
+// Update quantity buttons state (enable/disable increment/decrement buttons)
+function updateQuantityButtons(value) {
+    buyNowBtnDecrement.disabled = value <= 1;
+    buyNowBtnIncrement.disabled = value >= 10;
+}
+
+// Update total price in modal based on unit price and quantity
+function updateModalTotalPrice(price, quantity) {
+    const total = price * quantity;
+    const modalTotalPrice = buyNowModal.querySelector('.modal-body #total-price');
+    if (modalTotalPrice) {
+        modalTotalPrice.innerText = `Tổng tiền: ${formatPrice(total)}`;
+    }
+}
+
+// Increment quantity and update UI
+function incrementQuantity() {
+    let value = parseInt(buyNowQuantityElement.textContent);
+    if (value < 10) {
+        buyNowQuantityElement.textContent = value + 1;
+        updateQuantityButtons(value + 1);
+        updateModalTotalPrice(price, value + 1);
+    }
+}
+
+// Decrement quantity and update UI
+function decrementQuantity() {
+    let value = parseInt(buyNowQuantityElement.textContent);
+    if (value > 1) {
+        buyNowQuantityElement.textContent = value - 1;
+        updateQuantityButtons(value - 1);
+        updateModalTotalPrice(price, value - 1);
+    }
+}
+
+// Setup modal quantity selectors (initialize buttons and event listeners)
+function setupModalQuantitySelectors() {
+    updateQuantityButtons(1);
+    buyNowPriceElement = buyNowModal.querySelector('.text-success');
+    if (!buyNowPriceElement || !buyNowPriceElement.dataset.price) {
+        console.error("Không tìm thấy giá sản phẩm hoặc dataset.price");
+        return;
+    }
+
+    price = parseFormattedPrice(buyNowPriceElement.dataset.price.replace("đ", "").trim());
+
+    // Remove old event listeners if already setup
+    if (isBuyNowQuantitySelectorsSetup) {
+        buyNowBtnIncrement.removeEventListener('click', incrementQuantity);
+        buyNowBtnDecrement.removeEventListener('click', decrementQuantity);
+    }
+
+    // Attach new event listeners
+    buyNowBtnIncrement.addEventListener('click', incrementQuantity);
+    buyNowBtnDecrement.addEventListener('click', decrementQuantity);
+
+    isBuyNowQuantitySelectorsSetup = true;
+
+    // Update total price immediately
+    updateModalTotalPrice(price, parseInt(buyNowQuantityElement.textContent));
+}
+
+// Handle address input editability (enable/disable address input)
+function handleAddressInput(modalId) {
+    const addressInput = document.getElementById(modalId === 'buyNowModal' ? 'address-input' : 'checkoutAddressInput');
+    const editAddressRadio = document.getElementById(modalId === 'buyNowModal' ? 'edit-address' : 'checkoutEditAddress');
+
+    // Clone and replace radio to avoid duplicate event listeners
+    const newRadio = editAddressRadio.cloneNode(true);
+    editAddressRadio.parentNode.replaceChild(newRadio, editAddressRadio);
+
+    newRadio.addEventListener('change', () => {
+        addressInput.disabled = !newRadio.checked;
+    });
+}
+
+// Get cookie value by name
+function getCookieValue(name) {
+    const regex = new RegExp(`(^| )${name}=([^;]+)`);
+    const match = document.cookie.match(regex);
+    return match ? match[2] : null;
+}
+
+// Handle "Mua ngay" button click (validate and fetch product image)
+function handleClickMuaNgay() {
+    const elementDSP = document.querySelector('#modalProductRam .selected');
+    const elementCHSP = document.querySelector('#modalProductMauSac .selected');
+
+    if (elementDSP && elementCHSP) {
+        const idDSP = elementDSP.getAttribute('iddsp');
+        const idCHSP = elementCHSP.getAttribute('idchsp');
+        const priceProduct = document.querySelector('#modalProductPrice').innerText;
+        getAnh(idCHSP, idDSP, priceProduct);
+    } else {
+        alert('Vui lòng chọn phiên bản sản phẩm!');
+    }
+}
+
+// Fetch product image from AnhController
+function getAnh(idCHSP, idDSP, priceProduct) {
+    fetch(`/smartstation/src/mvc/controllers/AnhController.php?idCHSP=${idCHSP}&idDSP=${idDSP}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then(response => {
+        if (!response.ok) throw new Error('Lỗi mạng khi tải ảnh');
+        return response.json();
+    })
+    .then(data => {
+        if (data.length !== 0) {
+            const imageSrc = `data:image/jpeg;base64,${data[0].Anh}`;
+            const product = {
+                img: imageSrc,
+                idDSP: idDSP,
+                idCHSP: idCHSP,
+                price: priceProduct
+            };
+            SetInfor(product);
+        } else {
+            throw new Error("Không tìm thấy ảnh sản phẩm");
+        }
+    })
+    .catch(error => {
+        console.error("Lỗi khi tải ảnh:", error);
+        alert("Lỗi: " + error.message);
+    });
+}
+
+// Close modal
+function handleCloseModal() {
+    const myModal = bootstrap.Modal.getInstance(buyNowModal);
+    myModal.hide();
+    isBuyNowQuantitySelectorsSetup = false; // Reset state
+}
+
+// Set product and user information in modal
+async function SetInfor(product) {
+    try {
+        // Fetch user data
+        const userResponse = await fetch(`/smartstation/src/mvc/controllers/NguoiDungController.php?idNguoiDung=${idNguoiDung}`);
+        const userData = await userResponse.json();
+        document.getElementById('FullName').value = userData.HoVaTen || '';
+        document.getElementById('PhoneNumber').value = userData.SoDienThoai || '';
+        document.getElementById('Email').value = userData.Email || '';
+        document.getElementById('address-input').value = userData.DiaChi || '';
+
+        // Fetch product data
+        const productResponse = await fetch(`/smartstation/src/mvc/controllers/SanPhamController.php?idDSP=${product.idDSP}&idCHSP=${product.idCHSP}`);
+        const productData = await productResponse.json();
+
+        // Render product information
+        const html = `
+            <img src="${product.img}" alt="" class="product-image">
+            <h4 class="mt-3">${productData.TenDong}</h4>
+            <h3 class="text-success" data-price="${product.price}">${product.price}</h3>
+            <div class="config-container">
+                <div class="config-item">
+                    <span class="config-label">RAM</span>
+                    <span class="config-value">${productData.Ram}</span>
+                </div>
+                <div class="config-item">
+                    <span class="config-label">Bộ nhớ trong</span>
+                    <span class="config-value">${productData.Rom}</span>
+                </div>
+                <div class="config-item">
+                    <span class="config-label">Màn hình</span>
+                    <span class="config-value">${productData.ManHinh}</span>
+                </div>
+                <div class="config-item">
+                    <span class="config-label">Dung lượng pin</span>
+                    <span class="config-value">${productData.Pin}</span>
+                </div>
+                <div class="config-item">
+                    <span class="config-label">Màu sắc</span>
+                    <span class="config-value">${productData.MauSac}</span>
+                </div>
+                <div class="config-item">
+                    <span class="config-label">Độ phân giải</span>
+                    <span class="config-value">${productData.Camera}</span>
+                </div>
+            </div>`;
+        const productContainer = buyNowModal.querySelector(".col-md-6");
+        productContainer.innerHTML = html;
+        productContainer.dataset.idCHSP = product.idCHSP;
+        productContainer.dataset.idDSP = product.idDSP;
+        buyNowModal.querySelector('.modal-body .total-price').innerText = `Tổng tiền: ${product.price}`;
+        buyNowQuantityElement.innerText = 1;
+
+        // Show modal
+        const myModal = new bootstrap.Modal(buyNowModal);
+        myModal.show();
+
+        // Initialize quantity selectors and address input
+        setupModalQuantitySelectors();
+        handleAddressInput('buyNowModal');
+        document.getElementById('edit-address').checked = false;
+        document.getElementById('address-input').disabled = true;
+    } catch (error) {
+        console.error("Lỗi khi thiết lập thông tin:", error);
+        alert("Lỗi: " + error.message);
+    }
+}
+
+// Get account ID from TaiKhoanController
+async function getIdTaiKhoan(idNguoiDung) {
+    try {
+        const response = await fetch(`/smartstation/src/mvc/controllers/TaiKhoanController.php?idNguoiDung=${idNguoiDung}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        const data = await response.json();
+        if (data && data.IdTaiKhoan) {
+            return data.IdTaiKhoan;
+        }
+        throw new Error("Không tìm thấy IdTaiKhoan cho IdNguoiDung: " + idNguoiDung);
+    } catch (error) {
+        throw error;
+    }
+}
+
+// Handle checkout process
+async function handleCheckout() {
+    try {
+        // Get form data
+        const radioBtn = document.getElementById('edit-address');
+        const newAddress = document.getElementById('address-input').value;
+        const quantity = parseInt(buyNowQuantityElement.textContent) || 1;
+        const priceElement = buyNowModal.querySelector('.text-success');
+        const unitPrice = parseFormattedPrice(priceElement.dataset.price.replace("đ", "").trim());
+        const totalPrice = unitPrice * quantity;
+        const idCHSP = buyNowModal.querySelector('.col-md-6').dataset.idCHSP;
+        const idDongSanPham = buyNowModal.querySelector('.col-md-6').dataset.idDSP;
+        const currentDate = new Date().toISOString().slice(0, 10);
+        const idTaiKhoan = await getIdTaiKhoan(idNguoiDung);
+
+        // Fetch multiple IMEIs in one request
+        const response = await fetch(`/smartstation/src/mvc/controllers/SanPhamChiTietController.php?idCHSP=${idCHSP}&idDongSanPham=${idDongSanPham}&quantity=${quantity}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        if (!response.ok) {
+            throw new Error("Lỗi mạng khi lấy danh sách IMEI");
+        }
+        const data = await response.json();
+        if (!data.Imeis || data.Imeis.length < quantity) {
+            throw new Error(data.message || `Không đủ sản phẩm trong kho. Yêu cầu: ${quantity}, Còn lại: ${data.Imeis ? data.Imeis.length : 0}`);
+        }
+
+        // Create invoice (HoaDon)
+        const hoaDonData = {
+            IdTaiKhoan: idTaiKhoan,
+            NgayTao: currentDate,
+            ThanhTien: totalPrice,
+            TrangThai: 1,
+            IdTinhTrang: 1,
+            SoLuong: quantity,
+            IdCHSP: idCHSP,
+            IdDongSanPham: idDongSanPham
+        };
+
+        const hoaDonResponse = await fetch('/smartstation/src/mvc/controllers/HoaDonController.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(hoaDonData)
+        });
+        const hoaDonDataResult = await hoaDonResponse.json();
+        if (!hoaDonDataResult.HoaDon) {
+            throw new Error("Thêm hóa đơn thất bại");
+        }
+
+        const idHoaDon = hoaDonDataResult.HoaDon.IdHoaDon;
+
+        // Update address if edited
+        if (radioBtn.checked && newAddress) {
+            const response = await fetch(`/smartstation/src/mvc/controllers/NguoiDungController.php?idNguoiDung=${idNguoiDung}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ DiaChi: newAddress })
+            });
+            const data = await response.json();
+            if (!data.success) {
+                throw new Error("Cập nhật địa chỉ thất bại");
+            }
+        }
+
+        // Create CTHoaDon for each IMEI
+        for (let i = 0; i < data.Imeis.length; i++) {
+            const imei = data.Imeis[i];
+            const ctHoaDonData = {
+                IdHoaDon: idHoaDon,
+                GiaTien: unitPrice,
+                SoLuong: 1,
+                Imei: imei
+            };
+
+            const ctHoaDonResponse = await fetch('/smartstation/src/mvc/controllers/CTHoaDonController.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(ctHoaDonData)
+            });
+            const ctHoaDonResult = await ctHoaDonResponse.json();
+            if (!ctHoaDonResult.message.includes("thành công")) {
+                throw new Error(`Thêm chi tiết hóa đơn cho sản phẩm thứ ${i + 1} thất bại`);
+            }
+        }
+
+        alert("Thanh toán thành công!");
+        const myModal = bootstrap.Modal.getInstance(buyNowModal);
+        myModal.hide();
+    } catch (error) {
+        console.error("Lỗi thanh toán:", error);
+        alert("Lỗi thanh toán: " + error.message);
+    }
+}
+
+// Initialize address input handling
+handleAddressInput('buyNowModal');
+
+// Reset state when modal closes
+buyNowModal.addEventListener('hidden.bs.modal', () => {
+    isBuyNowQuantitySelectorsSetup = false;
+});

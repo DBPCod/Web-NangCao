@@ -8,7 +8,7 @@ class CauHinhSanPhamModel {
         $this->db = (new DB())->conn;
     }
 
-    // Lấy tất cả cấu hình sản phẩm
+    // Lấy tất cả cấu hình sản phẩm  
     public function getAllCauHinh() {
         $result = $this->db->query("SELECT * FROM CauHinhSanPham where trangthai=1");
         return $result->fetch_all(MYSQLI_ASSOC);

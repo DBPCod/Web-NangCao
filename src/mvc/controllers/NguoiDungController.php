@@ -44,7 +44,7 @@ class NguoiDungController {
                             'SoDienThoai' => $input['SoDienThoai'] ?? $currentUser['SoDienThoai'],
                             'TrangThai' => $input['TrangThai'] ?? $currentUser['TrangThai'],
                         ];
-                        $result = $this->model->updateNguoiDung($idNguoiDung, $input); // Truyền trực tiếp $input
+                        $result = $this->model->updateNguoiDung($idNguoiDung, $data); // Truyền trực tiếp $input
                         echo json_encode([
                             "success" => $result,
                             "message" => $result ? "Cập nhật thành công" : "Cập nhật thất bại"

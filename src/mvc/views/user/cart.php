@@ -45,7 +45,7 @@
                     </div> -->
                 </div>
                 <p class="text-end mt-3">Tổng cộng: <strong id="totalPrice"></strong></p>
-                <a href="#" class="btn btn-success w-100 custom-btn" data-bs-toggle="modal" data-bs-target="#myModal" data-title="ThanhToan">Thanh toán</a>
+                <a href="#" class="btn btn-success w-100 custom-btn" onclick="handleClickCheckout()">Thanh toán</a>
             </div>
         </div>
     </div>

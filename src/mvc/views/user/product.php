@@ -6,18 +6,15 @@
         <div class="row">
             <!-- Filter -->
              <?php include 'filter.php' ?>
-
             <!-- Product Grid -->
             <div class="col-lg-9 col-md-8">
                 <!-- Sorting Options -->
                 <?php include 'sortPrice.php' ?>
-
                 <!-- Product Grid -->
                 <div
                     class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 product-grid">
                     <!-- Sản phẩm sẽ được load bằng AJAX -->
                 </div>
-
                 <!-- Modal -->
                 <!-- Modal -->
 <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
@@ -60,7 +57,7 @@
                     <div class="col-md-7">
                         <h5 id="modalProductName" class="product-name"></h5>
                         <p id="modalProductSpecs" class="product-specs"></p>
-                        <p id="modalProductPrice" class="product-price"></p>
+                        <p id="modalProductPrice" class="product-price" id="productPrice"></p>
                         <p id="modalProductDiscount" class="product-discount text-warning"></p>
                         <p id="modalProductPoints" class="product-points"></p>
                         <!-- Thông số kỹ thuật -->
