@@ -52,21 +52,6 @@
                 </thead>
                 <tbody class="text-center">
                 <tr>
-                  <td class="text-start"><input type="checkbox"> Dashboards</td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td class="text-start"><input type="checkbox"> Trang tổng quan</td>
-                  <td><input type="checkbox"></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  
-                </tr>
-                <tr>
                   <td class="text-start"><input type="checkbox"> Khách hàng</td>
                   <td><input type="checkbox"></td>
                   <td></td>
@@ -194,21 +179,6 @@
                 </thead>
                 <tbody class="text-center">
                 <tr>
-                  <td class="text-start"><input type="checkbox"> Dashboards</td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td class="text-start"><input type="checkbox"> Trang tổng quan</td>
-                  <td><input type="checkbox"></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  
-                </tr>
-                <tr>
                   <td class="text-start"><input type="checkbox"> Khách hàng</td>
                   <td><input type="checkbox"></td>
                   <td></td>
@@ -333,21 +303,6 @@
                     </tr>
                 </thead>
                 <tbody class="text-center">
-                <tr>
-                  <td class="text-start"><input type="checkbox"> Dashboards</td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td class="text-start"><input type="checkbox"> Trang tổng quan</td>
-                  <td><input type="checkbox"></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  
-                </tr>
                 <tr>
                   <td class="text-start"><input type="checkbox"> Khách hàng</td>
                   <td><input type="checkbox"></td>
