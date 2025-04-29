@@ -30,6 +30,29 @@ class SanPhamModel {
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
+    public function getAllProductsSortedByNgayNhap() {
+        $result = $this->db->query("
+            SELECT sp.*, chsp.Ram, chsp.Rom, chsp.ManHinh, chsp.Pin, chsp.MauSac, chsp.Camera, dsp.TenDong,
+                   km.PhanTramGiam,
+                   CASE 
+                       WHEN km.PhanTramGiam IS NOT NULL 
+                       THEN sp.Gia - (sp.Gia * km.PhanTramGiam / 100) 
+                       ELSE NULL 
+                   END AS GiaGiam
+            FROM sanpham sp
+            JOIN CauHinhSanPham chsp ON sp.IdCHSP = chsp.IdCHSP
+            JOIN dongsanpham dsp ON sp.IdDongSanPham = dsp.IdDongSanPham
+            LEFT JOIN ctkhuyenmai ctkm ON dsp.IdDongSanPham = ctkm.IdDongSanPham
+            LEFT JOIN khuyenmai km ON ctkm.IdKhuyenMai = km.IdKhuyenMai 
+                AND km.NgayBatDau <= CURDATE() 
+                AND km.NgayKetThuc >= CURDATE() 
+                AND km.TrangThai != 0
+            WHERE sp.TrangThai = 1 AND chsp.TrangThai = 1 AND dsp.TrangThai = 1
+            ORDER BY sp.NgayNhap DESC, dsp.TenDong ASC
+        ");
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
     public function getProductsByDongSanPham($idDSP) {
         $stmt = $this->db->prepare("
             SELECT sp.IdCHSP, sp.IdDongSanPham, sp.Gia, sp.SoLuong, sp.TrangThai, 
@@ -81,6 +104,19 @@ class SanPhamModel {
         return $stmt->get_result()->fetch_assoc();
     }
 
+    public function getAllProductsSortedByDaBan() {
+        $query = "
+            SELECT sp.*, dsp.TenDong, dsp.IdThuongHieu 
+            FROM sanpham sp
+            JOIN dongsanpham dsp ON sp.IdDongSanPham = dsp.IdDongSanPham
+            WHERE sp.TrangThai = 1 AND dsp.TrangThai = 1
+            ORDER BY sp.DaBan DESC
+        ";
+        $stmt = $this->db->prepare($query);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+
     private function updateDongSanPhamQuantity($idDongSanPham) {
         $stmt = $this->db->prepare("
             SELECT SUM(SoLuong) as total 
@@ -120,7 +156,8 @@ class SanPhamModel {
                         UPDATE sanpham 
                         SET TrangThai = 1,
                             SoLuong = 0,
-                            Gia = ?
+                            Gia = ?,
+                            NgayNhap = NOW()
                         WHERE IdCHSP = ? AND IdDongSanPham = ?
                     ");
                     $gia = $data['Gia'] ?? $existingProduct['Gia'];
@@ -129,13 +166,13 @@ class SanPhamModel {
                 }
             } else {
                 $stmt = $this->db->prepare("
-                    INSERT INTO sanpham (IdCHSP, IdDongSanPham, SoLuong, Gia, TrangThai) 
-                    VALUES (?, ?, ?, ?, ?)
+                    INSERT INTO sanpham (IdCHSP, IdDongSanPham, SoLuong, Gia, NgayNhap, TrangThai) 
+                    VALUES (?, ?, ?, ?, NOW(), ?)
                 ");
                 $gia = $data['Gia'] ?? 0;
                 $trangThai = $data['TrangThai'] ?? 1;
                 $soLuong = $data['SoLuong'] ?? 0;
-                $stmt->bind_param("iiidi", $data['IdCHSP'], $data['IdDongSanPham'], $soLuong, $gia, $trangThai);
+                $stmt->bind_param("iidi", $data['IdCHSP'], $data['IdDongSanPham'], $soLuong, $gia, $trangThai);
                 $stmt->execute();
             }
 
@@ -149,15 +186,15 @@ class SanPhamModel {
         }
     }
 
-    public function updateProduct($idCHSP, $idDSP, $soLuong, $gia, $trangThai) {
+    public function updateProduct($idCHSP, $idDSP, $soLuong, $gia, $trangThai, $NgayNhap) {
         $this->db->begin_transaction();
-        try {
+        try {   
             $stmt = $this->db->prepare("
                 UPDATE sanpham 
-                SET SoLuong = ?, Gia = ?, TrangThai = ? 
+                SET SoLuong = ?, Gia = ?, TrangThai = ?, NgayNhap = ?
                 WHERE IdCHSP = ? AND IdDongSanPham = ?
             ");
-            $stmt->bind_param("idiii", $soLuong, $gia, $trangThai, $idCHSP, $idDSP);
+            $stmt->bind_param("idisii", $soLuong, $gia, $trangThai, $NgayNhap, $idCHSP, $idDSP);
             $stmt->execute();
 
             $this->updateDongSanPhamQuantity($idDSP);

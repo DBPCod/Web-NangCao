@@ -7,11 +7,11 @@ $db = (new DB())->conn;
 function GetMatKhau($username)
 {
     global $db;
-    $stmt = $db->prepare("SELECT MatKhau FROM taikhoan WHERE TaiKhoan = ?");
+    $stmt = $db->prepare("SELECT MatKhau,IdVaiTro FROM taikhoan WHERE TaiKhoan = ?");
     $stmt->bind_param("s", $username);
     $stmt->execute();
     $row = $stmt->get_result()->fetch_assoc();
-    return $row ? $row["MatKhau"] : null;
+    return $row;
 }
 
 function LayThongTinNguoiDung($username)
@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $hashedPassword = GetMatKhau($username);
 
-    if ($hashedPassword && password_verify($password, $hashedPassword)) {
+    if ($hashedPassword && password_verify($password, $hashedPassword["MatKhau"]) && $hashedPassword["IdVaiTro"] == 1) {
         $userInfo = LayThongTinNguoiDung($username);
         $_SESSION['admin_logged_in'] = true;
         $_SESSION['admin_info'] = $userInfo;
@@ -94,12 +94,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 var formData = $(this).serialize(); // Lấy dữ liệu từ form
 
+                console.log(formData);
                 $.ajax({
                     url: '', // Gửi request đến chính file này
                     type: 'POST',
                     data: formData,
                     dataType: 'json',
                     success: function(response) {
+                        console.log(response);
                         if (response.success) {
                             // Nếu đăng nhập thành công, chuyển hướng
                             window.location.href = response.redirect;

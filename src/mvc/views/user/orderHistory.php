@@ -1,4 +1,3 @@
-
 <div id="orderHistory" class="modal fade" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content custom-modal">
@@ -22,6 +21,10 @@
                 <div id="orderHistoryEmpty" class="text-center" style="display: none;">
                     <p>Bạn chưa có đơn hàng nào.</p>
                 </div>
+                <!-- Phân trang -->
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center" id="pagination"></ul>
+                </nav>
             </div>
         </div>
     </div>

@@ -51,7 +51,8 @@ class SanPhamController {
                             $_GET['idDSP'],
                             $_PUT['SoLuong'],
                             $_PUT['Gia'],
-                            $_PUT['TrangThai']
+                            $_PUT['TrangThai'],
+                            $_PUT['NgayNhap']
                         );
                         echo json_encode(["message" => $result ? "Cập nhật thành công" : "Cập nhật thất bại"]);
                     } catch (Exception $e) {

@@ -25,31 +25,37 @@ const statusMap = {
     4: { text: "Hủy", class: "status-4" }
 };
 
-// Load order history
-async function loadOrderHistory() {
+// Load order history with pagination
+async function loadOrderHistory(page = 1, limit = 5) {
     const idNguoiDung = getCookie('user');
     if (!idNguoiDung) {
         document.getElementById('orderHistoryEmpty').style.display = 'block';
+        document.getElementById('pagination').innerHTML = '';
         return;
     }
 
     try {
-        const response = await fetch(`/smartstation/src/mvc/controllers/HoaDonController.php?idNguoiDung=${idNguoiDung}`, {
+        // Fetch orders with pagination
+        const response = await fetch(`/smartstation/src/mvc/controllers/HoaDonController.php?idNguoiDung=${idNguoiDung}&page=${page}&limit=${limit}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' }
         });
-        const orders = await response.json();
+        const data = await response.json();
+        const orders = data.orders || [];
+        const totalOrders = data.total || 0;
 
         const tableBody = document.getElementById('orderHistoryTableBody');
         tableBody.innerHTML = '';
 
         if (orders.length === 0) {
             document.getElementById('orderHistoryEmpty').style.display = 'block';
+            document.getElementById('pagination').innerHTML = '';
             return;
         }
 
         document.getElementById('orderHistoryEmpty').style.display = 'none';
 
+        // Populate table
         orders.forEach(order => {
             const status = statusMap[order.IdTinhTrang] || { text: "Không xác định", class: "" };
             const row = `
@@ -64,11 +70,45 @@ async function loadOrderHistory() {
             `;
             tableBody.innerHTML += row;
         });
+
+        // Render pagination
+        renderPagination(totalOrders, page, limit);
     } catch (error) {
         console.error("Lỗi khi tải lịch sử đơn hàng:", error);
         document.getElementById('orderHistoryEmpty').innerHTML = '<p>Lỗi khi tải dữ liệu đơn hàng.</p>';
         document.getElementById('orderHistoryEmpty').style.display = 'block';
+        document.getElementById('pagination').innerHTML = '';
     }
+}
+
+// Render pagination buttons
+function renderPagination(totalOrders, currentPage, limit) {
+    const totalPages = Math.ceil(totalOrders / limit);
+    const pagination = document.getElementById('pagination');
+    pagination.innerHTML = '';
+
+    // Previous button
+    pagination.innerHTML += `
+        <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+            <a class="page-link" href="#" onclick="loadOrderHistory(${currentPage - 1})">Trước</a>
+        </li>
+    `;
+
+    // Page numbers
+    for (let i = 1; i <= totalPages; i++) {
+        pagination.innerHTML += `
+            <li class="page-item ${i === currentPage ? 'active' : ''}">
+                <a class="page-link" href="#" onclick="loadOrderHistory(${i})">${i}</a>
+            </li>
+        `;
+    }
+
+    // Next button
+    pagination.innerHTML += `
+        <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+            <a class="page-link" href="#" onclick="loadOrderHistory(${currentPage + 1})">Sau</a>
+        </li>
+    `;
 }
 
 // View order details
@@ -99,8 +139,6 @@ async function viewOrderDetails(idHoaDon) {
             const spData = await spResponse.json();
             const config = spData.Config || {};
             const configText = Object.entries(config).map(([key, value]) => `${key}: ${value}`).join(', ');
-            console.log(ct);
-            console.log(spData);
             const row = `
                 <tr>
                     <td>${ct.TenDong || 'Không xác định'}</td>
