@@ -143,6 +143,7 @@ document.addEventListener("click", function (e) {
                             <td>${order.TenTinhTrang}</td>
                             <td>
                                 <button class="btn btn-primary btn-xem-chitiet"
+                                        data-idNguoiDung="${idNguoiDung}"
                                         data-id="${order.IdHoaDon}" 
                                         data-ngay="${order.NgayTao}"
                                         data-trangthai="${order.TenTinhTrang}"
@@ -160,10 +161,14 @@ document.addEventListener("click", function (e) {
     }
     //Xem chi tiết đơn hàng
     if (e.target.classList.contains("btn-xem-chitiet")) {
+
+        const idNguoiDung = e.target.dataset.idnguoidung;
         const idHoaDon = e.target.dataset.id;
         const ngay = e.target.dataset.ngay;
         const trangThai = e.target.dataset.trangthai;
         const thanhtien = e.target.dataset.thanhtien;
+
+
         //Đổi các label 
         document.getElementById("orderDetailModalLabel").textContent = `Chi tiết hóa đơn #${idHoaDon}`;
         document.getElementById("orderDate").innerHTML = `<strong>Ngày đặt: </strong>${ngay}`;
@@ -218,5 +223,18 @@ function resetTopUsers(){
     loadTopUsers();
 }
 
+
+function getAddressUser(idNguoiDung)
+{
+    fetch(`/smartstation/src/mvc/controllers/NguoiDungController.php?idNguoiDung=${idNguoiDung}`)
+            .then((response) => {
+                if (!response.ok) throw new Error("Network error: " + response.status);
+                return response.json();
+            })
+            .then((user) => {
+                document.getElementById("adress").innerHTML= `<strong>Địa chỉ giao hàng: </strong>${user.DiaChi}</p>`;
+                console.log(user);
+            })
+}
 loadTopUsers();
 
