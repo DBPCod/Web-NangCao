@@ -16,7 +16,7 @@ function formatPrice(price) {
 function parseFormattedPrice(formattedPrice) {
     try {
         if (!formattedPrice) throw new Error("Giá không được cung cấp");
-        const cleanedPrice = formattedPrice.replace(/\./g, '').replace(/\s?VNĐ|đ/i, '').trim();
+        const cleanedPrice = formattedPrice.replace(/[,]/g, '').replace(/\s?VNĐ|đ/i, '').trim();
         const price = parseInt(cleanedPrice);
         if (isNaN(price)) throw new Error("Giá không hợp lệ");
         return price;
