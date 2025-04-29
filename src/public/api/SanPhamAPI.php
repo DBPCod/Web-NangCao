@@ -1,5 +1,4 @@
 <?php
-// smartstation/mvc/api/SanPhamAPI.php
 include_once __DIR__ . '/../../mvc/models/CauHinhSanPhamModel.php';
 include_once __DIR__ . '/../../mvc/models/SanPhamModel.php';
 include_once __DIR__ . '/../../mvc/models/DongSanPhamModel.php';
@@ -48,7 +47,6 @@ class SanPhamAPI {
             $pins = isset($filters['pins']) && $filters['pins'] !== '' ? array_map('trim', explode(',', filter_var($filters['pins'], FILTER_SANITIZE_STRING))) : [];
             $searchQuery = isset($filters['q']) && $filters['q'] !== '' ? trim(filter_var($filters['q'], FILTER_SANITIZE_STRING)) : '';
             $sort = isset($filters['sort']) && $filters['sort'] === 'latest' ? 'latest' : 'default';
-
             // Xử lý đặc biệt cho "12GB trở lên"
             $hasRam12GBPlus = in_array('12GB trở lên', $rams) || in_array('12GB+', $rams);
             if ($hasRam12GBPlus) {
@@ -59,9 +57,12 @@ class SanPhamAPI {
 
             // Kiểm tra xem có bộ lọc nào được áp dụng không
             $hasFilters = !empty($brands) || !empty($priceRanges) || $priceMin !== null || $priceMax !== null || !empty($rams) || $hasRam12GBPlus || !empty($pins) || $searchQuery !== '';
-
             // Bước 1: Lấy toàn bộ dữ liệu cần thiết
             $sanPhams = $sort === 'latest' ? $this->sanPhamModel->getAllProductsSortedByNgayNhap() : $this->sanPhamModel->getAllProducts();
+            error_log('SanPhams sorted by NgayNhap: ' . json_encode(array_map(function($p) {
+                return ['name' => $p['TenDong'], 'ngayNhap' => $p['NgayNhap']];
+            }, array_slice($sanPhams, 0, 5))));
+
             $cauHinhs = $this->cauHinhModel->getAllCauHinh();
             $dongSanPhams = $this->dongSanPhamModel->getAllDongSanPham();
             $thuongHieus = $this->thuongHieuModel->getAllThuongHieu();
@@ -151,7 +152,7 @@ class SanPhamAPI {
                     'soLuong' => $sanPham['SoLuong'],
                     'thuongHieu' => $tenThuongHieu,
                     'image' => $image,
-                    'ngayNhap' => $sanPham['NgayNhap'] // Thêm ngày nhập
+                    'ngayNhap' => $sanPham['NgayNhap']
                 ];
             }, $sanPhams);
 
@@ -161,8 +162,10 @@ class SanPhamAPI {
             });
             $products = array_values($products);
 
-            // Log số lượng sản phẩm ban đầu
             error_log('Initial products count: ' . count($products));
+            error_log('Initial products: ' . json_encode(array_map(function($p) {
+                return ['name' => $p['name'], 'ngayNhap' => $p['ngayNhap']];
+            }, array_slice($products, 0, 5))));
 
             // Bước 3: Lọc theo từ khóa tìm kiếm
             if ($hasFilters && $searchQuery) {
@@ -253,12 +256,37 @@ class SanPhamAPI {
                 error_log('Products count after pins filter: ' . count($products));
             }
 
-            // Log số lượng sản phẩm cuối cùng
-            error_log('Final products count: ' . count($products));
+            // Bước 9: Sắp xếp lại theo NgayNhap nếu sort=latest
+            error_log('Before sorting: ' . json_encode(array_map(function($p) {
+                return ['name' => $p['name'], 'ngayNhap' => $p['ngayNhap']];
+            }, array_slice($products, 0, 5))));
+
+            if ($sort === 'latest') {
+                usort($products, function($a, $b) {
+                    if (empty($a['ngayNhap']) && empty($b['ngayNhap'])) {
+                        return strcmp($a['name'], $b['name']); // Sắp xếp theo tên nếu cả hai null
+                    }
+                    if (empty($a['ngayNhap'])) {
+                        return 1; // Đẩy a xuống cuối
+                    }
+                    if (empty($b['ngayNhap'])) {
+                        return -1; // Đẩy b xuống cuối
+                    }
+                    return strtotime($b['ngayNhap']) - strtotime($a['ngayNhap']);
+                });
+            }
+
+            error_log('After sorting: ' . json_encode(array_map(function($p) {
+                return ['name' => $p['name'], 'ngayNhap' => $p['ngayNhap']];
+            }, array_slice($products, 0, 5))));
 
             // Phân trang
             $total = count($products);
             $finalProducts = array_slice($products, $offset, $limit);
+
+            error_log('Final products: ' . json_encode(array_map(function($p) {
+                return ['name' => $p['name'], 'ngayNhap' => $p['ngayNhap']];
+            }, array_slice($finalProducts, 0, 5))));
 
             echo json_encode([
                 'products' => $finalProducts,
@@ -286,7 +314,7 @@ $filters = [
     'rams' => isset($_GET['rams']) ? filter_var($_GET['rams'], FILTER_SANITIZE_STRING) : '',
     'pins' => isset($_GET['pins']) ? filter_var($_GET['pins'], FILTER_SANITIZE_STRING) : '',
     'q' => isset($_GET['q']) ? filter_var($_GET['q'], FILTER_SANITIZE_STRING) : '',
-    'sort' => isset($_GET['sort']) ? filter_var($_GET['sort'], FILTER_SANITIZE_STRING) : '' // Thêm sort
+    'sort' => isset($_GET['sort']) ? filter_var($_GET['sort'], FILTER_SANITIZE_STRING) : ''
 ];
 
 (new SanPhamAPI())->getProducts($page, 6, $filters);

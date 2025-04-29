@@ -93,10 +93,10 @@ function buildQueryString(filters, page) {
     const params = new URLSearchParams();
     params.append('page', page);
 
-    if (filters.brands.length > 0) {
+    if (filters.brands && filters.brands.length > 0) {
         params.append('brands', filters.brands.join(','));
     }
-    if (filters.priceRanges.length > 0) {
+    if (filters.priceRanges && filters.priceRanges.length > 0) {
         params.append('priceRanges', filters.priceRanges.join(','));
     }
     if (filters.priceMin) {
@@ -105,11 +105,14 @@ function buildQueryString(filters, page) {
     if (filters.priceMax) {
         params.append('priceMax', filters.priceMax);
     }
-    if (filters.rams.length > 0) {
+    if (filters.rams && filters.rams.length > 0) {
         params.append('rams', filters.rams.join(','));
     }
-    if (filters.pins.length > 0) {
+    if (filters.pins && filters.pins.length > 0) {
         params.append('pins', filters.pins.join(','));
+    }
+    if (filters.sort) {
+        params.append('sort', filters.sort); // Thêm sort nếu tồn tại
     }
 
     return params.toString();
@@ -498,8 +501,18 @@ function handleSelectConfigItem(product) {
     });
 }
 
-function filterNewProducts(limit = 10) {
-    fetch(`/smartstation/src/public/api/SanPhamAPI.php?sort=latest&limit=${limit}`, {
+
+function filterNewProducts(limit = 6) {
+    // Thu thập các bộ lọc hiện tại
+    const filters = collectFilters();
+    
+    // Thêm sort=latest vào filters
+    filters.sort = 'latest';
+    console.log('Filters:', filters);
+    // Xây dựng query string với page=1 và limit=10
+    const queryString = buildQueryString(filters, 1) + `&limit=${limit}`;
+    console.log(queryString);   
+    fetch(`/smartstation/src/public/api/SanPhamAPI.php?${queryString}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'
@@ -540,10 +553,10 @@ function filterNewProducts(limit = 10) {
                     </div>`;
             });
         } else {
-            productHTML = '<div class="col text-center">Không có sản phẩm mới.</div>';
+            productHTML = '<div class="col text-center">Không có sản phẩm mới phù hợp.</div>';
         }
 
-        // Render vào container .product-grid (giống loadProducts)
+        // Render vào container .product-grid
         const productContainer = document.querySelector('.product-grid');
         if (productContainer) {
             productContainer.innerHTML = productHTML;

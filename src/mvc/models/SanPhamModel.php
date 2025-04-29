@@ -48,7 +48,7 @@ class SanPhamModel {
                 AND km.NgayKetThuc >= CURDATE() 
                 AND km.TrangThai != 0
             WHERE sp.TrangThai = 1 AND chsp.TrangThai = 1 AND dsp.TrangThai = 1
-            ORDER BY sp.NgayNhap DESC
+            ORDER BY sp.NgayNhap DESC, dsp.TenDong ASC
         ");
         return $result->fetch_all(MYSQLI_ASSOC);
     }
@@ -143,7 +143,8 @@ class SanPhamModel {
                         UPDATE sanpham 
                         SET TrangThai = 1,
                             SoLuong = 0,
-                            Gia = ?
+                            Gia = ?,
+                            NgayNhap = NOW()
                         WHERE IdCHSP = ? AND IdDongSanPham = ?
                     ");
                     $gia = $data['Gia'] ?? $existingProduct['Gia'];
@@ -152,13 +153,13 @@ class SanPhamModel {
                 }
             } else {
                 $stmt = $this->db->prepare("
-                    INSERT INTO sanpham (IdCHSP, IdDongSanPham, SoLuong, Gia, TrangThai) 
-                    VALUES (?, ?, ?, ?, ?)
+                    INSERT INTO sanpham (IdCHSP, IdDongSanPham, SoLuong, Gia, NgayNhap, TrangThai) 
+                    VALUES (?, ?, ?, ?, NOW(), ?)
                 ");
                 $gia = $data['Gia'] ?? 0;
                 $trangThai = $data['TrangThai'] ?? 1;
                 $soLuong = $data['SoLuong'] ?? 0;
-                $stmt->bind_param("iiidi", $data['IdCHSP'], $data['IdDongSanPham'], $soLuong, $gia, $trangThai);
+                $stmt->bind_param("iidi", $data['IdCHSP'], $data['IdDongSanPham'], $soLuong, $gia, $trangThai);
                 $stmt->execute();
             }
 
