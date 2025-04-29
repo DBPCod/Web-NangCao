@@ -286,6 +286,8 @@ async function handleCheckout() {
             IdDongSanPham: idDongSanPham
         };
 
+        
+
         const hoaDonResponse = await fetch('/smartstation/src/mvc/controllers/HoaDonController.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

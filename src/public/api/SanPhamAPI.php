@@ -40,13 +40,13 @@ class SanPhamAPI {
 
             // Đọc và làm sạch tham số lọc
             $brands = isset($filters['brands']) && $filters['brands'] !== '' ? array_map('trim', explode(',', filter_var($filters['brands'], FILTER_SANITIZE_STRING))) : [];
-            $priceRanges = isset($filters['priceRanges']) && $filters['priceRanges'] !== '' ? array_map('trim', explode(',', filter_var($filters['priceRanges'], FILTER_SANITIZE_STRING))) : [];
-            $priceMin = isset($filters['priceMin']) && $filters['priceMin'] !== '' ? (float)filter_var($filters['priceMin'], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION) : null;
-            $priceMax = isset($filters['priceMax']) && $filters['priceMax'] !== '' ? (float)filter_var($filters['priceMax'], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION) : null;
-            $rams = isset($filters['rams']) && $filters['rams'] !== '' ? array_map('trim', explode(',', filter_var(urldecode($filters['rams']), FILTER_SANITIZE_STRING))) : [];
-            $pins = isset($filters['pins']) && $filters['pins'] !== '' ? array_map('trim', explode(',', filter_var($filters['pins'], FILTER_SANITIZE_STRING))) : [];
-            $searchQuery = isset($filters['q']) && $filters['q'] !== '' ? trim(filter_var($filters['q'], FILTER_SANITIZE_STRING)) : '';
-            $sort = isset($filters['sort']) && $filters['sort'] === 'latest' ? 'latest' : 'default';
+        $priceRanges = isset($filters['priceRanges']) && $filters['priceRanges'] !== '' ? array_map('trim', explode(',', filter_var($filters['priceRanges'], FILTER_SANITIZE_STRING))) : [];
+        $priceMin = isset($filters['priceMin']) && $filters['priceMin'] !== '' ? (float)filter_var($filters['priceMin'], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION) : null;
+        $priceMax = isset($filters['priceMax']) && $filters['priceMax'] !== '' ? (float)filter_var($filters['priceMax'], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION) : null;
+        $rams = isset($filters['rams']) && $filters['rams'] !== '' ? array_map('trim', explode(',', filter_var(urldecode($filters['rams']), FILTER_SANITIZE_STRING))) : [];
+        $pins = isset($filters['pins']) && $filters['pins'] !== '' ? array_map('trim', explode(',', filter_var($filters['pins'], FILTER_SANITIZE_STRING))) : [];
+        $searchQuery = isset($filters['q']) && $filters['q'] !== '' ? trim(filter_var($filters['q'], FILTER_SANITIZE_STRING)) : '';
+        $sort = isset($filters['sort']) ? filter_var($filters['sort'], FILTER_SANITIZE_STRING) : 'default';
             // Xử lý đặc biệt cho "12GB trở lên"
             $hasRam12GBPlus = in_array('12GB trở lên', $rams) || in_array('12GB+', $rams);
             if ($hasRam12GBPlus) {
@@ -54,13 +54,20 @@ class SanPhamAPI {
                     return $ram !== '12GB trở lên' && $ram !== '12GB+';
                 });
             }
-
             // Kiểm tra xem có bộ lọc nào được áp dụng không
-            $hasFilters = !empty($brands) || !empty($priceRanges) || $priceMin !== null || $priceMax !== null || !empty($rams) || $hasRam12GBPlus || !empty($pins) || $searchQuery !== '';
+        $hasFilters = !empty($brands) || !empty($priceRanges) || $priceMin !== null || $priceMax !== null || !empty($rams) || $hasRam12GBPlus || !empty($pins) || $searchQuery !== '';
             // Bước 1: Lấy toàn bộ dữ liệu cần thiết
-            $sanPhams = $sort === 'latest' ? $this->sanPhamModel->getAllProductsSortedByNgayNhap() : $this->sanPhamModel->getAllProducts();
-            error_log('SanPhams sorted by NgayNhap: ' . json_encode(array_map(function($p) {
-                return ['name' => $p['TenDong'], 'ngayNhap' => $p['NgayNhap']];
+            if ($sort === 'latest') {
+                $sanPhams = $this->sanPhamModel->getAllProductsSortedByNgayNhap();
+            } elseif ($sort === 'bestselling') {
+                $sanPhams = $this->sanPhamModel->getAllProductsSortedByDaBan();
+                
+            } else {
+                $sanPhams = $this->sanPhamModel->getAllProducts();
+            }
+
+            error_log('SanPhams sorted by ' . ($sort === 'latest' ? 'NgayNhap' : ($sort === 'bestselling' ? 'DaBan' : 'default')) . ': ' . json_encode(array_map(function($p) {
+                return ['name' => $p['TenDong'], 'ngayNhap' => $p['NgayNhap'], 'daBan' => $p['DaBan']];
             }, array_slice($sanPhams, 0, 5))));
 
             $cauHinhs = $this->cauHinhModel->getAllCauHinh();

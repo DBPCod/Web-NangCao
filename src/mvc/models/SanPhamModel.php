@@ -104,6 +104,19 @@ class SanPhamModel {
         return $stmt->get_result()->fetch_assoc();
     }
 
+    public function getAllProductsSortedByDaBan() {
+        $query = "
+            SELECT sp.*, dsp.TenDong, dsp.IdThuongHieu 
+            FROM sanpham sp
+            JOIN dongsanpham dsp ON sp.IdDongSanPham = dsp.IdDongSanPham
+            WHERE sp.TrangThai = 1 AND dsp.TrangThai = 1
+            ORDER BY sp.DaBan DESC
+        ";
+        $stmt = $this->db->prepare($query);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+
     private function updateDongSanPhamQuantity($idDongSanPham) {
         $stmt = $this->db->prepare("
             SELECT SUM(SoLuong) as total 

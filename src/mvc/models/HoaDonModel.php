@@ -91,6 +91,20 @@ class HoaDonModel {
             );
             $stmt->execute();
 
+
+            $stmt = $this->db->prepare("
+                UPDATE sanpham 
+                SET DaBan = DaBan + ?
+                WHERE IdCHSP = ? AND IdDongSanPham = ? AND SoLuong >= ?
+            ");
+            $stmt->bind_param("iiii", 
+                $data['SoLuong'], 
+                $data['IdCHSP'], 
+                $data['IdDongSanPham'], 
+                $data['SoLuong']
+            );
+            $stmt->execute();
+
             if ($stmt->affected_rows === 0) {
                 throw new Exception("Số lượng sản phẩm không đủ hoặc sản phẩm không tồn tại");
             }
@@ -139,6 +153,20 @@ class HoaDonModel {
                     WHERE IdCHSP = ? AND IdDongSanPham = ? AND SoLuong >= ?
                 ");
                 $stmt->bind_param("iiii", 
+                    $product['SoLuong'], 
+                    $product['IdCHSP'], 
+                    $product['IdDongSanPham'], 
+                    $product['SoLuong']
+                );
+                $stmt->execute();
+
+
+                $stmt = $this->db->prepare("
+                    UPDATE sanpham 
+                    SET DaBan = DaBan + ?
+                    WHERE IdCHSP = ? AND IdDongSanPham = ? AND SoLuong >= ?
+                ");
+                    $stmt->bind_param("iiii", 
                     $product['SoLuong'], 
                     $product['IdCHSP'], 
                     $product['IdDongSanPham'], 
@@ -204,6 +232,13 @@ class HoaDonModel {
                     $stmt->bind_param("iii", $soLuong, $idCHSP, $idDongSanPham);
                     $stmt->execute();
 
+                    $stmt = $this->db->prepare("
+                        UPDATE sanpham 
+                        SET DaBan = DaBan - ?
+                        WHERE IdCHSP = ? AND IdDongSanPham = ?");
+                    $stmt->bind_param("iii", $soLuong, $idCHSP, $idDongSanPham);
+                    $stmt->execute();
+                    
                     $stmt = $this->db->prepare("
                         UPDATE dongsanpham 
                         SET SoLuong = (
