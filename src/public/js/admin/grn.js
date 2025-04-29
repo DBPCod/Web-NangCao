@@ -443,11 +443,11 @@ function getCookie(name) {
     return null;
 }
 
+
 // Hàm thêm phiếu nhập
 async function submitAddGRN() {
     const saveButton = document.querySelector("#addGRNModal .btn-primary");
     const form = document.getElementById("addGRNForm");
-
     // Hiển thị loading và vô hiệu hóa form
     saveButton.disabled = true;
     saveButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Đang lưu...';
@@ -556,7 +556,8 @@ async function submitAddGRN() {
                     const updateProductData = {
                         SoLuong: existingProduct.SoLuong + product.SoLuong,
                         Gia: product.GiaBan,
-                        TrangThai: 1
+                        TrangThai: 1,
+                        NgayNhap: ngayNhap
                     };
                     const updateResponse = await fetch(`/smartstation/src/mvc/controllers/SanPhamController.php?idCHSP=${product.IdCHSP}&idDSP=${product.IdDongSanPham}`, {
                         method: "PUT",

@@ -183,7 +183,7 @@ class SanPhamAPI {
                 error_log('Products count after brands filter: ' . count($products));
             }
 
-            // Bước 5: Lọc theo priceRanges
+            //Lọc theo priceRanges
             // if ($hasFilters && !empty($priceRanges)) {
             //     $products = array_filter($products, function($product) use ($priceRanges) {
             //         $effectivePrice = $product['giaGiam'] !== null ? $product['giaGiam'] : $product['giaGoc'];
@@ -201,7 +201,7 @@ class SanPhamAPI {
             //     error_log('Products count after priceRanges filter: ' . count($products));
             // }
 
-            // Bước 6: Lọc theo priceMin và priceMax
+            // Lọc theo priceMin và priceMax
             if ($hasFilters && ($priceMin !== null || $priceMax !== null)) {
                 $products = array_filter($products, function($product) use ($priceMin, $priceMax) {
                     $effectivePrice = $product['giaGiam'] !== null ? $product['giaGiam'] : $product['giaGoc'];

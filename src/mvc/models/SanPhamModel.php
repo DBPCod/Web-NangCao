@@ -149,15 +149,15 @@ class SanPhamModel {
         }
     }
 
-    public function updateProduct($idCHSP, $idDSP, $soLuong, $gia, $trangThai) {
+    public function updateProduct($idCHSP, $idDSP, $soLuong, $gia, $trangThai,$NgayNhap) {
         $this->db->begin_transaction();
-        try {
+        try {   
             $stmt = $this->db->prepare("
                 UPDATE sanpham 
-                SET SoLuong = ?, Gia = ?, TrangThai = ? 
+                SET SoLuong = ?, Gia = ?, TrangThai = ? ,NgayNhap=?
                 WHERE IdCHSP = ? AND IdDongSanPham = ?
             ");
-            $stmt->bind_param("idiii", $soLuong, $gia, $trangThai, $idCHSP, $idDSP);
+            $stmt->bind_param("idisii", $soLuong, $gia, $trangThai,$NgayNhap, $idCHSP, $idDSP);
             $stmt->execute();
 
             $this->updateDongSanPhamQuantity($idDSP);
