@@ -47,6 +47,7 @@ class SanPhamAPI {
             $rams = isset($filters['rams']) && $filters['rams'] !== '' ? array_map('trim', explode(',', filter_var(urldecode($filters['rams']), FILTER_SANITIZE_STRING))) : [];
             $pins = isset($filters['pins']) && $filters['pins'] !== '' ? array_map('trim', explode(',', filter_var($filters['pins'], FILTER_SANITIZE_STRING))) : [];
             $searchQuery = isset($filters['q']) && $filters['q'] !== '' ? trim(filter_var($filters['q'], FILTER_SANITIZE_STRING)) : '';
+            $sort = isset($filters['sort']) && $filters['sort'] === 'latest' ? 'latest' : 'default';
 
             // Xử lý đặc biệt cho "12GB trở lên"
             $hasRam12GBPlus = in_array('12GB trở lên', $rams) || in_array('12GB+', $rams);
@@ -60,7 +61,7 @@ class SanPhamAPI {
             $hasFilters = !empty($brands) || !empty($priceRanges) || $priceMin !== null || $priceMax !== null || !empty($rams) || $hasRam12GBPlus || !empty($pins) || $searchQuery !== '';
 
             // Bước 1: Lấy toàn bộ dữ liệu cần thiết
-            $sanPhams = $this->sanPhamModel->getAllProducts();
+            $sanPhams = $sort === 'latest' ? $this->sanPhamModel->getAllProductsSortedByNgayNhap() : $this->sanPhamModel->getAllProducts();
             $cauHinhs = $this->cauHinhModel->getAllCauHinh();
             $dongSanPhams = $this->dongSanPhamModel->getAllDongSanPham();
             $thuongHieus = $this->thuongHieuModel->getAllThuongHieu();
@@ -149,7 +150,8 @@ class SanPhamAPI {
                     'phanTramGiam' => $phanTramGiam,
                     'soLuong' => $sanPham['SoLuong'],
                     'thuongHieu' => $tenThuongHieu,
-                    'image' => $image
+                    'image' => $image,
+                    'ngayNhap' => $sanPham['NgayNhap'] // Thêm ngày nhập
                 ];
             }, $sanPhams);
 
@@ -183,7 +185,7 @@ class SanPhamAPI {
                 error_log('Products count after brands filter: ' . count($products));
             }
 
-            //Lọc theo priceRanges
+            // Bước 5: Lọc theo khoảng giá (priceRanges)
             // if ($hasFilters && !empty($priceRanges)) {
             //     $products = array_filter($products, function($product) use ($priceRanges) {
             //         $effectivePrice = $product['giaGiam'] !== null ? $product['giaGiam'] : $product['giaGoc'];
@@ -201,7 +203,7 @@ class SanPhamAPI {
             //     error_log('Products count after priceRanges filter: ' . count($products));
             // }
 
-            // Lọc theo priceMin và priceMax
+            // Bước 6: Lọc theo priceMin và priceMax
             if ($hasFilters && ($priceMin !== null || $priceMax !== null)) {
                 $products = array_filter($products, function($product) use ($priceMin, $priceMax) {
                     $effectivePrice = $product['giaGiam'] !== null ? $product['giaGiam'] : $product['giaGoc'];
@@ -283,7 +285,8 @@ $filters = [
     'priceMax' => isset($_GET['priceMax']) ? filter_var($_GET['priceMax'], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION) : null,
     'rams' => isset($_GET['rams']) ? filter_var($_GET['rams'], FILTER_SANITIZE_STRING) : '',
     'pins' => isset($_GET['pins']) ? filter_var($_GET['pins'], FILTER_SANITIZE_STRING) : '',
-    'q' => isset($_GET['q']) ? filter_var($_GET['q'], FILTER_SANITIZE_STRING) : ''
+    'q' => isset($_GET['q']) ? filter_var($_GET['q'], FILTER_SANITIZE_STRING) : '',
+    'sort' => isset($_GET['sort']) ? filter_var($_GET['sort'], FILTER_SANITIZE_STRING) : '' // Thêm sort
 ];
 
 (new SanPhamAPI())->getProducts($page, 6, $filters);

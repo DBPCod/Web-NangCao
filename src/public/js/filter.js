@@ -497,3 +497,78 @@ function handleSelectConfigItem(product) {
         });
     });
 }
+
+function filterNewProducts(limit = 10) {
+    fetch(`/smartstation/src/public/api/SanPhamAPI.php?sort=latest&limit=${limit}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Lỗi tải sản phẩm mới nhất');
+        }
+        return response.json();
+    })
+    .then(data => {
+        const products = data.products || [];
+        let productHTML = '';
+
+        if (products.length > 0) {
+            products.forEach(product => {
+                const productName = product.name || 'Sản phẩm không xác định';
+                const giaGocNum = Number(product.giaGoc);
+                const giaGoc = !isNaN(giaGocNum) && product.giaGoc !== null ? formatPrice(giaGocNum) : 'N/A';
+                let priceHTML = '';
+                if (product.giaGiam !== null && product.giaGiam !== undefined) {
+                    const giaGiamNum = Number(product.giaGiam);
+                    const giaGiam = !isNaN(giaGiamNum) ? formatPrice(giaGiamNum) : 'N/A';
+                    priceHTML = `<span class="text-decoration-line-through text-muted me-2">${giaGoc}</span> ${giaGiam}`;
+                } else {
+                    priceHTML = giaGoc;
+                }
+                const imageSrc = product.image ? `data:image/jpeg;base64,${product.image}` : '/smartstation/src/public/img/default.png';
+                productHTML += `
+                    <div class="col">
+                        <div class="product-card" data-bs-toggle="modal" data-bs-target="#productModal" data-product='${JSON.stringify(product)}'>
+                            <img src="${imageSrc}" alt="${productName}">
+                            <div class="product-name">${productName}</div>
+                            <div class="product-specs">RAM: ${product.ram || 'N/A'} - ROM: ${product.rom || 'N/A'}</div>
+                            <div class="product-price">${priceHTML}</div>
+                        </div>
+                    </div>`;
+            });
+        } else {
+            productHTML = '<div class="col text-center">Không có sản phẩm mới.</div>';
+        }
+
+        // Render vào container .product-grid (giống loadProducts)
+        const productContainer = document.querySelector('.product-grid');
+        if (productContainer) {
+            productContainer.innerHTML = productHTML;
+        } else {
+            console.warn('Container .product-grid không tồn tại trong DOM');
+        }
+
+        // Gắn sự kiện cho các thẻ sản phẩm
+        attachProductCardListeners();
+
+        // Cập nhật phân trang (hiển thị 1 trang vì giới hạn 10 sản phẩm)
+        const paginationContainer = document.querySelector('.pagination');
+        if (paginationContainer) {
+            paginationContainer.innerHTML = `
+                <li class="page-item active">
+                    <a class="page-link page-btn" href="#" data-page="1">1</a>
+                </li>
+            `;
+        }
+    })
+    .catch(error => {
+        console.error('Lỗi tải sản phẩm mới nhất:', error);
+        const productContainer = document.querySelector('.product-grid');
+        if (productContainer) {
+            productContainer.innerHTML = '<div class="col text-center">Lỗi tải sản phẩm mới.</div>';
+        }
+    });
+}
