@@ -6,6 +6,15 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                <!-- Status filter dropdown -->
+                <div class="mb-3">
+                    <label for="statusFilter" class="form-label fw-bold">Lọc theo tình trạng</label>
+                    <select id="statusFilter" class="form-select">
+                        <option value="1" selected>Chưa xác nhận</option>
+                        <option value="3">Thành công</option>
+                        <option value="4">Hủy</option>
+                    </select>
+                </div>
                 <!-- Bảng đơn hàng -->
                 <table class="table table-bordered">
                     <thead class="table-dark" id="oderHistoryTable">

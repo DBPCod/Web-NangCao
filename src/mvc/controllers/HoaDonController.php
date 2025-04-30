@@ -21,8 +21,9 @@ class HoaDonController {
                 } elseif (isset($_GET['idNguoiDung'])) {
                     $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
                     $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 5;
-                    $orders = $this->model->getHoaDonByNguoiDungWithPagination($_GET['idNguoiDung'], $page, $limit);
-                    $total = $this->model->countHoaDonByNguoiDung($_GET['idNguoiDung']);
+                    $statusId = isset($_GET['statusId']) ? (int)$_GET['statusId'] : null;
+                    $orders = $this->model->getHoaDonByNguoiDungWithPagination($_GET['idNguoiDung'], $page, $limit, $statusId);
+                    $total = $this->model->countHoaDonByNguoiDung($_GET['idNguoiDung'], $statusId); // Sửa: Truyền statusId
                     echo json_encode([
                         'orders' => $orders,
                         'total' => $total
