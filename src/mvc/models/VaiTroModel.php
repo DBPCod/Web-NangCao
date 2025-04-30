@@ -45,7 +45,7 @@ class VaiTroModel {
         $this->db->begin_transaction();
         try {
             // Kiểm tra tên vai trò trùng lặp
-            $stmt = $this->db->prepare("SELECT IdVaiTro FROM vaitro WHERE TenVaiTro = ?");
+            $stmt = $this->db->prepare("SELECT IdVaiTro FROM vaitro WHERE TenVaiTro = ? AND TrangThai = 1");
             $stmt->bind_param("s", $data['TenVaiTro']);
             $stmt->execute();
             if ($stmt->get_result()->fetch_assoc()) {
@@ -108,7 +108,7 @@ class VaiTroModel {
         $this->db->begin_transaction();
         try {
             // Kiểm tra tên vai trò trùng lặp (ngoại trừ vai trò hiện tại)
-            $stmt = $this->db->prepare("SELECT IdVaiTro FROM vaitro WHERE TenVaiTro = ? AND IdVaiTro != ?");
+            $stmt = $this->db->prepare("SELECT IdVaiTro FROM vaitro WHERE TenVaiTro = ? AND IdVaiTro != ? AND TrangThai = 1");
             $stmt->bind_param("si", $data['TenVaiTro'], $idVaiTro);
             $stmt->execute();
             if ($stmt->get_result()->fetch_assoc()) {

@@ -274,7 +274,15 @@ function editRole() {
                 type: "error",
                 duration: 3000,
           });
-          }else if (result.message === "Cập nhật vai trò thành công"){
+          }else if(result.message === "Tên vai trò không hợp lệ"){
+            toast({
+                title: "Cảnh báo",
+                message: "Nhập tên vai trò",
+                type: "warning",
+                duration: 3000,
+            });
+          }
+          else if (result.message === "Cập nhật vai trò thành công"){
             toast({
                 title: "Thành công",
                 message: "Cập nhật vai trò thành công",
@@ -333,21 +341,27 @@ function deleteRole(idVaiTro) {
         });
 }
 
-document.getElementById('addRoleModal').addEventListener('show.bs.modal', function () {
-    console.log('addRoleModal opened');
-    loadPermissionTable('addPermissionsBody', null);
+document.addEventListener('show.bs.modal', function (event) {
+    const targetId = event.target.id;
+
+    if (targetId === 'addRoleModal') {
+        console.log('addRoleModal opened');
+        loadPermissionTable('addPermissionsBody', null);
+    }
+
+    if (targetId === 'editRoleModal') {
+        console.log('editRoleModal opened');
+        const button = event.relatedTarget;
+        const idVaiTro = button.getAttribute('data-id');
+        const tenVaiTro = button.getAttribute('data-name');
+
+        document.getElementById('tenVaitroEdit').value = tenVaiTro;
+        document.getElementById('idVaitroEdit').value = idVaiTro;
+
+        loadPermissionTable('editPermissionsBody', idVaiTro);
+    }
 });
 
-document.getElementById('editRoleModal').addEventListener('show.bs.modal', function (event) {
-    console.log('editRoleModal opened');
-    const button = event.relatedTarget;
-    const idVaiTro = button.getAttribute('data-id');
-    const tenVaiTro = button.getAttribute('data-name');
 
-    document.getElementById('tenVaitroEdit').value = tenVaiTro;
-    document.getElementById('idVaitroEdit').value = idVaiTro;
-
-    loadPermissionTable('editPermissionsBody', idVaiTro);
-});
 
 loadRoles();

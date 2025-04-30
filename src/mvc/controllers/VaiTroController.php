@@ -44,6 +44,11 @@ class VaiTroController {
                 break;
 
             case 'PUT':
+                if (empty($input['TenVaiTro'])) {
+                    echo json_encode(["message" => "Tên vai trò không hợp lệ"]);
+                    break;
+                }
+                
                 if (isset($_GET['idVaiTro'])) {
                     try {
                         $result = $this->model->updateVaiTro($_GET['idVaiTro'], $input);
