@@ -196,22 +196,22 @@ class SanPhamAPI {
             }
 
             // Bước 5: Lọc theo khoảng giá (priceRanges)
-            // if ($hasFilters && !empty($priceRanges)) {
-            //     $products = array_filter($products, function($product) use ($priceRanges) {
-            //         $effectivePrice = $product['giaGiam'] !== null ? $product['giaGiam'] : $product['giaGoc'];
-            //         foreach ($priceRanges as $range) {
-            //             list($min, $max) = explode('-', $range);
-            //             $min = (float)$min;
-            //             $max = $max === '' ? PHP_INT_MAX : (float)$max;
-            //             if ($effectivePrice >= $min && $effectivePrice <= $max) {
-            //                 return true;
-            //             }
-            //         }
-            //         return false;
-            //     });
-            //     $products = array_values($products);
-            //     error_log('Products count after priceRanges filter: ' . count($products));
-            // }
+            if ($hasFilters && !empty($priceRanges)) {
+                $products = array_filter($products, function($product) use ($priceRanges) {
+                    $effectivePrice = $product['giaGiam'] !== null ? $product['giaGiam'] : $product['giaGoc'];
+                    foreach ($priceRanges as $range) {
+                        list($min, $max) = explode('-', $range);
+                        $min = (float)$min;
+                        $max = $max === '' ? PHP_INT_MAX : (float)$max;
+                        if ($effectivePrice >= $min && $effectivePrice <= $max) {
+                            return true;
+                        }
+                    }
+                    return false;
+                });
+                $products = array_values($products);
+                error_log('Products count after priceRanges filter: ' . count($products));
+            }
 
             // Bước 6: Lọc theo priceMin và priceMax
             if ($hasFilters && ($priceMin !== null || $priceMax !== null)) {
