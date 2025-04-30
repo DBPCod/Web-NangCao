@@ -4,5 +4,4 @@
         <button class="btn btn-outline-secondary" onclick="filterNewProducts()">Mới nhất</button>
         <button class="btn btn-outline-secondary" onclick="filterBestSellingProducts()">Bán chạy</button>
     </div>
-
 </div>

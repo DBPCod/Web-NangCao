@@ -2,13 +2,13 @@
     <div class="modal-dialog modal-xl">
         <div class="modal-content custom-modal">
             <div class="modal-header bg-info text-white">
-                <h5 class="modal-title">Lịch sử mua hàng</h5>
+                <h5 class="modal-title" style="color: white;">Lịch sử mua hàng</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <!-- Bảng đơn hàng -->
-                <table class="table table-bordered table-hover">
-                    <thead class="table-dark">
+                <table class="table table-bordered">
+                    <thead class="table-dark" id="oderHistoryTable">
                         <tr>
                             <th>Ngày tạo</th>
                             <th>Tổng tiền</th>
