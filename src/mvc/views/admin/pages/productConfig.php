@@ -19,6 +19,8 @@
         </thead>
         <tbody id="productConfigTableBody"></tbody>
     </table>
+    <!-- Container cho các nút phân trang -->
+    <div id="pagination" class="d-flex justify-content-center mt-3"></div>
 </div>
 
 <!-- Modal để thêm/sửa cấu hình sản phẩm -->
@@ -55,13 +57,6 @@
                         <label for="camera" class="form-label">Camera (MP)</label>
                         <input type="number" class="form-control" id="camera" min="0" step="1" required>
                     </div>
-                    <!-- <div class="mb-3">
-                        <label for="trangThai" class="form-label">Trạng thái</label>
-                        <select class="form-control" id="trangThai" required>
-                            <option value="1">Hoạt động</option>
-                            <option value="0">Ngừng hoạt động</option>
-                        </select>
-                    </div> -->
                 </form>
             </div>
             <div class="modal-footer">
