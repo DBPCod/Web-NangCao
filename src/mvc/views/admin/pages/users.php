@@ -13,14 +13,6 @@
       </tr>
     </thead>
     <tbody id="RolesBody">
-      <tr>
-        <td>1</td>
-        <td>Admin</td>
-        <td class="text-center">
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editRoleModal">Sửa</button>
-            <button class="btn btn-danger">Xóa</button>
-          </td>
-      </tr>
     </tbody>
   </table>
 </div>
@@ -43,102 +35,15 @@
                   <table class="table table-hover table-bordered">
                 <thead class="text-center">
                     <tr>
-                        <th class="text-start" style="width:21%"><input type="checkbox"> Tên quyền</th>
-                        <th style="width:12%"><input type="checkbox"> Xem</th>
-                        <th style="width:12%"><input type="checkbox"> Thêm mới</th>
-                        <th style="width:12%"><input type="checkbox"> Sửa</th>
-                        <th style="width:12%"><input type="checkbox"> Xóa</th>
+                        <th class="text-start" style="width:21%"> Tên quyền</th>
+                        <th style="width:12%"> Xem</th>
+                        <th style="width:12%"> Thêm mới</th>
+                        <th style="width:12%"> Sửa</th>
+                        <th style="width:12%"> Xóa</th>
                     </tr>
                 </thead>
-                <tbody class="text-center">
-                <tr>
-                  <td class="text-start"><input type="checkbox"> Khách hàng</td>
-                  <td><input type="checkbox"></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  
-                </tr>
-                <tr>
-                  <td class="text-start"><input type="checkbox"> Danh sách sản phẩm</td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  
-                </tr>
-                <tr>
-                  <td class="text-start"><input type="checkbox"> Dòng sản phẩm</td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  
-                </tr>
-                <tr>
-                  <td class="text-start"><input type="checkbox"> Cấu hình sản phẩm</td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  
-                </tr>
-                <tr>
-                  <td class="text-start"><input type="checkbox"> Thương hiệu</td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  
-                </tr>
-                <tr>
-                  <td class="text-start"><input type="checkbox"> Khuyến mãi</td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  
-                </tr>
-                <tr>
-                  <td class="text-start"><input type="checkbox"> Bảo hành</td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  
-                </tr>
-                <tr>
-                  <td class="text-start"><input type="checkbox"> Danh sách phiếu nhập</td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td></td>
-                  <td><input type="checkbox"></td>
+                <tbody id="addPermissionsBody" class="text-center">
                 
-                </tr>
-                <tr>
-                  <td class="text-start"><input type="checkbox"> Nhà cung cấp</td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                
-                </tr>
-                <tr>
-                  <td class="text-start"><input type="checkbox"> Đơn hàng</td>
-                  <td><input type="checkbox"></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  
-                </tr>
-                <tr>
-                  <td class="text-start"><input type="checkbox"> Thống kê</td>
-                  <td><input type="checkbox"></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  
-                </tr>
               </tbody>
         </table>
 
@@ -146,7 +51,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                <button type="button" class="btn btn-primary" id="saveRoleBtn">Lưu</button>
+                <button type="button" class="btn btn-primary" id="addRoleBtn" onclick="addRole()">Lưu</button>
             </div>
         </div>
     </div>
@@ -164,115 +69,28 @@
                <form id="editRoleForm">
                <div class="mb-3">
                         <label for="tenVaitroEdit" class="form-label">Tên vai trò</label>
-                        <input type="text" class="form-control form-control-sm w-25" id="tenVaitroEdit" name="tenVaitroEdit" value="Admin" readonly>
+                        <input type="text" class="form-control form-control-sm w-25" id="tenVaitroEdit" name="tenVaitroEdit">
                     </div>
                     <h5 class="mb-3 mt-3">Bảng phân quyền</h5>
                   <table class="table table-hover table-bordered">
                 <thead class="text-center">
                     <tr>
-                        <th class="text-start" style="width:21%"><input type="checkbox"> Tên quyền</th>
-                        <th style="width:12%"><input type="checkbox"> Xem</th>
-                        <th style="width:12%"><input type="checkbox"> Thêm mới</th>
-                        <th style="width:12%"><input type="checkbox"> Sửa</th>
-                        <th style="width:12%"><input type="checkbox"> Xóa</th>
+                        <th class="text-start" style="width:21%"> Tên quyền</th>
+                        <th style="width:12%"> Xem</th>
+                        <th style="width:12%"> Thêm mới</th>
+                        <th style="width:12%"> Sửa</th>
+                        <th style="width:12%"> Xóa</th>
                     </tr>
                 </thead>
-                <tbody class="text-center">
-                <tr>
-                  <td class="text-start"><input type="checkbox"> Khách hàng</td>
-                  <td><input type="checkbox"></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  
-                </tr>
-                <tr>
-                  <td class="text-start"><input type="checkbox"> Danh sách sản phẩm</td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  
-                </tr>
-                <tr>
-                  <td class="text-start"><input type="checkbox"> Dòng sản phẩm</td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  
-                </tr>
-                <tr>
-                  <td class="text-start"><input type="checkbox"> Cấu hình sản phẩm</td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  
-                </tr>
-                <tr>
-                  <td class="text-start"><input type="checkbox"> Thương hiệu</td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  
-                </tr>
-                <tr>
-                  <td class="text-start"><input type="checkbox"> Khuyến mãi</td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  
-                </tr>
-                <tr>
-                  <td class="text-start"><input type="checkbox"> Bảo hành</td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  
-                </tr>
-                <tr>
-                  <td class="text-start"><input type="checkbox"> Danh sách phiếu nhập</td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td></td>
-                  <td><input type="checkbox"></td>
+                <tbody id="editPermissionsBody" class="text-center">
                 
-                </tr>
-                <tr>
-                  <td class="text-start"><input type="checkbox"> Nhà cung cấp</td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                
-                </tr>
-                <tr>
-                  <td class="text-start"><input type="checkbox"> Đơn hàng</td>
-                  <td><input type="checkbox"></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  
-                </tr>
-                <tr>
-                  <td class="text-start"><input type="checkbox"> Thống kê</td>
-                  <td><input type="checkbox"></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  
-                </tr>
               </tbody>
         </table>
                </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                <button type="button" class="btn btn-primary">Lưu</button>
+                <button type="button" class="btn btn-primary" id="saveRoleBtn" onclick="editRole()">Lưu</button>
             </div>
         </div>
     </div>
@@ -291,106 +109,20 @@
                         <label for="tenVaitroView" class="form-label">Tên vai trò</label>
                         <input type="text" class="form-control form-control-sm w-25" id="tenVaitroView" name="tenVaitroView" value="Admin" readonly>
                     </div>
+                    <input type="hidden" id="idVaitroEdit" name="idVaitroEdit">
                     <h5 class="mb-3 mt-3">Bảng phân quyền</h5>
                   <table class="table table-hover table-bordered">
                 <thead class="text-center">
                     <tr>
-                        <th class="text-start" style="width:21%"><input type="checkbox"> Tên quyền</th>
-                        <th style="width:12%"><input type="checkbox"> Xem</th>
-                        <th style="width:12%"><input type="checkbox"> Thêm mới</th>
-                        <th style="width:12%"><input type="checkbox"> Sửa</th>
-                        <th style="width:12%"><input type="checkbox"> Xóa</th>
+                        <th class="text-start" style="width:21%"> Tên quyền</th>
+                        <th style="width:12%"> Xem</th>
+                        <th style="width:12%"> Thêm mới</th>
+                        <th style="width:12%"> Sửa</th>
+                        <th style="width:12%"> Xóa</th>
                     </tr>
                 </thead>
-                <tbody class="text-center">
-                <tr>
-                  <td class="text-start"><input type="checkbox"> Khách hàng</td>
-                  <td><input type="checkbox"></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  
-                </tr>
-                <tr>
-                  <td class="text-start"><input type="checkbox"> Danh sách sản phẩm</td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  
-                </tr>
-                <tr>
-                  <td class="text-start"><input type="checkbox"> Dòng sản phẩm</td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  
-                </tr>
-                <tr>
-                  <td class="text-start"><input type="checkbox"> Cấu hình sản phẩm</td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  
-                </tr>
-                <tr>
-                  <td class="text-start"><input type="checkbox"> Thương hiệu</td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  
-                </tr>
-                <tr>
-                  <td class="text-start"><input type="checkbox"> Khuyến mãi</td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  
-                </tr>
-                <tr>
-                  <td class="text-start"><input type="checkbox"> Bảo hành</td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  
-                </tr>
-                <tr>
-                  <td class="text-start"><input type="checkbox"> Danh sách phiếu nhập</td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td></td>
-                  <td><input type="checkbox"></td>
-                
-                </tr>
-                <tr>
-                  <td class="text-start"><input type="checkbox"> Nhà cung cấp</td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                  <td><input type="checkbox"></td>
-                
-                </tr>
-                <tr>
-                  <td class="text-start"><input type="checkbox"> Đơn hàng</td>
-                  <td><input type="checkbox"></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  
-                </tr>
-                <tr>
-                  <td class="text-start"><input type="checkbox"> Thống kê</td>
-                  <td><input type="checkbox"></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  
-                </tr>
+                <tbody id="viewPermissionsBody" class="text-center">
+              
               </tbody>
         </table>
             </div>
@@ -409,6 +141,8 @@
     max-width: 60%;
     }
 </style>
+
+<script src="/smartstation/src/public/js/admin/role.js"></script>
 
 
 

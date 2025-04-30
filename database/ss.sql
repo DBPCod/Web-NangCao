@@ -207,30 +207,6 @@ CREATE TABLE `ctquyen` (
   `IdVaiTro` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Đang đổ dữ liệu cho bảng `ctquyen`
---
-
-INSERT INTO `ctquyen` (`IdQuyen`, `IdVaiTro`) VALUES
-(1, 1),
-(1, 2),
-(2, 1),
-(3, 1),
-(4, 1),
-(4, 3),
-(5, 1),
-(5, 3),
-(6, 1),
-(7, 1),
-(8, 1),
-(9, 1),
-(10, 1),
-(11, 1),
-(12, 1),
-(13, 1),
-(13, 2),
-(14, 1),
-(15, 1);
 
 -- --------------------------------------------------------
 
@@ -415,21 +391,17 @@ CREATE TABLE `quyen` (
 --
 
 INSERT INTO `quyen` (`IdQuyen`, `TenQuyen`) VALUES
-(1, 'Thêm sản phẩm'),
-(2, 'Sửa sản phẩm'),
-(3, 'Xóa sản phẩm'),
-(4, 'Thêm hóa đơn'),
-(5, 'Sửa hóa đơn'),
-(6, 'Xóa hóa đơn'),
-(7, 'Thêm tài khoản'),
-(8, 'Sửa tài khoản'),
-(9, 'Xóa tài khoản'),
-(10, 'Thêm khuyến mãi'),
-(11, 'Sửa khuyến mãi'),
-(12, 'Xóa khuyến mãi'),
-(13, 'Thêm phiếu nhập'),
-(14, 'Sửa phiếu nhập'),
-(15, 'Xóa phiếu nhập');
+(1,	'Khách hàng'),
+(2,	'Danh sách sản phẩm'),
+(3,	'Dòng sản phẩm'),
+(4,	'Cấu hình sản phẩm'),
+(5,	'Thương hiệu'),
+(6,	'Khuyến mãi'),
+(7,	'Bảo hành'),
+(8,	'Danh sách phiếu nhập'),
+(9,	'Nhà cung cấp'),
+(10,	'Đơn hàng'),
+(11,	'Thống kê')
 
 -- --------------------------------------------------------
 
@@ -811,13 +783,19 @@ ALTER TABLE `phieunhap`
 -- AUTO_INCREMENT cho bảng `quyen`
 --
 ALTER TABLE `quyen`
-  MODIFY `IdQuyen` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `IdQuyen` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT cho bảng `taikhoan`
 --
 ALTER TABLE `taikhoan`
   MODIFY `IdTaiKhoan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
+-- AUTO_INCREMENT cho bảng `vaitro`
+--
+ALTER TABLE `vaitro`
+  MODIFY `IdVaiTro` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT cho bảng `thuonghieu`
