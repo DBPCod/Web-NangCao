@@ -270,7 +270,11 @@ INSERT INTO `ctphieunhap` (`IdPhieuNhap`, `GiaNhap`, `SoLuong`, `IdCHSP`, `IdDon
 
 CREATE TABLE `ctquyen` (
   `IdQuyen` int(11) NOT NULL,
-  `IdVaiTro` int(11) NOT NULL
+  `IdVaiTro` int(11) NOT NULL,
+  `xem` tinyint(1) DEFAULT 0,
+  `them` tinyint(1) DEFAULT 0,
+  `sua` tinyint(1) DEFAULT 0,
+  `xoa` tinyint(1) DEFAULT 0,
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
@@ -513,7 +517,7 @@ INSERT INTO `quyen` (`IdQuyen`, `TenQuyen`) VALUES
 (8,	'Danh sách phiếu nhập'),
 (9,	'Nhà cung cấp'),
 (10,	'Đơn hàng'),
-(11,	'Thống kê')
+(11,	'Thống kê');
 
 -- --------------------------------------------------------
 
