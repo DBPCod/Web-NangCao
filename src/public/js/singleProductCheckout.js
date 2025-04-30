@@ -111,6 +111,17 @@ function getCookieValue(name) {
 
 // Handle "Mua ngay" button click (validate and fetch product image)
 function handleClickMuaNgay() {
+
+    if(!getCookieValue("username"))
+    {
+        toast({
+            title: "Cảnh báo",
+            message: "Đăng nhập trước khi mua hàng!",
+            type: "warning",
+            duration: 3000,
+        });
+        return;
+    }
     const elementDSP = document.querySelector('#modalProductRam .selected');
     const elementCHSP = document.querySelector('#modalProductMauSac .selected');
 
