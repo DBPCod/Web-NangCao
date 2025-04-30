@@ -1,3 +1,7 @@
+var GRNS_PER_PAGE = 5; // Số lượng phiếu nhập mỗi trang
+var currentPage = 1; // Trang hiện tại
+var allGRNs = []; // Lưu trữ toàn bộ dữ liệu phiếu nhập
+
 // Hàm tạo mã IMEI theo chuẩn Luhn
 function generateIMEI() {
     let imeiBase = [];
@@ -64,36 +68,14 @@ function loadGRNs() {
             return response.json();
         })
         .then((phieuNhaps) => {
-            const tbody = document.getElementById("grnTableBody");
-            tbody.innerHTML = "";
-            if (!phieuNhaps || phieuNhaps.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4">Không có phiếu nhập nào</td></tr>';
-            } else {
-                Promise.all(phieuNhaps.map(phieuNhap => 
-                    fetch(`/smartstation/src/mvc/controllers/NhaCungCapController.php?idNCC=${phieuNhap.IdNCC}`)
-                        .then(res => res.json())
-                        .then(ncc => ({
-                            ...phieuNhap,
-                            TenNCC: ncc ? ncc.TenNCC : "Không xác định"
-                        }))
-                ))
-                .then(phieuNhapsWithDetails => {
-                    phieuNhapsWithDetails.forEach((phieuNhap) => {
-                        tbody.innerHTML += `
-                            <tr onclick="viewGRN(${phieuNhap.IdPhieuNhap})" style="cursor: pointer;">
-                                <td><span class="clickable-id">${phieuNhap.IdPhieuNhap}</span></td>
-                                <td>${phieuNhap.TenNCC}</td>
-                                <td>${phieuNhap.TongTien ? phieuNhap.TongTien.toLocaleString('vi-VN') + ' VNĐ' : 'Chưa xác định'}</td>
-                                <td class="text-center">
-                                    <button class="btn btn-danger btn-sm" onclick="event.stopPropagation(); deleteGRN(${phieuNhap.IdPhieuNhap})">Xóa</button>
-                                </td>
-                            </tr>`;
-                    });
-                });
-            }
+            allGRNs = phieuNhaps; // Lưu dữ liệu vào biến toàn cục
+            renderGRNsByPage(currentPage); // Render trang đầu tiên
+            renderPagination(); // Render nút phân trang
         })
         .catch((error) => {
             console.error("Fetch error:", error);
+            document.getElementById("grnTableBody").innerHTML =
+                '<tr><td colspan="4">Đã xảy ra lỗi khi tải dữ liệu.</td></tr>';
             toast({
                 title: "Lỗi",
                 message: "Không thể tải danh sách phiếu nhập",
@@ -101,6 +83,101 @@ function loadGRNs() {
                 duration: 3000,
             });
         });
+}
+
+// Render danh sách phiếu nhập theo trang
+function renderGRNsByPage(page) {
+    const tbody = document.getElementById("grnTableBody");
+    tbody.innerHTML = "";
+
+    if (!allGRNs || allGRNs.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4">Không có phiếu nhập nào</td></tr>';
+        return;
+    }
+
+    // Tính toán chỉ số bắt đầu và kết thúc của dữ liệu trên trang hiện tại
+    const startIndex = (page - 1) * GRNS_PER_PAGE;
+    const endIndex = startIndex + GRNS_PER_PAGE;
+    const phieuNhapsToDisplay = allGRNs.slice(startIndex, endIndex);
+
+    Promise.all(phieuNhapsToDisplay.map(phieuNhap => 
+        fetch(`/smartstation/src/mvc/controllers/NhaCungCapController.php?idNCC=${phieuNhap.IdNCC}`)
+            .then(res => res.json())
+            .then(ncc => ({
+                ...phieuNhap,
+                TenNCC: ncc ? ncc.TenNCC : "Không xác định"
+            }))
+    ))
+    .then(phieuNhapsWithDetails => {
+        phieuNhapsWithDetails.forEach((phieuNhap) => {
+            tbody.innerHTML += `
+                <tr onclick="viewGRN(${phieuNhap.IdPhieuNhap})" style="cursor: pointer;">
+                    <td><span class="clickable-id">${phieuNhap.IdPhieuNhap}</span></td>
+                    <td>${phieuNhap.TenNCC}</td>
+                    <td>${phieuNhap.TongTien ? phieuNhap.TongTien.toLocaleString('vi-VN') + ' VNĐ' : 'Chưa xác định'}</td>
+                    <td class="text-center">
+                        <button class="btn btn-danger btn-sm" onclick="event.stopPropagation(); deleteGRN(${phieuNhap.IdPhieuNhap})">Xóa</button>
+                    </td>
+                </tr>`;
+        });
+    })
+    .catch((error) => {
+        console.error("Error fetching NCC details:", error);
+        toast({
+            title: "Lỗi",
+            message: "Không thể tải thông tin nhà cung cấp",
+            type: "error",
+            duration: 3000,
+        });
+    });
+}
+
+// Render nút phân trang
+function renderPagination() {
+    const totalPages = Math.ceil(allGRNs.length / GRNS_PER_PAGE);
+    const paginationContainer = document.querySelector("#pagination");
+    paginationContainer.innerHTML = "";
+
+    // Nút Previous
+    const prevButton = document.createElement("button");
+    prevButton.className = "btn btn-secondary mx-1";
+    prevButton.textContent = "Previous";
+    prevButton.disabled = currentPage === 1;
+    prevButton.addEventListener("click", () => {
+        if (currentPage > 1) {
+            currentPage--;
+            renderGRNsByPage(currentPage);
+            renderPagination();
+        }
+    });
+    paginationContainer.appendChild(prevButton);
+
+    // Nút số trang
+    for (let i = 1; i <= totalPages; i++) {
+        const pageButton = document.createElement("button");
+        pageButton.className = `btn mx-1 ${i === currentPage ? "btn-primary" : "btn-secondary"}`;
+        pageButton.textContent = i;
+        pageButton.addEventListener("click", () => {
+            currentPage = i;
+            renderGRNsByPage(currentPage);
+            renderPagination();
+        });
+        paginationContainer.appendChild(pageButton);
+    }
+
+    // Nút Next
+    const nextButton = document.createElement("button");
+    nextButton.className = "btn btn-secondary mx-1";
+    nextButton.textContent = "Next";
+    nextButton.disabled = currentPage === totalPages;
+    nextButton.addEventListener("click", () => {
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderGRNsByPage(currentPage);
+            renderPagination();
+        }
+    });
+    paginationContainer.appendChild(nextButton);
 }
 
 // Hàm xem chi tiết phiếu nhập
@@ -442,7 +519,6 @@ function getCookie(name) {
     if (parts.length === 2) return parts.pop().split(';').shift();
     return null;
 }
-
 
 // Hàm thêm phiếu nhập
 async function submitAddGRN() {

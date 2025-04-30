@@ -1,3 +1,7 @@
+var PROVIDERS_PER_PAGE = 5; // Số lượng nhà cung cấp mỗi trang
+var currentPage = 1; // Trang hiện tại
+var allProviders = []; // Lưu trữ toàn bộ dữ liệu nhà cung cấp
+
 // Hàm toast từ code của bạn
 function toast({ title = '', message = '', type = 'info', duration = 3000 }) {
   const main = document.getElementById('toast');
@@ -54,30 +58,14 @@ function loadProviders() {
           return response.json();
       })
       .then((providers) => {
-          const tbody = document.getElementById("providerTableBody");
-          tbody.innerHTML = "";
-          if (!providers || providers.length === 0) {
-              tbody.innerHTML = '<tr><td colspan="7">Không có nhà cung cấp nào</td></tr>';
-          } else {
-              providers.forEach((provider) => {
-                  tbody.innerHTML += `
-                      <tr>
-                          <td>${provider.IdNCC}</td>
-                          <td>${provider.TenNCC}</td>
-                          <td>${provider.DiaChi}</td>
-                          <td>${provider.SoDienThoai}</td>
-                          <td>${provider.Email}</td>
-                          <td>${provider.TrangThai == 1 ? "Hoạt động" : "Ngừng hoạt động"}</td>
-                          <td>
-                              <button class="btn btn-primary" onclick="openEditModal('${provider.IdNCC}')">Sửa</button>
-                              <button class="btn btn-danger" onclick="deleteProvider('${provider.IdNCC}')">Xóa</button>
-                          </td>
-                      </tr>`;
-              });
-          }
+          allProviders = providers; // Lưu dữ liệu vào biến toàn cục
+          renderProvidersByPage(currentPage); // Render trang đầu tiên
+          renderPagination(); // Render nút phân trang
       })
       .catch((error) => {
           console.error("Fetch error:", error);
+          document.getElementById("providerTableBody").innerHTML =
+              '<tr><td colspan="7">Đã xảy ra lỗi khi tải dữ liệu.</td></tr>';
           toast({
               title: "Lỗi",
               message: "Không thể tải danh sách nhà cung cấp",
@@ -87,11 +75,92 @@ function loadProviders() {
       });
 }
 
+// Render danh sách nhà cung cấp theo trang
+function renderProvidersByPage(page) {
+  const tbody = document.getElementById("providerTableBody");
+  tbody.innerHTML = "";
+
+  if (!allProviders || allProviders.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7">Không có nhà cung cấp nào</td></tr>';
+      return;
+  }
+
+  // Tính toán chỉ số bắt đầu và kết thúc của dữ liệu trên trang hiện tại
+  const startIndex = (page - 1) * PROVIDERS_PER_PAGE;
+  const endIndex = startIndex + PROVIDERS_PER_PAGE;
+  const providersToDisplay = allProviders.slice(startIndex, endIndex);
+
+  providersToDisplay.forEach((provider) => {
+      tbody.innerHTML += `
+          <tr>
+              <td>${provider.IdNCC}</td>
+              <td>${provider.TenNCC}</td>
+              <td>${provider.DiaChi}</td>
+              <td>${provider.SoDienThoai}</td>
+              <td>${provider.Email}</td>
+              <td>${provider.TrangThai == 1 ? "Hoạt động" : "Ngừng hoạt động"}</td>
+              <td>
+                  <button class="btn btn-primary" onclick="openEditModal('${provider.IdNCC}')">Sửa</button>
+                  <button class="btn btn-danger" onclick="deleteProvider('${provider.IdNCC}')">Xóa</button>
+              </td>
+          </tr>`;
+  });
+}
+
+// Render nút phân trang
+function renderPagination() {
+  const totalPages = Math.ceil(allProviders.length / PROVIDERS_PER_PAGE);
+  const paginationContainer = document.querySelector("#pagination");
+  paginationContainer.innerHTML = "";
+
+  // Nút Previous
+  const prevButton = document.createElement("button");
+  prevButton.className = "btn btn-secondary mx-1";
+  prevButton.textContent = "Previous";
+  prevButton.disabled = currentPage === 1;
+  prevButton.addEventListener("click", () => {
+      if (currentPage > 1) {
+          currentPage--;
+          renderProvidersByPage(currentPage);
+          renderPagination();
+      }
+  });
+  paginationContainer.appendChild(prevButton);
+
+  // Nút số trang
+  for (let i = 1; i <= totalPages; i++) {
+      const pageButton = document.createElement("button");
+      pageButton.className = `btn mx-1 ${i === currentPage ? "btn-primary" : "btn-secondary"}`;
+      pageButton.textContent = i;
+      pageButton.addEventListener("click", () => {
+          currentPage = i;
+          renderProvidersByPage(currentPage);
+          renderPagination();
+      });
+      paginationContainer.appendChild(pageButton);
+  }
+
+  // Nút Next
+  const nextButton = document.createElement("button");
+  nextButton.className = "btn btn-secondary mx-1";
+  nextButton.textContent = "Next";
+  nextButton.disabled = currentPage === totalPages;
+  nextButton.addEventListener("click", () => {
+      if (currentPage < totalPages) {
+          currentPage++;
+          renderProvidersByPage(currentPage);
+          renderPagination();
+      }
+  });
+  paginationContainer.appendChild(nextButton);
+}
+
 // Mở modal để thêm nhà cung cấp
 function openAddModal() {
   document.getElementById("providerModalLabel").innerText = "Thêm nhà cung cấp";
   document.getElementById("providerForm").reset();
   document.getElementById("saveProviderBtn").setAttribute("data-action", "add");
+  document.getElementById("saveProviderBtn").removeAttribute("data-id");
 }
 
 // Mở modal để sửa nhà cung cấp

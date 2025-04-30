@@ -15,7 +15,10 @@ class HoaDonController {
 
         switch ($method) {
             case 'GET':
-                if (isset($_GET['idHoaDon'])) {
+                if (isset($_GET['totalRevenue'])) {
+                    $data = $this->model->getTotalRevenueThisMonth();
+                    echo json_encode(['totalRevenue' => $data]);
+                } elseif (isset($_GET['idHoaDon'])) {
                     $data = $this->model->getHoaDonById($_GET['idHoaDon']);
                     echo json_encode($data);
                 } elseif (isset($_GET['idNguoiDung'])) {
@@ -23,13 +26,12 @@ class HoaDonController {
                     $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 5;
                     $statusId = isset($_GET['statusId']) ? (int)$_GET['statusId'] : null;
                     $orders = $this->model->getHoaDonByNguoiDungWithPagination($_GET['idNguoiDung'], $page, $limit, $statusId);
-                    $total = $this->model->countHoaDonByNguoiDung($_GET['idNguoiDung'], $statusId); // Sửa: Truyền statusId
+                    $total = $this->model->countHoaDonByNguoiDung($_GET['idNguoiDung'], $statusId);
                     echo json_encode([
                         'orders' => $orders,
                         'total' => $total
                     ]);
                 } else {
-                    // Lấy các tham số lọc
                     $filters = [];
                     if (isset($_GET['tinhTrang']) && $_GET['tinhTrang'] !== '') {
                         $filters['tinhTrang'] = $_GET['tinhTrang'];
@@ -92,6 +94,5 @@ class HoaDonController {
     }
 }
 
-// Khởi tạo controller và xử lý request
 (new HoaDonController())->handleRequest();
 ?>

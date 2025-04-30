@@ -15,21 +15,11 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>1</td>
-                <td>Nguyễn Văn A</td>
-                <td>nva@example.com</td>
-                <td>5 nguyen trai</td>
-                <td>0908701337</td>
-                <td>Đang hoạt động</td>
-                <td>sieunhan123</td>
-                <td>123siu123</td>
-                <td>
-                    <button class="btn btn-danger">Xóa</button>
-                </td>
-            </tr>
+            <!-- Dữ liệu sẽ được render bằng JavaScript -->
         </tbody>
     </table>
+    <!-- Container cho các nút phân trang -->
+    <div id="pagination" class="d-flex justify-content-center mt-3"></div>
 </div>
 
 <script src="/smartstation/src/public/js/admin/customer.js"></script>

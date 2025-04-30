@@ -15,20 +15,22 @@ class SanPhamController {
 
         switch ($method) {
             case 'GET':
-                if (isset($_GET['priceRange'])) {
-                    // Xử lý yêu cầu lấy khoảng giá
+                if (isset($_GET['total'])) {
+                    $data = $this->model->getTotalProducts();
+                    echo json_encode(['total' => $data]);
+                } elseif (isset($_GET['priceRange'])) {
                     $data = $this->model->getPriceRange();
                     echo json_encode($data);
-                    break;
-                }
-                if (isset($_GET['idCHSP']) && isset($_GET['idDSP'])) {
+                } elseif (isset($_GET['idCHSP']) && isset($_GET['idDSP'])) {
                     $data = $this->model->getProductById($_GET['idCHSP'], $_GET['idDSP']);
-                } else if (isset($_GET['idDSP'])) {
+                    echo json_encode($data);
+                } elseif (isset($_GET['idDSP'])) {
                     $data = $this->model->getProductsByDongSanPham($_GET['idDSP']);
+                    echo json_encode($data);
                 } else {
                     $data = $this->model->getAllProducts();
+                    echo json_encode($data);
                 }
-                echo json_encode($data);
                 break;
 
             case 'POST':

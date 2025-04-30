@@ -14,9 +14,8 @@ class TaiKhoanModel {
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
-    //lấy tài khoản theo idnguoidung
-    public function getTaiKhoanByIdUser($idNguoiDung)
-    {
+    // Lấy tài khoản theo idnguoidung
+    public function getTaiKhoanByIdUser($idNguoiDung) {
         $stmt = $this->db->prepare("SELECT * FROM TaiKhoan WHERE IdNguoiDung = ?");
         $stmt->bind_param("i", $idNguoiDung);
         $stmt->execute();
@@ -66,13 +65,18 @@ class TaiKhoanModel {
         return $stmt->execute();
     }
 
-    //check mật khẩu
-    public function GetPass($input)
-    {
+    // Check mật khẩu
+    public function GetPass($input) {
         $stmt = $this->db->prepare("SELECT * FROM TaiKhoan WHERE taiKhoan = ?");
         $stmt->bind_param("s", $input["taikhoan"]);
         $stmt->execute();
         return $stmt->get_result()->fetch_assoc();
+    }
+
+    // Lấy tổng số tài khoản đang hoạt động
+    public function getTotalTaiKhoan() {
+        $result = $this->db->query("SELECT COUNT(*) as total FROM TaiKhoan WHERE TrangThai = 1");
+        return $result->fetch_assoc()['total'];
     }
 }
 ?>

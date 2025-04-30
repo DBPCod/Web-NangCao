@@ -1,3 +1,8 @@
+// Số lượng người dùng mỗi trang
+var USERS_PER_PAGE = 5;
+var currentPage = 1;
+var allUsers = []; // Lưu trữ toàn bộ dữ liệu người dùng
+
 // Hàm để lấy và render danh sách người dùng
 function fetchAndRenderUsers() {
     fetch("/smartstation/src/mvc/controllers/NguoiDungController.php", {
@@ -13,7 +18,9 @@ function fetchAndRenderUsers() {
             return response.json();
         })
         .then((data) => {
-            renderUsers(data);
+            allUsers = data; // Lưu dữ liệu vào biến toàn cục
+            renderUsersByPage(currentPage); // Render trang đầu tiên
+            renderPagination(); // Render nút phân trang
         })
         .catch((error) => {
             console.error("Error fetching users:", error);
@@ -22,17 +29,22 @@ function fetchAndRenderUsers() {
         });
 }
 
-// Hàm để render dữ liệu vào bảng
-function renderUsers(users) {
+// Hàm để render dữ liệu người dùng theo trang
+function renderUsersByPage(page) {
     const tbody = document.querySelector("tbody");
     tbody.innerHTML = "";
 
-    if (users.length === 0) {
+    if (allUsers.length === 0) {
         tbody.innerHTML = '<tr><td colspan="8" class="text-center">Không có khách hàng nào.</td></tr>';
         return;
     }
 
-    const userPromises = users.map((user) => {
+    // Tính toán chỉ số bắt đầu và kết thúc của dữ liệu trên trang hiện tại
+    const startIndex = (page - 1) * USERS_PER_PAGE;
+    const endIndex = startIndex + USERS_PER_PAGE;
+    const usersToDisplay = allUsers.slice(startIndex, endIndex);
+
+    const userPromises = usersToDisplay.map((user) => {
         return fetch(`/smartstation/src/mvc/controllers/TaiKhoanController.php?idNguoiDung=${user.IdNguoiDung}`)
             .then((response) => response.json())
             .then((data) => {
@@ -49,7 +61,6 @@ function renderUsers(users) {
 
     Promise.all(userPromises).then((usersWithAccount) => {
         usersWithAccount.forEach((user) => {
-            console.log(user);
             const tr = document.createElement("tr");
             const buttonText = user.TrangThai == 1 ? "Khóa" : "Mở khóa";
             const buttonClass = user.TrangThai == 1 ? "btn-danger" : "btn-success";
@@ -75,7 +86,55 @@ function renderUsers(users) {
     });
 }
 
-// Hàm gắn sự kiện cho các nút
+// Hàm để render nút phân trang
+function renderPagination() {
+    const totalPages = Math.ceil(allUsers.length / USERS_PER_PAGE);
+    const paginationContainer = document.querySelector("#pagination");
+    paginationContainer.innerHTML = "";
+
+    // Nút Previous
+    const prevButton = document.createElement("button");
+    prevButton.className = "btn btn-secondary mx-1";
+    prevButton.textContent = "Previous";
+    prevButton.disabled = currentPage === 1;
+    prevButton.addEventListener("click", () => {
+        if (currentPage > 1) {
+            currentPage--;
+            renderUsersByPage(currentPage);
+            renderPagination();
+        }
+    });
+    paginationContainer.appendChild(prevButton);
+
+    // Nút số trang
+    for (let i = 1; i <= totalPages; i++) {
+        const pageButton = document.createElement("button");
+        pageButton.className = `btn mx-1 ${i === currentPage ? "btn-primary" : "btn-secondary"}`;
+        pageButton.textContent = i;
+        pageButton.addEventListener("click", () => {
+            currentPage = i;
+            renderUsersByPage(currentPage);
+            renderPagination();
+        });
+        paginationContainer.appendChild(pageButton);
+    }
+
+    // Nút Next
+    const nextButton = document.createElement("button");
+    nextButton.className = "btn btn-secondary mx-1";
+    nextButton.textContent = "Next";
+    nextButton.disabled = currentPage === totalPages;
+    nextButton.addEventListener("click", () => {
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderUsersByPage(currentPage);
+            renderPagination();
+        }
+    });
+    paginationContainer.appendChild(nextButton);
+}
+
+// Hàm gắn sự kiện cho các nút khóa/mở khóa
 function attachEventListeners() {
     document.querySelectorAll(".btn-toggle-lock").forEach((button) => {
         button.addEventListener("click", function () {
@@ -84,9 +143,9 @@ function attachEventListeners() {
             const newStatus = currentStatus === 1 ? 0 : 1;
             const action = newStatus === 0 ? "khóa" : "mở khóa";
 
-            // if (confirm(`Bạn có chắc muốn ${action} khách hàng này?`)) {
+            if (confirm(`Bạn có chắc muốn ${action} khách hàng này?`)) {
                 toggleUserLock(id, newStatus, this);
-            // }
+            }
         });
     });
 }
@@ -118,7 +177,13 @@ function toggleUserLock(id, newStatus, button) {
                 const statusCell = button.closest("tr").querySelector(".status");
                 statusCell.textContent = newStatus === 1 ? "Đang hoạt động" : "Ngừng hoạt động";
 
-                // alert(data.message);
+                // Cập nhật dữ liệu trong allUsers
+                const userIndex = allUsers.findIndex((user) => user.IdNguoiDung == id);
+                if (userIndex !== -1) {
+                    allUsers[userIndex].TrangThai = newStatus;
+                }
+
+                alert(data.message);
             } else {
                 alert("Thay đổi trạng thái thất bại: " + data.message);
             }

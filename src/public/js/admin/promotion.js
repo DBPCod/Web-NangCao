@@ -1,6 +1,10 @@
 var allProductLines = [];
-  var selectedProductLines = new Set();
-  
+var selectedProductLines = new Set();
+var allPromotions = []; // Lưu trữ toàn bộ dữ liệu khuyến mãi
+var PROMOTIONS_PER_PAGE = 5; // Số lượng khuyến mãi mỗi trang
+var currentPage = 1; // Trang hiện tại
+
+// Hàm tải danh sách khuyến mãi
 function loadPromotions() {
     fetch("/smartstation/src/mvc/controllers/KhuyenMaiController.php", {
         method: "GET",
@@ -10,27 +14,99 @@ function loadPromotions() {
             return response.json();
         })
         .then((promotions) => {
-            const tbody = document.getElementById("promotionTableBody");
-            tbody.innerHTML = "";
-            if (!promotions || promotions.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6">Không có khuyến mãi nào</td></tr>';
-            } else {
-                promotions.forEach((promotion) => {
-                    tbody.innerHTML += `
-                        <tr onclick="viewPromotionDetails('${promotion.IdKhuyenMai}')" style="cursor: pointer;">
-                            <td>${promotion.IdKhuyenMai}</td>
-                            <td>${promotion.NgayBatDau}</td>
-                            <td>${promotion.NgayKetThuc}</td>
-                            <td>${promotion.PhanTramGiam}%</td>
-                            <td>${promotion.TrangThai == 1 ? "Hoạt động" : "Ngừng hoạt động"}</td>
-                            <td class="text-center">
-                                <button class="btn btn-danger" onclick="deletePromotion('${promotion.IdKhuyenMai}'); event.stopPropagation();">Xóa</button>
-                            </td>
-                        </tr>`;
-                });
-            }
+            allPromotions = promotions; // Lưu dữ liệu vào biến toàn cục
+            renderPromotionsByPage(currentPage); // Render trang đầu tiên
+            renderPagination(); // Render nút phân trang
         })
-        .catch((error) => console.error("Fetch error in loadPromotions:", error));
+        .catch((error) => {
+            console.error("Fetch error in loadPromotions:", error);
+            document.getElementById("promotionTableBody").innerHTML =
+                '<tr><td colspan="6">Đã xảy ra lỗi khi tải dữ liệu.</td></tr>';
+            toast({
+                title: "Lỗi",
+                message: "Không thể tải danh sách khuyến mãi",
+                type: "error",
+                duration: 3000,
+            });
+        });
+}
+
+// Render danh sách khuyến mãi theo trang
+function renderPromotionsByPage(page) {
+    const tbody = document.getElementById("promotionTableBody");
+    tbody.innerHTML = "";
+
+    if (!allPromotions || allPromotions.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6">Không có khuyến mãi nào</td></tr>';
+        return;
+    }
+
+    // Tính toán chỉ số bắt đầu và kết thúc của dữ liệu trên trang hiện tại
+    const startIndex = (page - 1) * PROMOTIONS_PER_PAGE;
+    const endIndex = startIndex + PROMOTIONS_PER_PAGE;
+    const promotionsToDisplay = allPromotions.slice(startIndex, endIndex);
+
+    promotionsToDisplay.forEach((promotion) => {
+        tbody.innerHTML += `
+            <tr onclick="viewPromotionDetails('${promotion.IdKhuyenMai}')" style="cursor: pointer;">
+                <td>${promotion.IdKhuyenMai}</td>
+                <td>${promotion.NgayBatDau}</td>
+                <td>${promotion.NgayKetThuc}</td>
+                <td>${promotion.PhanTramGiam}%</td>
+                <td>${promotion.TrangThai == 1 ? "Hoạt động" : "Ngừng hoạt động"}</td>
+                <td class="text-center">
+                    <button class="btn btn-danger" onclick="deletePromotion('${promotion.IdKhuyenMai}'); event.stopPropagation();">Xóa</button>
+                </td>
+            </tr>`;
+    });
+}
+
+// Render nút phân trang
+function renderPagination() {
+    const totalPages = Math.ceil(allPromotions.length / PROMOTIONS_PER_PAGE);
+    const paginationContainer = document.querySelector("#pagination");
+    paginationContainer.innerHTML = "";
+
+    // Nút Previous
+    const prevButton = document.createElement("button");
+    prevButton.className = "btn btn-secondary mx-1";
+    prevButton.textContent = "Previous";
+    prevButton.disabled = currentPage === 1;
+    prevButton.addEventListener("click", () => {
+        if (currentPage > 1) {
+            currentPage--;
+            renderPromotionsByPage(currentPage);
+            renderPagination();
+        }
+    });
+    paginationContainer.appendChild(prevButton);
+
+    // Nút số trang
+    for (let i = 1; i <= totalPages; i++) {
+        const pageButton = document.createElement("button");
+        pageButton.className = `btn mx-1 ${i === currentPage ? "btn-primary" : "btn-secondary"}`;
+        pageButton.textContent = i;
+        pageButton.addEventListener("click", () => {
+            currentPage = i;
+            renderPromotionsByPage(currentPage);
+            renderPagination();
+        });
+        paginationContainer.appendChild(pageButton);
+    }
+
+    // Nút Next
+    const nextButton = document.createElement("button");
+    nextButton.className = "btn btn-secondary mx-1";
+    nextButton.textContent = "Next";
+    nextButton.disabled = currentPage === totalPages;
+    nextButton.addEventListener("click", () => {
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderPromotionsByPage(currentPage);
+            renderPagination();
+        }
+    });
+    paginationContainer.appendChild(nextButton);
 }
 
 function viewPromotionDetails(idKhuyenMai) {
@@ -47,6 +123,12 @@ function viewPromotionDetails(idKhuyenMai) {
             const list = document.getElementById("productLineList");
             if (!list) {
                 console.error("Element #productLineList not found!");
+                toast({
+                    title: "Lỗi",
+                    message: "Không tìm thấy danh sách dòng sản phẩm",
+                    type: "error",
+                    duration: 3000,
+                });
                 return;
             }
             list.innerHTML = "";
@@ -60,6 +142,12 @@ function viewPromotionDetails(idKhuyenMai) {
             const modalElement = document.getElementById("productLineModal");
             if (!modalElement) {
                 console.error("Modal element #productLineModal not found!");
+                toast({
+                    title: "Lỗi",
+                    message: "Không tìm thấy modal chi tiết khuyến mãi",
+                    type: "error",
+                    duration: 3000,
+                });
                 return;
             }
             new bootstrap.Modal(modalElement).show();
@@ -80,18 +168,23 @@ function deletePromotion(idKhuyenMai) {
         fetch(`/smartstation/src/mvc/controllers/KhuyenMaiController.php?idKhuyenMai=${idKhuyenMai}`, {
             method: "GET",
         })
-            .then((response) => response.json())
+            .then((response) => {
+                if (!response.ok) throw new Error("Network error: " + response.status);
+                return response.json();
+            })
             .then((promotion) => {
                 if (promotion.TrangThai == 1) {
                     return fetch(`/smartstation/src/mvc/controllers/KhuyenMaiController.php?idKhuyenMai=${idKhuyenMai}`, {
                         method: "DELETE",
                     });
                 } else {
-                    alert("Khuyến mãi không còn hoạt động.");
                     throw new Error("Khuyến mãi không còn hoạt động.");
                 }
             })
-            .then((response) => response.json())
+            .then((response) => {
+                if (!response.ok) throw new Error("Network error: " + response.status);
+                return response.json();
+            })
             .then((data) => {
                 toast({
                     title: "Thành công",
@@ -99,11 +192,19 @@ function deletePromotion(idKhuyenMai) {
                     type: "success",
                     duration: 3000,
                 });
-                delete window.allProductLines;
+                // Không xóa allProductLines, thay vào đó làm mới nếu cần
                 loadPromotions();
             })
             .catch((error) => {
                 console.error("Error in deletePromotion:", error);
+                toast({
+                    title: "Cảnh báo",
+                    message: error.message.includes("Khuyến mãi không còn hoạt động")
+                        ? "Khuyến mãi không còn hoạt động."
+                        : "Xóa khuyến mãi thất bại.",
+                    type: "warning",
+                    duration: 3000,
+                });
             });
     }
 }
@@ -120,7 +221,15 @@ function loadProductLinesForAdd() {
             allProductLines = productLines;
             renderProductLines(productLines);
         })
-        .catch((error) => console.error("Error loading product lines:", error));
+        .catch((error) => {
+            console.error("Error loading product lines:", error);
+            toast({
+                title: "Lỗi",
+                message: "Không thể tải danh sách dòng sản phẩm",
+                type: "error",
+                duration: 3000,
+            });
+        });
 }
 
 function renderProductLines(productLines) {
@@ -182,11 +291,27 @@ document.getElementById("addPromotionForm").addEventListener("submit", function 
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(promotionData),
     })
-        .then((response) => response.json())
+        .then((response) => {
+            if (!response.ok) throw new Error("Network error: " + response.status);
+            return response.json();
+        })
         .then((data) => {
             if (data.message === "Thêm khuyến mãi thành công") {
                 const newIdKhuyenMai = data.khuyenmai.IdKhuyenMai;
                 const selectedProductLinesArray = Array.from(selectedProductLines);
+
+                if (selectedProductLinesArray.length === 0) {
+                    toast({
+                        title: "Thành công",
+                        message: "Thêm khuyến mãi thành công (không có dòng sản phẩm được chọn)",
+                        type: "success",
+                        duration: 3000,
+                    });
+                    selectedProductLines.clear();
+                    loadPromotions();
+                    document.getElementById("addPromotionModal").querySelector(".btn-close").click();
+                    return;
+                }
 
                 const promises = selectedProductLinesArray.map((idDongSanPham) => {
                     console.log("Adding CTKhuyenMai for IdDongSanPham:", idDongSanPham);
@@ -202,10 +327,9 @@ document.getElementById("addPromotionForm").addEventListener("submit", function 
 
                 Promise.all(promises)
                     .then(() => {
-                        console.log(promises);
                         toast({
                             title: "Thành công",
-                            message: "Thêm thành công",
+                            message: "Thêm khuyến mãi và dòng sản phẩm thành công",
                             type: "success",
                             duration: 3000,
                         });
@@ -213,17 +337,33 @@ document.getElementById("addPromotionForm").addEventListener("submit", function 
                         loadPromotions();
                         document.getElementById("addPromotionModal").querySelector(".btn-close").click();
                     })
-                    .catch((error) => console.error("Error adding product lines:", error));
+                    .catch((error) => {
+                        console.error("Error adding product lines:", error);
+                        toast({
+                            title: "Lỗi",
+                            message: "Thêm dòng sản phẩm khuyến mãi thất bại",
+                            type: "error",
+                            duration: 3000,
+                        });
+                    });
             } else {
                 toast({
                     title: "Lỗi",
-                    message: "Thêm thất bại.",
+                    message: "Thêm khuyến mãi thất bại",
                     type: "error",
                     duration: 3000,
                 });
             }
         })
-        .catch((error) => console.error("Error adding promotion:", error));
+        .catch((error) => {
+            console.error("Error adding promotion:", error);
+            toast({
+                title: "Lỗi",
+                message: "Thêm khuyến mãi thất bại",
+                type: "error",
+                duration: 3000,
+            });
+        });
 });
 
 document.getElementById("addPromotionModal").addEventListener("show.bs.modal", function () {
@@ -238,4 +378,5 @@ document.getElementById("addPromotionModal").addEventListener("show.bs.modal", f
     loadProductLinesForAdd();
 });
 
+// Gọi khi script được tải
 loadPromotions();
