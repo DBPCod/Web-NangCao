@@ -1006,3 +1006,43 @@ tr:hover {
     font-size: 12px;
     padding: 4px 8px;
 }
+
+.bg-info
+{
+    background-color: #28a745 !important;
+    color: white !important;
+}
+
+button.btn.btn-info.btn-sm.action-btn {
+    background-color: #28a745;
+    color: white;
+}
+
+button.btn.btn-info.btn-sm.action-btn:hover {
+    opacity: 0.9;
+    color: black;
+}
+
+.oderHistoryTable {
+    background-color: #28a745 !important;
+  }
+
+.oderHistoryTable:hover {
+    background-color: inherit !important;
+  }
+
+
+  .price-range .slider-container {
+    margin: 0;
+    padding: 0;
+}
+
+.price-range .d-flex {
+    gap: 0; /* Loại bỏ khoảng cách giữa các phần tử trong d-flex */
+}
+
+.price-range .slider-container input[type="range"] {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}

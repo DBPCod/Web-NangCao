@@ -61,7 +61,7 @@ class HoaDonModel {
         return $stmt->get_result()->fetch_assoc();
     }
 
-    public function getHoaDonByNguoiDungWithPagination($idNguoiDung, $page = 1, $limit = 5) {
+    public function getHoaDonByNguoiDungWithPagination($idNguoiDung, $page = 1, $limit = 5, $statusId = null) {
         $offset = ($page - 1) * $limit;
 
         $query = "
@@ -70,16 +70,28 @@ class HoaDonModel {
             LEFT JOIN TaiKhoan tk ON h.IdTaiKhoan = tk.IdTaiKhoan
             LEFT JOIN nguoidung nd ON tk.IdNguoiDung = nd.IdNguoiDung
             WHERE h.TrangThai = 1 AND nd.IdNguoiDung = ?
-            ORDER BY h.NgayTao DESC
-            LIMIT ? OFFSET ?
         ";
+        $params = [$idNguoiDung];
+        $types = "i";
+
+        if ($statusId !== null) {
+            $query .= " AND h.IdTinhTrang = ?";
+            $params[] = $statusId;
+            $types .= "i";
+        }
+
+        $query .= " ORDER BY h.NgayTao DESC LIMIT ? OFFSET ?";
+        $params[] = $limit;
+        $params[] = $offset;
+        $types .= "ii";
+
         $stmt = $this->db->prepare($query);
-        $stmt->bind_param("iii", $idNguoiDung, $limit, $offset);
+        $stmt->bind_param($types, ...$params);
         $stmt->execute();
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
 
-    public function countHoaDonByNguoiDung($idNguoiDung) {
+    public function countHoaDonByNguoiDung($idNguoiDung, $statusId = null) {
         $query = "
             SELECT COUNT(*) as total
             FROM hoadon h
@@ -87,8 +99,17 @@ class HoaDonModel {
             LEFT JOIN nguoidung nd ON tk.IdNguoiDung = nd.IdNguoiDung
             WHERE h.TrangThai = 1 AND nd.IdNguoiDung = ?
         ";
+        $params = [$idNguoiDung];
+        $types = "i";
+
+        if ($statusId !== null) {
+            $query .= " AND h.IdTinhTrang = ?";
+            $params[] = $statusId;
+            $types .= "i";
+        }
+
         $stmt = $this->db->prepare($query);
-        $stmt->bind_param("i", $idNguoiDung);
+        $stmt->bind_param($types, ...$params);
         $stmt->execute();
         $result = $stmt->get_result()->fetch_assoc();
         return $result['total'];

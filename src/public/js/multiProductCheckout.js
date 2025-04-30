@@ -351,6 +351,18 @@ function handleClickCheckout() {
         return;
     }
 
+
+    if(!getCookieValue("username"))
+        {
+            toast({
+                title: "Cảnh báo",
+                message: "Đăng nhập trước khi mua hàng!",
+                type: "warning",
+                duration: 3000,
+            });
+            return;
+        }
+
     const myModal = new bootstrap.Modal(checkoutModal);
     myModal.show();
     loadListProduct();

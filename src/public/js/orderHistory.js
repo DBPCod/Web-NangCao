@@ -25,8 +25,8 @@ const statusMap = {
     4: { text: "Hủy", class: "status-4" }
 };
 
-// Load order history with pagination
-async function loadOrderHistory(page = 1, limit = 5) {
+// Load order history with pagination and status filter
+async function loadOrderHistory(page = 1, limit = 5, statusId = 1) {
     const idNguoiDung = getCookie('user');
     if (!idNguoiDung) {
         document.getElementById('orderHistoryEmpty').style.display = 'block';
@@ -35,8 +35,8 @@ async function loadOrderHistory(page = 1, limit = 5) {
     }
 
     try {
-        // Fetch orders with pagination
-        const response = await fetch(`/smartstation/src/mvc/controllers/HoaDonController.php?idNguoiDung=${idNguoiDung}&page=${page}&limit=${limit}`, {
+        // Fetch orders with pagination and status filter
+        const response = await fetch(`/smartstation/src/mvc/controllers/HoaDonController.php?idNguoiDung=${idNguoiDung}&page=${page}&limit=${limit}&statusId=${statusId}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' }
         });
@@ -72,7 +72,7 @@ async function loadOrderHistory(page = 1, limit = 5) {
         });
 
         // Render pagination
-        renderPagination(totalOrders, page, limit);
+        renderPagination(totalOrders, page, limit, statusId);
     } catch (error) {
         console.error("Lỗi khi tải lịch sử đơn hàng:", error);
         document.getElementById('orderHistoryEmpty').innerHTML = '<p>Lỗi khi tải dữ liệu đơn hàng.</p>';
@@ -82,7 +82,7 @@ async function loadOrderHistory(page = 1, limit = 5) {
 }
 
 // Render pagination buttons
-function renderPagination(totalOrders, currentPage, limit) {
+function renderPagination(totalOrders, currentPage, limit, statusId) {
     const totalPages = Math.ceil(totalOrders / limit);
     const pagination = document.getElementById('pagination');
     pagination.innerHTML = '';
@@ -90,7 +90,7 @@ function renderPagination(totalOrders, currentPage, limit) {
     // Previous button
     pagination.innerHTML += `
         <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
-            <a class="page-link" href="#" onclick="loadOrderHistory(${currentPage - 1})">Trước</a>
+            <a class="page-link" href="#" onclick="loadOrderHistory(${currentPage - 1}, ${limit}, ${statusId})">Trước</a>
         </li>
     `;
 
@@ -98,7 +98,7 @@ function renderPagination(totalOrders, currentPage, limit) {
     for (let i = 1; i <= totalPages; i++) {
         pagination.innerHTML += `
             <li class="page-item ${i === currentPage ? 'active' : ''}">
-                <a class="page-link" href="#" onclick="loadOrderHistory(${i})">${i}</a>
+                <a class="page-link" href="#" onclick="loadOrderHistory(${i}, ${limit}, ${statusId})">${i}</a>
             </li>
         `;
     }
@@ -106,7 +106,7 @@ function renderPagination(totalOrders, currentPage, limit) {
     // Next button
     pagination.innerHTML += `
         <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
-            <a class="page-link" href="#" onclick="loadOrderHistory(${currentPage + 1})">Sau</a>
+            <a class="page-link" href="#" onclick="loadOrderHistory(${currentPage + 1}, ${limit}, ${statusId})">Sau</a>
         </li>
     `;
 }
@@ -163,5 +163,10 @@ async function viewOrderDetails(idHoaDon) {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
-    loadOrderHistory();
+    loadOrderHistory(1, 5, 1); // Default to "Chưa xác nhận"
+    // Add event listener for status filter dropdown
+    document.getElementById('statusFilter').addEventListener('change', (e) => {
+        const statusId = parseInt(e.target.value);
+        loadOrderHistory(1, 5, statusId); // Reset to page 1 when filter changes
+    });
 });
