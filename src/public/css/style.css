@@ -1030,3 +1030,19 @@ button.btn.btn-info.btn-sm.action-btn:hover {
 .oderHistoryTable:hover {
     background-color: inherit !important;
   }
+
+
+  .price-range .slider-container {
+    margin: 0;
+    padding: 0;
+}
+
+.price-range .d-flex {
+    gap: 0; /* Loại bỏ khoảng cách giữa các phần tử trong d-flex */
+}
+
+.price-range .slider-container input[type="range"] {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}

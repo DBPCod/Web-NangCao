@@ -104,6 +104,7 @@ class SanPhamModel {
         return $stmt->get_result()->fetch_assoc();
     }
 
+
     public function getAllProductsSortedByDaBan() {
         $query = "
             SELECT sp.*, dsp.TenDong, dsp.IdThuongHieu 
@@ -117,6 +118,15 @@ class SanPhamModel {
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
 
+    public function getPriceRange() {
+        $result = $this->db->query("
+            SELECT MIN(Gia) as minPrice, MAX(Gia) as maxPrice
+            FROM sanpham
+            WHERE TrangThai = 1
+        ");
+        return $result->fetch_assoc();
+    }
+    
     private function updateDongSanPhamQuantity($idDongSanPham) {
         $stmt = $this->db->prepare("
             SELECT SUM(SoLuong) as total 

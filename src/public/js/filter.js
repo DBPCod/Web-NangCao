@@ -37,6 +37,44 @@ function renderBrands() {
     });
 }
 
+
+// Hàm lấy và cập nhật khoảng giá
+function updatePriceRange() {
+    fetch('/smartstation/src/mvc/controllers/SanPhamController.php?priceRange=true', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Lỗi tải khoảng giá');
+        }
+        return response.json();
+    })
+    .then(data => {
+        const minPrice = data.minPrice || 400000; // Giá trị mặc định nếu không có dữ liệu
+        const maxPrice = data.maxPrice || 48500000;
+
+        // Cập nhật thanh trượt min-price
+        const minPriceSlider = document.querySelector('.price-slider.min-price');
+        minPriceSlider.min = minPrice;
+        minPriceSlider.max = maxPrice;
+        minPriceSlider.value = minPrice;
+        document.querySelector('.min-price-display').textContent = formatPrice(minPrice);
+
+        // Cập nhật thanh trượt max-price
+        const maxPriceSlider = document.querySelector('.price-slider.max-price');
+        maxPriceSlider.min = minPrice;
+        maxPriceSlider.max = maxPrice;
+        maxPriceSlider.value = maxPrice;
+        document.querySelector('.max-price-display').textContent = formatPrice(maxPrice);
+    })
+    .catch(error => {
+        console.error('Lỗi tải khoảng giá:', error);
+    });
+}
+
 // Hàm thu thập các bộ lọc
 function collectFilters() {
     const filters = {
@@ -62,9 +100,11 @@ function collectFilters() {
     if (document.querySelector('#app5').checked) filters.priceRanges.push('10000000-');
 
     // Lấy giá từ thanh trượt
-    const priceSlider = document.querySelector('.price-range .form-range');
-    filters.priceMin = parseInt(priceSlider.value);
-    filters.priceMax = parseInt(priceSlider.max);
+    // Lấy giá từ thanh trượt
+    const minPriceSlider = document.querySelector('.price-slider.min-price');
+    const maxPriceSlider = document.querySelector('.price-slider.max-price');
+    filters.priceMin = parseInt(minPriceSlider.value);
+    filters.priceMax = parseInt(maxPriceSlider.value);
 
     // Lấy RAM
     document.querySelectorAll('.filter-section .form-check-input[id^="ram"]').forEach(checkbox => {
@@ -121,7 +161,6 @@ function buildQueryString(filters, page) {
 // Hàm tải sản phẩm với bộ lọc
 function loadProducts(page = 1, filters = null) {
     const queryString = filters ? buildQueryString(filters, page) : `page=${page}`;
-    console.log(queryString);
     fetch(`/smartstation/src/public/api/SanPhamAPI.php?${queryString}`, {
         method: 'GET',
         headers: {
@@ -193,20 +232,27 @@ function loadProducts(page = 1, filters = null) {
 document.addEventListener('DOMContentLoaded', () => {
     // Render danh sách thương hiệu
     renderBrands();
+    updatePriceRange();
     // Tải sản phẩm mặc định (không lọc)
     loadProducts(1);
 
     // Xử lý sự kiện nút LỌC
     document.getElementById('applyFilterBtn').addEventListener('click', () => {
+        console.log("1");
         const filters = collectFilters();
         loadProducts(1, filters);
     });
 
     // Xử lý sự kiện thay đổi thanh trượt giá
-    const priceSlider = document.querySelector('.price-range .form-range');
-    priceSlider.addEventListener('input', () => {
-        const value = parseInt(priceSlider.value);
-        document.querySelector('.price-range .d-flex span:first-child').textContent = formatPrice(value);
+    const minPriceSlider = document.querySelector('.price-slider.min-price');
+    const maxPriceSlider = document.querySelector('.price-slider.max-price');
+    minPriceSlider.addEventListener('input', () => {
+        const value = parseInt(minPriceSlider.value);
+        document.querySelector('.min-price-display').textContent = formatPrice(value);
+    });
+    maxPriceSlider.addEventListener('input', () => {
+        const value = parseInt(maxPriceSlider.value);
+        document.querySelector('.max-price-display').textContent = formatPrice(value);
     });
 
     // Xử lý sự kiện click vào phân trang
@@ -343,6 +389,7 @@ function loadConfigItem(idDSP, idCHSP) {
         setUpDataConfigItem(configs, idDSP, idCHSP);
     });
 }
+
 
 function setUpDataConfigItem(product, idDSP, idCHSP) {
     product.forEach((item) => {
