@@ -4,9 +4,5 @@
         <button class="btn btn-outline-secondary" onclick="filterNewProducts()">Mới nhất</button>
         <button class="btn btn-outline-secondary" onclick="filterBestSellingProducts()">Bán chạy</button>
     </div>
-    <div>
-        <button class="btn btn-outline-secondary" style="white-space: nowrap;">
-            Giá tiền <i class="bi bi-chevron-down"></i>
-        </button>
-    </div>
+
 </div>
