@@ -18,6 +18,8 @@
         </thead>
         <tbody id="providerTableBody"></tbody>
     </table>
+    <!-- Container cho các nút phân trang -->
+    <div id="pagination" class="d-flex justify-content-center mt-3"></div>
 </div>
 
 <!-- Modal -->
