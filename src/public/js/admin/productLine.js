@@ -1,3 +1,8 @@
+// Số lượng dòng sản phẩm mỗi trang
+var PRODUCT_LINES_PER_PAGE = 5;
+var currentPage = 1;
+var allProductLines = []; // Lưu trữ toàn bộ dữ liệu dòng sản phẩm
+
 // Hàm lấy danh sách thương hiệu và trả về ánh xạ Id -> Tên
 async function fetchBrandsMap() {
     try {
@@ -60,36 +65,101 @@ async function loadProductLines() {
         if (!response.ok) throw new Error("Network error: " + response.status);
         const productLines = await response.json();
 
-        const tbody = document.getElementById("productLineTableBody");
-        tbody.innerHTML = "";
-        if (!productLines || productLines.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5">Không có dòng sản phẩm nào</td></tr>';
-        } else {
-            productLines.forEach((productLine) => {
-                const brandName = productLine.IdThuongHieu ? brandMap[productLine.IdThuongHieu] || "Không xác định" : "Không có";
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${productLine.IdDongSanPham}</td>
-                        <td>${productLine.TenDong}</td>
-                        <td>${productLine.SoLuong}</td>
-                        <td>${brandName}</td>
-                        <td class="text-center">
-                            <button class="btn btn-primary" onclick="openEditModal(${productLine.IdDongSanPham})">Sửa</button>
-                            <button class="btn btn-danger" onclick="deleteProductLine(${productLine.IdDongSanPham})">Xóa</button>
-                        </td>
-                    </tr>`;
-            });
-        }
+        allProductLines = productLines; // Lưu dữ liệu vào biến toàn cục
+        renderProductLinesByPage(currentPage); // Render trang đầu tiên
+        renderPagination(); // Render nút phân trang
     } catch (error) {
         console.error("Fetch error:", error);
+        document.getElementById("productLineTableBody").innerHTML =
+            '<tr><td colspan="5">Đã xảy ra lỗi khi tải dữ liệu.</td></tr>';
     }
+}
+
+// Render danh sách dòng sản phẩm theo trang
+async function renderProductLinesByPage(page) {
+    const tbody = document.getElementById("productLineTableBody");
+    tbody.innerHTML = "";
+
+    if (!allProductLines || allProductLines.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5">Không có dòng sản phẩm nào</td></tr>';
+        return;
+    }
+
+    // Tính toán chỉ số bắt đầu và kết thúc của dữ liệu trên trang hiện tại
+    const startIndex = (page - 1) * PRODUCT_LINES_PER_PAGE;
+    const endIndex = startIndex + PRODUCT_LINES_PER_PAGE;
+    const productLinesToDisplay = allProductLines.slice(startIndex, endIndex);
+
+    const brandMap = await fetchBrandsMap();
+    productLinesToDisplay.forEach((productLine) => {
+        const brandName = productLine.IdThuongHieu ? brandMap[productLine.IdThuongHieu] || "Không xác định" : "Không có";
+        tbody.innerHTML += `
+            <tr>
+                <td>${productLine.IdDongSanPham}</td>
+                <td>${productLine.TenDong}</td>
+                <td>${productLine.SoLuong}</td>
+                <td>${brandName}</td>
+                <td class="text-center">
+                    <button class="btn btn-primary" onclick="openEditModal(${productLine.IdDongSanPham})">Sửa</button>
+                    <button class="btn btn-danger" onclick="deleteProductLine(${productLine.IdDongSanPham})">Xóa</button>
+                </td>
+            </tr>`;
+    });
+}
+
+// Render nút phân trang
+function renderPagination() {
+    const totalPages = Math.ceil(allProductLines.length / PRODUCT_LINES_PER_PAGE);
+    const paginationContainer = document.querySelector("#pagination");
+    paginationContainer.innerHTML = "";
+
+    // Nút Previous
+    const prevButton = document.createElement("button");
+    prevButton.className = "btn btn-secondary mx-1";
+    prevButton.textContent = "Previous";
+    prevButton.disabled = currentPage === 1;
+    prevButton.addEventListener("click", () => {
+        if (currentPage > 1) {
+            currentPage--;
+            renderProductLinesByPage(currentPage);
+            renderPagination();
+        }
+    });
+    paginationContainer.appendChild(prevButton);
+
+    // Nút số trang
+    for (let i = 1; i <= totalPages; i++) {
+        const pageButton = document.createElement("button");
+        pageButton.className = `btn mx-1 ${i === currentPage ? "btn-primary" : "btn-secondary"}`;
+        pageButton.textContent = i;
+        pageButton.addEventListener("click", () => {
+            currentPage = i;
+            renderProductLinesByPage(currentPage);
+            renderPagination();
+        });
+        paginationContainer.appendChild(pageButton);
+    }
+
+    // Nút Next
+    const nextButton = document.createElement("button");
+    nextButton.className = "btn btn-secondary mx-1";
+    nextButton.textContent = "Next";
+    nextButton.disabled = currentPage === totalPages;
+    nextButton.addEventListener("click", () => {
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderProductLinesByPage(currentPage);
+            renderPagination();
+        }
+    });
+    paginationContainer.appendChild(nextButton);
 }
 
 function openAddModal() {
     document.getElementById("productLineModalLabel").innerText = "Thêm dòng sản phẩm";
     document.getElementById("productLineForm").reset();
     document.getElementById("tenDong").dataset.idDSP = "";
-    document.getElementById("soLuongField").style.display = "none";
+    document.getElementById("soLuongField").style.display = "none"; // Sửa lỗi cú pháp
     loadBrands();
 }
 
