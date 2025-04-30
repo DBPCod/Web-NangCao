@@ -1,7 +1,10 @@
-// Hàm tải danh sách sản phẩm
-
+// Số lượng sản phẩm mỗi trang
+const PRODUCTS_PER_PAGE = 5;
+let currentPage = 1;
+let allProducts = []; // Lưu trữ toàn bộ dữ liệu sản phẩm
 let isLoadingProducts = false; // Đặt cờ để kiểm tra trạng thái tải sản phẩm
 
+// Hàm tải danh sách sản phẩm
 function loadProducts() {
     if (isLoadingProducts) return; // Bỏ qua nếu đang tải
     isLoadingProducts = true;
@@ -14,54 +17,120 @@ function loadProducts() {
             return response.json();
         })
         .then((products) => {
-            const tbody = document.getElementById("productTableBody");
-            tbody.innerHTML = "";
-            if (!products || products.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7">Không có sản phẩm nào</td></tr>';
-            } else {
-                Promise.all(products.map(product => 
-                    Promise.all([
-                        fetch(`/smartstation/src/mvc/controllers/DongSanPhamController.php?idDSP=${product.IdDongSanPham}`).then(res => res.json()),
-                        fetch(`/smartstation/src/mvc/controllers/CauHinhSanPhamController.php?idCHSP=${product.IdCHSP}`).then(res => res.json())
-                    ])
-                    .then(([dongSanPham, cauHinh]) => {
-                        if (!dongSanPham || !cauHinh) {
-                            console.warn("Dữ liệu không hợp lệ:", { dongSanPham, cauHinh });
-                            return null;
-                        }
-                        return {
-                            ...product,
-                            TenDong: dongSanPham.TenDong || "Không xác định",
-                            Ram: cauHinh.Ram || "N/A",
-                            Rom: cauHinh.Rom || "N/A",
-                            MauSac: cauHinh.MauSac || "N/A"
-                        };
-                    })
-                ))
-                .then(productsWithDetails => {
-                    // Lọc bỏ các mục null
-                    const validProducts = productsWithDetails.filter(product => product);
-                    validProducts.forEach((product) => {
-                        tbody.innerHTML += `
-                            <tr onclick="showProductDetail('${product.IdCHSP}', '${product.IdDongSanPham}')" style="cursor: pointer;">
-                                <td>${product.TenDong}</td>
-                                <td>${product.Ram}</td>
-                                <td>${product.Rom}</td>
-                                <td>${product.MauSac}</td>
-                                <td>${product.Gia.toLocaleString('vi-VN')} VNĐ</td>
-                                <td>${product.SoLuong}</td>
-                                <td class="text-center">
-                                    <button class="btn btn-danger" onclick="deleteProduct('${product.IdCHSP}', '${product.IdDongSanPham}'); event.stopPropagation();">Xóa</button>
-                                </td>
-                            </tr>`;
-                    });
-                });
-            }
+            allProducts = products; // Lưu dữ liệu vào biến toàn cục
+            renderProductsByPage(currentPage); // Render trang đầu tiên
+            renderPagination(); // Render nút phân trang
         })
-        .catch((error) => console.error("Fetch error:", error))
+        .catch((error) => {
+            console.error("Fetch error:", error);
+            document.getElementById("productTableBody").innerHTML =
+                '<tr><td colspan="7">Đã xảy ra lỗi khi tải dữ liệu.</td></tr>';
+        })
         .finally(() => {
             isLoadingProducts = false; // Đặt lại trạng thái
         });
+}
+
+// Hàm render danh sách sản phẩm theo trang
+function renderProductsByPage(page) {
+    const tbody = document.getElementById("productTableBody");
+    tbody.innerHTML = "";
+
+    if (!allProducts || allProducts.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7">Không có sản phẩm nào</td></tr>';
+        return;
+    }
+
+    // Tính toán chỉ số bắt đầu và kết thúc của dữ liệu trên trang hiện tại
+    const startIndex = (page - 1) * PRODUCTS_PER_PAGE;
+    const endIndex = startIndex + PRODUCTS_PER_PAGE;
+    const productsToDisplay = allProducts.slice(startIndex, endIndex);
+
+    Promise.all(productsToDisplay.map(product =>
+        Promise.all([
+            fetch(`/smartstation/src/mvc/controllers/DongSanPhamController.php?idDSP=${product.IdDongSanPham}`).then(res => res.json()),
+            fetch(`/smartstation/src/mvc/controllers/CauHinhSanPhamController.php?idCHSP=${product.IdCHSP}`).then(res => res.json())
+        ])
+        .then(([dongSanPham, cauHinh]) => {
+            if (!dongSanPham || !cauHinh) {
+                console.warn("Dữ liệu không hợp lệ:", { dongSanPham, cauHinh });
+                return null;
+            }
+            return {
+                ...product,
+                TenDong: dongSanPham.TenDong || "Không xác định",
+                Ram: cauHinh.Ram || "N/A",
+                Rom: cauHinh.Rom || "N/A",
+                MauSac: cauHinh.MauSac || "N/A"
+            };
+        })
+    ))
+    .then(productsWithDetails => {
+        // Lọc bỏ các mục null
+        const validProducts = productsWithDetails.filter(product => product);
+        validProducts.forEach((product) => {
+            tbody.innerHTML += `
+                <tr onclick="showProductDetail('${product.IdCHSP}', '${product.IdDongSanPham}')" style="cursor: pointer;">
+                    <td>${product.TenDong}</td>
+                    <td>${product.Ram}</td>
+                    <td>${product.Rom}</td>
+                    <td>${product.MauSac}</td>
+                    <td>${product.Gia.toLocaleString('vi-VN')} VNĐ</td>
+                    <td>${product.SoLuong}</td>
+                    <td class="text-center">
+                        <button class="btn btn-danger" onclick="deleteProduct('${product.IdCHSP}', '${product.IdDongSanPham}'); event.stopPropagation();">Xóa</button>
+                    </td>
+                </tr>`;
+        });
+    });
+}
+
+// Hàm render nút phân trang
+function renderPagination() {
+    const totalPages = Math.ceil(allProducts.length / PRODUCTS_PER_PAGE);
+    const paginationContainer = document.querySelector("#pagination");
+    paginationContainer.innerHTML = "";
+
+    // Nút Previous
+    const prevButton = document.createElement("button");
+    prevButton.className = "btn btn-secondary mx-1";
+    prevButton.textContent = "Previous";
+    prevButton.disabled = currentPage === 1;
+    prevButton.addEventListener("click", () => {
+        if (currentPage > 1) {
+            currentPage--;
+            renderProductsByPage(currentPage);
+            renderPagination();
+        }
+    });
+    paginationContainer.appendChild(prevButton);
+
+    // Nút số trang
+    for (let i = 1; i <= totalPages; i++) {
+        const pageButton = document.createElement("button");
+        pageButton.className = `btn mx-1 ${i === currentPage ? "btn-primary" : "btn-secondary"}`;
+        pageButton.textContent = i;
+        pageButton.addEventListener("click", () => {
+            currentPage = i;
+            renderProductsByPage(currentPage);
+            renderPagination();
+        });
+        paginationContainer.appendChild(pageButton);
+    }
+
+    // Nút Next
+    const nextButton = document.createElement("button");
+    nextButton.className = "btn btn-secondary mx-1";
+    nextButton.textContent = "Next";
+    nextButton.disabled = currentPage === totalPages;
+    nextButton.addEventListener("click", () => {
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderProductsByPage(currentPage);
+            renderPagination();
+        }
+    });
+    paginationContainer.appendChild(nextButton);
 }
 
 // Hàm tải danh sách dòng sản phẩm vào modal thêm
@@ -222,7 +291,7 @@ async function submitAddProduct() {
         }
 
         bootstrap.Modal.getInstance(document.getElementById("addProductModal")).hide();
-        loadProducts();
+        loadProducts(); // Tải lại danh sách sản phẩm
     } catch (error) {
         console.error("Error:", error);
         toast({
@@ -321,7 +390,7 @@ function deleteProduct(idCHSP, idDSP) {
                     type: "success",
                     duration: 3000,
                 });
-                loadProducts();
+                loadProducts(); // Tải lại danh sách sản phẩm
             })
             .catch(error => {
                 console.error("Error:", error);
