@@ -1,7 +1,7 @@
 // Số lượng người dùng mỗi trang
-const USERS_PER_PAGE = 5;
-let currentPage = 1;
-let allUsers = []; // Lưu trữ toàn bộ dữ liệu người dùng
+var USERS_PER_PAGE = 5;
+var currentPage = 1;
+var allUsers = []; // Lưu trữ toàn bộ dữ liệu người dùng
 
 // Hàm để lấy và render danh sách người dùng
 function fetchAndRenderUsers() {

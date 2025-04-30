@@ -1,8 +1,8 @@
 // Số lượng sản phẩm mỗi trang
-const PRODUCTS_PER_PAGE = 5;
-let currentPage = 1;
-let allProducts = []; // Lưu trữ toàn bộ dữ liệu sản phẩm
-let isLoadingProducts = false; // Đặt cờ để kiểm tra trạng thái tải sản phẩm
+var PRODUCTS_PER_PAGE = 5;
+var currentPage = 1;
+var allProducts = []; // Lưu trữ toàn bộ dữ liệu sản phẩm
+var isLoadingProducts = false; // Đặt cờ để kiểm tra trạng thái tải sản phẩm
 
 // Hàm tải danh sách sản phẩm
 function loadProducts() {
