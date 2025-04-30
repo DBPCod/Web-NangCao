@@ -61,6 +61,60 @@ class HoaDonModel {
         return $stmt->get_result()->fetch_assoc();
     }
 
+    public function getHoaDonByNguoiDungWithPagination($idNguoiDung, $page = 1, $limit = 5, $statusId = null) {
+        $offset = ($page - 1) * $limit;
+
+        $query = "
+            SELECT h.*, nd.HoVaTen 
+            FROM hoadon h
+            LEFT JOIN TaiKhoan tk ON h.IdTaiKhoan = tk.IdTaiKhoan
+            LEFT JOIN nguoidung nd ON tk.IdNguoiDung = nd.IdNguoiDung
+            WHERE h.TrangThai = 1 AND nd.IdNguoiDung = ?
+        ";
+        $params = [$idNguoiDung];
+        $types = "i";
+
+        if ($statusId !== null) {
+            $query .= " AND h.IdTinhTrang = ?";
+            $params[] = $statusId;
+            $types .= "i";
+        }
+
+        $query .= " ORDER BY h.NgayTao DESC LIMIT ? OFFSET ?";
+        $params[] = $limit;
+        $params[] = $offset;
+        $types .= "ii";
+
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param($types, ...$params);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function countHoaDonByNguoiDung($idNguoiDung, $statusId = null) {
+        $query = "
+            SELECT COUNT(*) as total
+            FROM hoadon h
+            LEFT JOIN TaiKhoan tk ON h.IdTaiKhoan = tk.IdTaiKhoan
+            LEFT JOIN nguoidung nd ON tk.IdNguoiDung = nd.IdNguoiDung
+            WHERE h.TrangThai = 1 AND nd.IdNguoiDung = ?
+        ";
+        $params = [$idNguoiDung];
+        $types = "i";
+
+        if ($statusId !== null) {
+            $query .= " AND h.IdTinhTrang = ?";
+            $params[] = $statusId;
+            $types .= "i";
+        }
+
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param($types, ...$params);
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+        return $result['total'];
+    }
+
     public function addHoaDon($data) {
         $this->db->begin_transaction();
         try {
@@ -81,6 +135,19 @@ class HoaDonModel {
             $stmt = $this->db->prepare("
                 UPDATE sanpham 
                 SET SoLuong = SoLuong - ? 
+                WHERE IdCHSP = ? AND IdDongSanPham = ? AND SoLuong >= ?
+            ");
+            $stmt->bind_param("iiii", 
+                $data['SoLuong'], 
+                $data['IdCHSP'], 
+                $data['IdDongSanPham'], 
+                $data['SoLuong']
+            );
+            $stmt->execute();
+
+            $stmt = $this->db->prepare("
+                UPDATE sanpham 
+                SET DaBan = DaBan + ?
                 WHERE IdCHSP = ? AND IdDongSanPham = ? AND SoLuong >= ?
             ");
             $stmt->bind_param("iiii", 
@@ -136,6 +203,19 @@ class HoaDonModel {
                 $stmt = $this->db->prepare("
                     UPDATE sanpham 
                     SET SoLuong = SoLuong - ? 
+                    WHERE IdCHSP = ? AND IdDongSanPham = ? AND SoLuong >= ?
+                ");
+                $stmt->bind_param("iiii", 
+                    $product['SoLuong'], 
+                    $product['IdCHSP'], 
+                    $product['IdDongSanPham'], 
+                    $product['SoLuong']
+                );
+                $stmt->execute();
+
+                $stmt = $this->db->prepare("
+                    UPDATE sanpham 
+                    SET DaBan = DaBan + ?
                     WHERE IdCHSP = ? AND IdDongSanPham = ? AND SoLuong >= ?
                 ");
                 $stmt->bind_param("iiii", 
@@ -205,6 +285,14 @@ class HoaDonModel {
                     $stmt->execute();
 
                     $stmt = $this->db->prepare("
+                        UPDATE sanpham 
+                        SET DaBan = DaBan - ?
+                        WHERE IdCHSP = ? AND IdDongSanPham = ?
+                    ");
+                    $stmt->bind_param("iii", $soLuong, $idCHSP, $idDongSanPham);
+                    $stmt->execute();
+
+                    $stmt = $this->db->prepare("
                         UPDATE dongsanpham 
                         SET SoLuong = (
                             SELECT SUM(SoLuong) 
@@ -239,20 +327,6 @@ class HoaDonModel {
         $stmt = $this->db->prepare("UPDATE hoadon SET TrangThai = 0 WHERE IdHoaDon = ?");
         $stmt->bind_param("i", $idHoaDon);
         return $stmt->execute();
-    }
-
-    public function getHoaDonByNguoiDung($idNguoiDung) {
-        $query = "
-            SELECT h.*, nd.HoVaTen 
-            FROM hoadon h
-            LEFT JOIN TaiKhoan tk ON h.IdTaiKhoan = tk.IdTaiKhoan
-            LEFT JOIN nguoidung nd ON tk.IdNguoiDung = nd.IdNguoiDung
-            WHERE h.TrangThai = 1 AND nd.IdNguoiDung = ?
-        ";
-        $stmt = $this->db->prepare($query);
-        $stmt->bind_param("i", $idNguoiDung);
-        $stmt->execute();
-        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
 }
 ?>

@@ -15,10 +15,16 @@ class SanPhamController {
 
         switch ($method) {
             case 'GET':
+                if (isset($_GET['priceRange'])) {
+                    // Xử lý yêu cầu lấy khoảng giá
+                    $data = $this->model->getPriceRange();
+                    echo json_encode($data);
+                    break;
+                }
                 if (isset($_GET['idCHSP']) && isset($_GET['idDSP'])) {
                     $data = $this->model->getProductById($_GET['idCHSP'], $_GET['idDSP']);
-                }else if(isset($_GET['idDSP'])){
-                    $data = $this->model->getProductsByDongSanPham( $_GET['idDSP']);
+                } else if (isset($_GET['idDSP'])) {
+                    $data = $this->model->getProductsByDongSanPham($_GET['idDSP']);
                 } else {
                     $data = $this->model->getAllProducts();
                 }
@@ -51,7 +57,8 @@ class SanPhamController {
                             $_GET['idDSP'],
                             $_PUT['SoLuong'],
                             $_PUT['Gia'],
-                            $_PUT['TrangThai']
+                            $_PUT['TrangThai'],
+                            $_PUT['NgayNhap']
                         );
                         echo json_encode(["message" => $result ? "Cập nhật thành công" : "Cập nhật thất bại"]);
                     } catch (Exception $e) {

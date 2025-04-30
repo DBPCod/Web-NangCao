@@ -16,7 +16,7 @@ function formatPrice(price) {
 function parseFormattedPrice(formattedPrice) {
     try {
         if (!formattedPrice) throw new Error("Giá không được cung cấp");
-        const cleanedPrice = formattedPrice.replace(/\./g, '').replace(/\s?VNĐ|đ/i, '').trim();
+        const cleanedPrice = formattedPrice.replace(/[,]/g, '').replace(/\s?VNĐ|đ/i, '').trim();
         const price = parseInt(cleanedPrice);
         if (isNaN(price)) throw new Error("Giá không hợp lệ");
         return price;
@@ -111,6 +111,17 @@ function getCookieValue(name) {
 
 // Handle "Mua ngay" button click (validate and fetch product image)
 function handleClickMuaNgay() {
+
+    if(!getCookieValue("username"))
+    {
+        toast({
+            title: "Cảnh báo",
+            message: "Đăng nhập trước khi mua hàng!",
+            type: "warning",
+            duration: 3000,
+        });
+        return;
+    }
     const elementDSP = document.querySelector('#modalProductRam .selected');
     const elementCHSP = document.querySelector('#modalProductMauSac .selected');
 
@@ -285,6 +296,8 @@ async function handleCheckout() {
             IdCHSP: idCHSP,
             IdDongSanPham: idDongSanPham
         };
+
+        
 
         const hoaDonResponse = await fetch('/smartstation/src/mvc/controllers/HoaDonController.php', {
             method: 'POST',

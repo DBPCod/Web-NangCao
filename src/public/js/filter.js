@@ -37,6 +37,44 @@ function renderBrands() {
     });
 }
 
+
+// Hàm lấy và cập nhật khoảng giá
+function updatePriceRange() {
+    fetch('/smartstation/src/mvc/controllers/SanPhamController.php?priceRange=true', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Lỗi tải khoảng giá');
+        }
+        return response.json();
+    })
+    .then(data => {
+        const minPrice = data.minPrice || 400000; // Giá trị mặc định nếu không có dữ liệu
+        const maxPrice = data.maxPrice || 48500000;
+
+        // Cập nhật thanh trượt min-price
+        const minPriceSlider = document.querySelector('.price-slider.min-price');
+        minPriceSlider.min = minPrice;
+        minPriceSlider.max = maxPrice;
+        minPriceSlider.value = minPrice;
+        document.querySelector('.min-price-display').textContent = formatPrice(minPrice);
+
+        // Cập nhật thanh trượt max-price
+        const maxPriceSlider = document.querySelector('.price-slider.max-price');
+        maxPriceSlider.min = minPrice;
+        maxPriceSlider.max = maxPrice;
+        maxPriceSlider.value = maxPrice;
+        document.querySelector('.max-price-display').textContent = formatPrice(maxPrice);
+    })
+    .catch(error => {
+        console.error('Lỗi tải khoảng giá:', error);
+    });
+}
+
 // Hàm thu thập các bộ lọc
 function collectFilters() {
     const filters = {
@@ -62,9 +100,11 @@ function collectFilters() {
     if (document.querySelector('#app5').checked) filters.priceRanges.push('10000000-');
 
     // Lấy giá từ thanh trượt
-    const priceSlider = document.querySelector('.price-range .form-range');
-    filters.priceMin = parseInt(priceSlider.value);
-    filters.priceMax = parseInt(priceSlider.max);
+    // Lấy giá từ thanh trượt
+    const minPriceSlider = document.querySelector('.price-slider.min-price');
+    const maxPriceSlider = document.querySelector('.price-slider.max-price');
+    filters.priceMin = parseInt(minPriceSlider.value);
+    filters.priceMax = parseInt(maxPriceSlider.value);
 
     // Lấy RAM
     document.querySelectorAll('.filter-section .form-check-input[id^="ram"]').forEach(checkbox => {
@@ -93,10 +133,10 @@ function buildQueryString(filters, page) {
     const params = new URLSearchParams();
     params.append('page', page);
 
-    if (filters.brands.length > 0) {
+    if (filters.brands && filters.brands.length > 0) {
         params.append('brands', filters.brands.join(','));
     }
-    if (filters.priceRanges.length > 0) {
+    if (filters.priceRanges && filters.priceRanges.length > 0) {
         params.append('priceRanges', filters.priceRanges.join(','));
     }
     if (filters.priceMin) {
@@ -105,11 +145,14 @@ function buildQueryString(filters, page) {
     if (filters.priceMax) {
         params.append('priceMax', filters.priceMax);
     }
-    if (filters.rams.length > 0) {
+    if (filters.rams && filters.rams.length > 0) {
         params.append('rams', filters.rams.join(','));
     }
-    if (filters.pins.length > 0) {
+    if (filters.pins && filters.pins.length > 0) {
         params.append('pins', filters.pins.join(','));
+    }
+    if (filters.sort) {
+        params.append('sort', filters.sort); // Thêm sort nếu tồn tại
     }
 
     return params.toString();
@@ -118,7 +161,6 @@ function buildQueryString(filters, page) {
 // Hàm tải sản phẩm với bộ lọc
 function loadProducts(page = 1, filters = null) {
     const queryString = filters ? buildQueryString(filters, page) : `page=${page}`;
-    console.log(queryString);
     fetch(`/smartstation/src/public/api/SanPhamAPI.php?${queryString}`, {
         method: 'GET',
         headers: {
@@ -190,20 +232,27 @@ function loadProducts(page = 1, filters = null) {
 document.addEventListener('DOMContentLoaded', () => {
     // Render danh sách thương hiệu
     renderBrands();
+    updatePriceRange();
     // Tải sản phẩm mặc định (không lọc)
     loadProducts(1);
 
     // Xử lý sự kiện nút LỌC
     document.getElementById('applyFilterBtn').addEventListener('click', () => {
+        console.log("1");
         const filters = collectFilters();
         loadProducts(1, filters);
     });
 
     // Xử lý sự kiện thay đổi thanh trượt giá
-    const priceSlider = document.querySelector('.price-range .form-range');
-    priceSlider.addEventListener('input', () => {
-        const value = parseInt(priceSlider.value);
-        document.querySelector('.price-range .d-flex span:first-child').textContent = formatPrice(value);
+    const minPriceSlider = document.querySelector('.price-slider.min-price');
+    const maxPriceSlider = document.querySelector('.price-slider.max-price');
+    minPriceSlider.addEventListener('input', () => {
+        const value = parseInt(minPriceSlider.value);
+        document.querySelector('.min-price-display').textContent = formatPrice(value);
+    });
+    maxPriceSlider.addEventListener('input', () => {
+        const value = parseInt(maxPriceSlider.value);
+        document.querySelector('.max-price-display').textContent = formatPrice(value);
     });
 
     // Xử lý sự kiện click vào phân trang
@@ -340,6 +389,7 @@ function loadConfigItem(idDSP, idCHSP) {
         setUpDataConfigItem(configs, idDSP, idCHSP);
     });
 }
+
 
 function setUpDataConfigItem(product, idDSP, idCHSP) {
     product.forEach((item) => {
@@ -495,5 +545,176 @@ function handleSelectConfigItem(product) {
             ramOptions.forEach(item => item.classList.remove('selected'));
             option.classList.add('selected');
         });
+    });
+}
+
+
+function filterNewProducts(limit = 6) {
+    // Thu thập các bộ lọc hiện tại
+    const filters = collectFilters();
+    
+    // Thêm sort=latest vào filters
+    filters.sort = 'latest';
+    console.log('Filters:', filters);
+    // Xây dựng query string với page=1 và limit=10
+    const queryString = buildQueryString(filters, 1) + `&limit=${limit}`;
+    console.log(queryString);   
+    fetch(`/smartstation/src/public/api/SanPhamAPI.php?${queryString}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Lỗi tải sản phẩm mới nhất');
+        }
+        return response.json();
+    })
+    .then(data => {
+        const products = data.products || [];
+        let productHTML = '';
+
+        if (products.length > 0) {
+            products.forEach(product => {
+                const productName = product.name || 'Sản phẩm không xác định';
+                const giaGocNum = Number(product.giaGoc);
+                const giaGoc = !isNaN(giaGocNum) && product.giaGoc !== null ? formatPrice(giaGocNum) : 'N/A';
+                let priceHTML = '';
+                if (product.giaGiam !== null && product.giaGiam !== undefined) {
+                    const giaGiamNum = Number(product.giaGiam);
+                    const giaGiam = !isNaN(giaGiamNum) ? formatPrice(giaGiamNum) : 'N/A';
+                    priceHTML = `<span class="text-decoration-line-through text-muted me-2">${giaGoc}</span> ${giaGiam}`;
+                } else {
+                    priceHTML = giaGoc;
+                }
+                const imageSrc = product.image ? `data:image/jpeg;base64,${product.image}` : '/smartstation/src/public/img/default.png';
+                productHTML += `
+                    <div class="col">
+                        <div class="product-card" data-bs-toggle="modal" data-bs-target="#productModal" data-product='${JSON.stringify(product)}'>
+                            <img src="${imageSrc}" alt="${productName}">
+                            <div class="product-name">${productName}</div>
+                            <div class="product-specs">RAM: ${product.ram || 'N/A'} - ROM: ${product.rom || 'N/A'}</div>
+                            <div class="product-price">${priceHTML}</div>
+                        </div>
+                    </div>`;
+            });
+        } else {
+            productHTML = '<div class="col text-center">Không có sản phẩm mới phù hợp.</div>';
+        }
+
+        // Render vào container .product-grid
+        const productContainer = document.querySelector('.product-grid');
+        if (productContainer) {
+            productContainer.innerHTML = productHTML;
+        } else {
+            console.warn('Container .product-grid không tồn tại trong DOM');
+        }
+
+        // Gắn sự kiện cho các thẻ sản phẩm
+        attachProductCardListeners();
+
+        // Cập nhật phân trang (hiển thị 1 trang vì giới hạn 10 sản phẩm)
+        const paginationContainer = document.querySelector('.pagination');
+        if (paginationContainer) {
+            paginationContainer.innerHTML = `
+                <li class="page-item active">
+                    <a class="page-link page-btn" href="#" data-page="1">1</a>
+                </li>
+            `;
+        }
+    })
+    .catch(error => {
+        console.error('Lỗi tải sản phẩm mới nhất:', error);
+        const productContainer = document.querySelector('.product-grid');
+        if (productContainer) {
+            productContainer.innerHTML = '<div class="col text-center">Lỗi tải sản phẩm mới.</div>';
+        }
+    });
+}
+
+function filterBestSellingProducts(limit = 6) {
+    // Thu thập các bộ lọc hiện tại
+    const filters = collectFilters();
+    
+    // Thêm sort=bestselling vào filters
+    filters.sort = 'bestselling';
+    console.log('Filters:', filters);
+    
+    // Xây dựng query string với page=1 và limit=6
+    const queryString = buildQueryString(filters, 1) + `&limit=${limit}`;
+    console.log('QueryString:', queryString);
+    
+    fetch(`/smartstation/src/public/api/SanPhamAPI.php?${queryString}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Lỗi tải sản phẩm bán chạy');
+        }
+        return response.json();
+    })
+    .then(data => {
+        const products = data.products || [];
+        let productHTML = '';
+
+        if (products.length > 0) {
+            products.forEach(product => {
+                const productName = product.name || 'Sản phẩm không xác định';
+                const giaGocNum = Number(product.giaGoc);
+                const giaGoc = !isNaN(giaGocNum) && product.giaGoc !== null ? formatPrice(giaGocNum) : 'N/A';
+                let priceHTML = '';
+                if (product.giaGiam !== null && product.giaGiam !== undefined) {
+                    const giaGiamNum = Number(product.giaGiam);
+                    const giaGiam = !isNaN(giaGiamNum) ? formatPrice(giaGiamNum) : 'N/A';
+                    priceHTML = `<span class="text-decoration-line-through text-muted me-2">${giaGoc}</span> ${giaGiam}`;
+                } else {
+                    priceHTML = giaGoc;
+                }
+                const imageSrc = product.image ? `data:image/jpeg;base64,${product.image}` : '/smartstation/src/public/img/default.png';
+                productHTML += `
+                    <div class="col">
+                        <div class="product-card" data-bs-toggle="modal" data-bs-target="#productModal" data-product='${JSON.stringify(product)}'>
+                            <img src="${imageSrc}" alt="${productName}">
+                            <div class="product-name">${productName}</div>
+                            <div class="product-specs">RAM: ${product.ram || 'N/A'} - ROM: ${product.rom || 'N/A'}</div>
+                            <div class="product-price">${priceHTML}</div>
+                        </div>
+                    </div>`;
+            });
+        } else {
+            productHTML = '<div class="col text-center">Không có sản phẩm bán chạy phù hợp.</div>';
+        }
+
+        // Render vào container .product-grid
+        const productContainer = document.querySelector('.product-grid');
+        if (productContainer) {
+            productContainer.innerHTML = productHTML;
+        } else {
+            console.warn('Container .product-grid không tồn tại trong DOM');
+        }
+
+        // Gắn sự kiện cho các thẻ sản phẩm
+        attachProductCardListeners();
+
+        // Cập nhật phân trang (hiển thị 1 trang vì giới hạn 6 sản phẩm)
+        const paginationContainer = document.querySelector('.pagination');
+        if (paginationContainer) {
+            paginationContainer.innerHTML = `
+                <li class="page-item active">
+                    <a class="page-link page-btn" href="#" data-page="1">1</a>
+                </li>
+            `;
+        }
+    })
+    .catch(error => {
+        console.error('Lỗi tải sản phẩm bán chạy:', error);
+        const productContainer = document.querySelector('.product-grid');
+        if (productContainer) {
+            productContainer.innerHTML = '<div class="col text-center">Lỗi tải sản phẩm bán chạy.</div>';
+        }
     });
 }

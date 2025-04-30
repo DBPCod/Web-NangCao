@@ -16,18 +16,33 @@
         <div class="brand-list"></div>
         <h5 class="mt-4">MỨC GIÁ</h5>
         <div class="price-range">
+    <div class="d-flex align-items-center mb-2">
+        <div class="slider-container" style="flex: 1;">
             <input
                 type="range"
-                class="form-range"
+                class="form-range price-slider min-price"
                 min="400000"
                 max="48500000"
                 step="100000"
-                value="400000" />
-            <div class="d-flex justify-content-between">
-                <span>400,000 đ</span>
-                <span>48,500,000 đ</span>
-            </div>
+                value="400000"
+            />
         </div>
+        <div class="slider-container" style="flex: 1;">
+            <input
+                type="range"
+                class="form-range price-slider max-price"
+                min="400000"
+                max="48500000"
+                step="100000"
+                value="48500000"
+            />
+        </div>
+    </div>
+    <div class="d-flex justify-content-between">
+        <span class="min-price-display">400,000 đ</span>
+        <span class="max-price-display">48,500,000 đ</span>
+    </div>
+</div>
         <h5 class="mt-4"></h5>
         <div class="form-check">
             <input class="form-check-input" type="checkbox" id="app1" />
