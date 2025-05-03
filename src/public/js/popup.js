@@ -401,7 +401,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (hasError) {
                 e.preventDefault();
+                toast({
+                    title: 'Lỗi',
+                    message: 'Đăng ký thất bại, vui lòng thử lại!',
+                    type: 'error',
+                    duration: 3000
+                });
             }
+            toast({
+                title: 'Thành công',
+                message: 'Đăng ký thành công!',
+                type: 'success',
+                duration: 3000
+            });
         });
     }
 });
