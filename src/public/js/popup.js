@@ -160,20 +160,25 @@ document.addEventListener('DOMContentLoaded', function () {
             // Lấy giỏ hàng hiện tại từ localStorage (nếu có)
             let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-            // Kiểm tra nếu sản phẩm đã có trong giỏ hàng, không thêm nếu đã có
-            const productExists = cart.some(item => item.idDSP === idDSP && item.idCHSP === idCHSP);
+            // Kiểm tra nếu sản phẩm đã có trong giỏ hàng
+            const existingProductIndex = cart.findIndex(item => item.idDSP === idDSP && item.idCHSP === idCHSP);
             
-            if (productExists) {
+            if (existingProductIndex !== -1) {
+                // Nếu sản phẩm đã tồn tại, tăng số lượng lên 1
+                cart[existingProductIndex].quantity = (cart[existingProductIndex].quantity || 1) + 1;
+                localStorage.setItem('cart', JSON.stringify(cart));
+                loadItemCountInCart();
+                
                 toast({
-                    title: "Thông báo",
-                    message: "Sản phẩm đã có trong giỏ hàng",
-                    type: "info",
+                    title: "Thành công",
+                    message: "Đã thêm sản phẩm vào giỏ hàng",
+                    type: "success",
                     duration: 3000,
                 });
                 return;
             }
 
-            // Tạo đối tượng sản phẩm
+            // Tạo đối tượng sản phẩm mới nếu chưa có trong giỏ hàng
             const product = {
                 rom: rom,
                 screenSize: screenSize,
