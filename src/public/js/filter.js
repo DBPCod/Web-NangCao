@@ -596,10 +596,10 @@ function handleSelectConfigItem(product) {
 }
 
 
-function filterNewProducts(limit = 6) {
+function filterNewProducts() {
+    // console.log(limit);
     // Thu thập các bộ lọc hiện tại
     const filters = collectFilters();
-    
     // Thêm sort=latest vào filters
     filters.sort = 'latest';
     console.log('Filters:', filters);
@@ -680,7 +680,7 @@ function filterNewProducts(limit = 6) {
     });
 }
 
-function filterBestSellingProducts(limit = 6) {
+function filterBestSellingProducts() {
     // Thu thập các bộ lọc hiện tại
     const filters = collectFilters();
     
