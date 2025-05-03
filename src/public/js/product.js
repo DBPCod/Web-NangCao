@@ -118,6 +118,7 @@ function buildQueryString(filters, page) {
 
 // Hàm tải sản phẩm
 function loadProducts(page = 1, filters = null) {
+    console.log("b");
     const queryString = filters ? buildQueryString(filters, page) : `page=${page}`;
     console.log(queryString);
     fetch(`/smartstation/src/public/api/SanPhamAPI.php?${queryString}`, {
