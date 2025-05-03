@@ -118,6 +118,7 @@ function buildQueryString(filters, page) {
 
 // Hàm tải sản phẩm
 function loadProducts(page = 1, filters = null) {
+    console.log("b");
     const queryString = filters ? buildQueryString(filters, page) : `page=${page}`;
     console.log(queryString);
     fetch(`/smartstation/src/public/api/SanPhamAPI.php?${queryString}`, {
@@ -550,7 +551,7 @@ function handleSelectConfigItem(product) {
             let htmlMauSac = '';
             product.forEach((item) => {
                 if (item.Ram === selectedRam) {
-                    htmlMauSac += `<span idchsp=${item.IdCHSP}>${item.MauSac}</span>`;
+                    htmlMauSac += `<span idchsp=${item.IdCHSP} data-quantity="${item.SoLuong}">${item.MauSac}</span>`;
                 }
             });
             setUpAfterSelectedRam(product, selectedRam);
@@ -566,12 +567,43 @@ function handleSelectConfigItem(product) {
                     colorOption.classList.add('selected');
                     const selectedColor = e.currentTarget.innerText;
                     setUpAfterSelectedColor(product, selectedColor, ram);
+                    
+                    // Cập nhật trạng thái số lượng hàng
+                    const quantity = parseInt(e.currentTarget.getAttribute('data-quantity'));
+                    const modalProductTrangThai = document.querySelector('#modalProductTrangThai');
+                    if (modalProductTrangThai) {
+                        modalProductTrangThai.textContent = quantity > 0 ? `Còn hàng (${quantity})` : 'Hết hàng';
+                        modalProductTrangThai.style.color = quantity > 0 ? '#28a745' : '#dc3545';
+                    }
                 });
             });
             ramOptions.forEach(item => item.classList.remove('selected'));
             option.classList.add('selected');
         });
     });
+}
+
+function searchProductsInput(filters) {
+    console.log(filters);
+    const searchInputs = document.querySelectorAll('.search-bar input');
+    let searchQuery = '';
+
+    
+    // Lấy từ khóa từ input tìm kiếm (desktop hoặc mobile)
+    searchInputs.forEach(input => {
+        if (input.value.trim()) {
+            searchQuery = input.value.trim();
+        }
+    });
+
+    // Thêm từ khóa tìm kiếm vào filters
+    if (searchQuery) {
+        filters.searchQuery = searchQuery;
+    } else {
+        delete filters.searchQuery; // Xóa nếu không có từ khóa
+    }
+
+    return filters;
 }
 
 // Khởi tạo khi DOM được tải
@@ -582,8 +614,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const applyFilterBtn = document.getElementById('applyFilterBtn');
     if (applyFilterBtn) {
         applyFilterBtn.addEventListener('click', () => {
-            const filters = collectFilters();
-            console.log(filters);
+            const filters = searchProductsInput(collectFilters());
             loadProducts(1, filters);
         });
     }
@@ -599,15 +630,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const pagination = document.querySelector('.pagination');
-    if (pagination) {
-        pagination.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (e.target.classList.contains('page-btn')) {
-                const page = parseInt(e.target.dataset.page);
-                const filters = collectFilters();
-                loadProducts(page, filters);
-            }
-        });
-    }
+    // const pagination = document.querySelector('.pagination');
+    // if (pagination) {
+    //     pagination.addEventListener('click', (e) => {
+    //         e.preventDefault();
+    //         if (e.target.classList.contains('page-btn')) {
+    //             const page = parseInt(e.target.dataset.page);
+    //             const filters = collectFilters();
+    //             loadProducts(page, filters);
+    //         }
+    //     });
+    // }
 });

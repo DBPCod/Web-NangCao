@@ -115,6 +115,20 @@ class HoaDonModel {
         return $result['total'];
     }
 
+    // Tính tổng doanh thu từ hóa đơn trong tháng hiện tại
+    public function getTotalRevenueThisMonth() {
+        $result = $this->db->query("
+            SELECT SUM(ThanhTien) as totalRevenue
+            FROM hoadon
+            WHERE TrangThai = 1 
+            AND IdTinhTrang = 3
+            AND YEAR(NgayTao) = YEAR(CURDATE())
+            AND MONTH(NgayTao) = MONTH(CURDATE())
+        ");
+        $data = $result->fetch_assoc();
+        return $data['totalRevenue'] ?? 0;
+    }
+
     public function addHoaDon($data) {
         $this->db->begin_transaction();
         try {

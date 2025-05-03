@@ -15,36 +15,36 @@ class TaiKhoanController {
 
         switch ($method) {
             case 'GET':
-                if (isset($_GET['taikhoan'])) {
+                if (isset($_GET['total'])) {
+                    $data = $this->model->getTotalTaiKhoan();
+                    echo json_encode(['total' => $data]);
+                } elseif (isset($_GET['taikhoan'])) {
                     $data = $this->model->getTaiKhoanById($_GET['taikhoan']);
-                }else if (isset($_GET['idNguoiDung'])) {
+                    echo json_encode($data);
+                } elseif (isset($_GET['idNguoiDung'])) {
                     $data = $this->model->getTaiKhoanByIdUser($_GET['idNguoiDung']);
+                    echo json_encode($data);
                 } else {
                     $data = $this->model->getAllTaiKhoan();
+                    echo json_encode($data);
                 }
-                echo json_encode($data);
                 break;
 
             case 'POST':
-                if(isset($input['taikhoan']))
-                {
+                if (isset($input['taikhoan'])) {
                     $result = $this->model->GetPass($input);
-                   if(password_verify($input["matkhau"], $result["MatKhau"]))
-                   {
+                    if (password_verify($input["matkhau"], $result["MatKhau"])) {
                         echo json_encode([
                             "success" => true,
                             "message" => "Đúng mật khẩu!"
-                            ]);
-                   }else
-                   {
+                        ]);
+                    } else {
                         echo json_encode([
                             "success" => false,
                             "message" => "Sai mật khẩu!"
-                            ]);
-                   }
-                    
-                }else if(isset($input['taikhoan']) && isset($input['matkhau']))
-                {
+                        ]);
+                    }
+                } elseif (isset($input['taikhoan']) && isset($input['matkhau'])) {
                     $newTaiKhoan = $this->model->addTaiKhoan($input);
                     echo json_encode([
                         "message" => "Thêm tài khoản thành công",
@@ -60,7 +60,8 @@ class TaiKhoanController {
                 if (isset($_GET['taikhoan'])) {
                     $result = $this->model->updateTaiKhoan($_GET['taikhoan'], $_PUT);
                     echo json_encode([
-                        "success" => $result,"message" => $result ? "Cập nhật thành công" : "Cập nhật thất bại"
+                        "success" => $result,
+                        "message" => $result ? "Cập nhật thành công" : "Cập nhật thất bại"
                     ]);
                 } else {
                     echo json_encode(["message" => "Thiếu IdTaiKhoan để cập nhật"]);

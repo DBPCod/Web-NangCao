@@ -1,3 +1,8 @@
+var ORDERS_PER_PAGE = 5; // Số lượng hóa đơn mỗi trang
+var currentPage = 1; // Trang hiện tại
+var allOrders = []; // Lưu trữ toàn bộ dữ liệu hóa đơn
+var currentFilters = {}; // Lưu trữ bộ lọc hiện tại
+
 // Định nghĩa ánh xạ trạng thái
 var tinhTrangMap = {
     1: { name: "Chưa xác nhận", color: "#6c757d", class: "status-1" },
@@ -51,7 +56,7 @@ function loadTinhTrangOptions() {
 
 // Hàm tải danh sách hóa đơn
 function loadOrders(filters = {}) {
-    console.log(filters);
+    currentFilters = filters; // Lưu bộ lọc hiện tại
     let url = "/smartstation/src/mvc/controllers/HoaDonController.php";
     // Chỉ thêm tham số nếu có giá trị
     const validFilters = {};
@@ -73,48 +78,15 @@ function loadOrders(filters = {}) {
             return response.json();
         })
         .then(hoaDons => {
-            const tbody = document.getElementById("orderTableBody");
-            tbody.innerHTML = "";
-            if (!hoaDons || hoaDons.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5">Không có hóa đơn nào</td></tr>';
-            } else {
-                hoaDons.forEach(hoaDon => {
-                    // Xây dựng nút hành động
-                    let actionButtons = `<button class="btn btn-primary btn-sm action-btn" onclick="viewOrder(${hoaDon.IdHoaDon})">Xem</button>`;
-                    const nextTinhTrang = getNextTinhTrang(hoaDon.IdTinhTrang);
-                    if (nextTinhTrang) {
-                        if (Array.isArray(nextTinhTrang)) {
-                            nextTinhTrang.forEach(tinhTrang => {
-                                actionButtons += `
-                                    <button class="btn btn-sm action-btn" 
-                                            style="background-color: ${tinhTrang.buttonColor}; color: white;"
-                                            onclick="confirmUpdateStatusTable(${hoaDon.IdHoaDon}, ${hoaDon.IdTinhTrang}, ${tinhTrang.nextId})">
-                                        ${tinhTrang.buttonLabel}
-                                    </button>`;
-                            });
-                        } else {
-                            actionButtons += `
-                                <button class="btn btn-sm action-btn" 
-                                        style="background-color: ${nextTinhTrang.buttonColor}; color: white;"
-                                        onclick="confirmUpdateStatusTable(${hoaDon.IdHoaDon}, ${hoaDon.IdTinhTrang}, ${nextTinhTrang.nextId})">
-                                    ${nextTinhTrang.buttonLabel}
-                                </button>`;
-                        }
-                    }
-                    
-                    tbody.innerHTML += `
-                        <tr>
-                            <td>${hoaDon.IdHoaDon}</td>
-                            <td>${hoaDon.HoVaTen || "Không xác định"}</td>
-                            <td>${hoaDon.ThanhTien ? Number(hoaDon.ThanhTien).toLocaleString('vi-VN') + ' VNĐ' : 'Chưa xác định'}</td>
-                            <td class="${tinhTrangMap[hoaDon.IdTinhTrang].class}">${tinhTrangMap[hoaDon.IdTinhTrang].name}</td>
-                            <td>${actionButtons}</td>
-                        </tr>`;
-                });
-            }
+            allOrders = hoaDons; // Lưu dữ liệu vào biến toàn cục
+            currentPage = 1; // Reset về trang đầu tiên khi tải mới
+            renderOrdersByPage(currentPage); // Render trang đầu tiên
+            renderPagination(); // Render nút phân trang
         })
         .catch(error => {
             console.error("Error loading orders:", error);
+            document.getElementById("orderTableBody").innerHTML =
+                '<tr><td colspan="5">Đã xảy ra lỗi khi tải dữ liệu.</td></tr>';
             toast({
                 title: "Lỗi",
                 message: "Không thể tải danh sách hóa đơn",
@@ -122,6 +94,104 @@ function loadOrders(filters = {}) {
                 duration: 3000,
             });
         });
+}
+
+// Render danh sách hóa đơn theo trang
+function renderOrdersByPage(page) {
+    const tbody = document.getElementById("orderTableBody");
+    tbody.innerHTML = "";
+
+    if (!allOrders || allOrders.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5">Không có hóa đơn nào</td></tr>';
+        return;
+    }
+
+    // Tính toán chỉ số bắt đầu và kết thúc của dữ liệu trên trang hiện tại
+    const startIndex = (page - 1) * ORDERS_PER_PAGE;
+    const endIndex = startIndex + ORDERS_PER_PAGE;
+    const ordersToDisplay = allOrders.slice(startIndex, endIndex);
+
+    ordersToDisplay.forEach(hoaDon => {
+        // Xây dựng nút hành động
+        let actionButtons = `<button class="btn btn-primary btn-sm action-btn" onclick="viewOrder(${hoaDon.IdHoaDon})">Xem</button>`;
+        const nextTinhTrang = getNextTinhTrang(hoaDon.IdTinhTrang);
+        if (nextTinhTrang) {
+            if (Array.isArray(nextTinhTrang)) {
+                nextTinhTrang.forEach(tinhTrang => {
+                    actionButtons += `
+                        <button class="btn btn-sm action-btn" 
+                                style="background-color: ${tinhTrang.buttonColor}; color: white;"
+                                onclick="confirmUpdateStatusTable(${hoaDon.IdHoaDon}, ${hoaDon.IdTinhTrang}, ${tinhTrang.nextId})">
+                            ${tinhTrang.buttonLabel}
+                        </button>`;
+                });
+            } else {
+                actionButtons += `
+                    <button class="btn btn-sm action-btn" 
+                            style="background-color: ${nextTinhTrang.buttonColor}; color: white;"
+                            onclick="confirmUpdateStatusTable(${hoaDon.IdHoaDon}, ${hoaDon.IdTinhTrang}, ${nextTinhTrang.nextId})">
+                        ${nextTinhTrang.buttonLabel}
+                    </button>`;
+            }
+        }
+        
+        tbody.innerHTML += `
+            <tr>
+                <td>${hoaDon.IdHoaDon}</td>
+                <td>${hoaDon.HoVaTen || "Không xác định"}</td>
+                <td>${hoaDon.ThanhTien ? Number(hoaDon.ThanhTien).toLocaleString('vi-VN') + ' VNĐ' : 'Chưa xác định'}</td>
+                <td class="${tinhTrangMap[hoaDon.IdTinhTrang].class}">${tinhTrangMap[hoaDon.IdTinhTrang].name}</td>
+                <td>${actionButtons}</td>
+            </tr>`;
+    });
+}
+
+// Render nút phân trang
+function renderPagination() {
+    const totalPages = Math.ceil(allOrders.length / ORDERS_PER_PAGE);
+    const paginationContainer = document.querySelector("#pagination");
+    paginationContainer.innerHTML = "";
+
+    // Nút Previous
+    const prevButton = document.createElement("button");
+    prevButton.className = "btn btn-secondary mx-1";
+    prevButton.textContent = "Previous";
+    prevButton.disabled = currentPage === 1;
+    prevButton.addEventListener("click", () => {
+        if (currentPage > 1) {
+            currentPage--;
+            renderOrdersByPage(currentPage);
+            renderPagination();
+        }
+    });
+    paginationContainer.appendChild(prevButton);
+
+    // Nút số trang
+    for (let i = 1; i <= totalPages; i++) {
+        const pageButton = document.createElement("button");
+        pageButton.className = `btn mx-1 ${i === currentPage ? "btn-primary" : "btn-secondary"}`;
+        pageButton.textContent = i;
+        pageButton.addEventListener("click", () => {
+            currentPage = i;
+            renderOrdersByPage(currentPage);
+            renderPagination();
+        });
+        paginationContainer.appendChild(pageButton);
+    }
+
+    // Nút Next
+    const nextButton = document.createElement("button");
+    nextButton.className = "btn btn-secondary mx-1";
+    nextButton.textContent = "Next";
+    nextButton.disabled = currentPage === totalPages;
+    nextButton.addEventListener("click", () => {
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderOrdersByPage(currentPage);
+            renderPagination();
+        }
+    });
+    paginationContainer.appendChild(nextButton);
 }
 
 // Hàm xem chi tiết hóa đơn
@@ -319,7 +389,7 @@ function updateOrderStatus(idHoaDon, newTinhTrang, currentTinhTrang, selectEleme
                     }
                 }
 
-                loadOrders();
+                loadOrders(currentFilters); // Tải lại danh sách với bộ lọc hiện tại
             } else {
                 throw new Error(result.message);
             }
@@ -360,5 +430,5 @@ document.getElementById("resetFilter").addEventListener("click", function () {
 });
 
 // Gọi khi trang được tải
-    loadTinhTrangOptions();
-    loadOrders();
+loadTinhTrangOptions();
+loadOrders();

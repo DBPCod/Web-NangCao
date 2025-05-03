@@ -104,7 +104,6 @@ class SanPhamModel {
         return $stmt->get_result()->fetch_assoc();
     }
 
-
     public function getAllProductsSortedByDaBan() {
         $query = "
             SELECT sp.*, dsp.TenDong, dsp.IdThuongHieu 
@@ -126,7 +125,13 @@ class SanPhamModel {
         ");
         return $result->fetch_assoc();
     }
-    
+
+    // Lấy tổng số sản phẩm đang hoạt động
+    public function getTotalProducts() {
+        $result = $this->db->query("SELECT COUNT(*) as total FROM sanpham WHERE TrangThai = 1");
+        return $result->fetch_assoc()['total'];
+    }
+
     private function updateDongSanPhamQuantity($idDongSanPham) {
         $stmt = $this->db->prepare("
             SELECT SUM(SoLuong) as total 
@@ -182,7 +187,7 @@ class SanPhamModel {
                 $gia = $data['Gia'] ?? 0;
                 $trangThai = $data['TrangThai'] ?? 1;
                 $soLuong = $data['SoLuong'] ?? 0;
-                $stmt->bind_param("iidi", $data['IdCHSP'], $data['IdDongSanPham'], $soLuong, $gia, $trangThai);
+                $stmt->bind_param("iiidi", $data['IdCHSP'], $data['IdDongSanPham'], $soLuong, $gia, $trangThai);
                 $stmt->execute();
             }
 

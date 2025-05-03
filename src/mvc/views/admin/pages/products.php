@@ -12,12 +12,14 @@
                 <th>ROM</th>
                 <th>Màu sắc</th>
                 <th>Giá</th>
-                <th>Số lượng</th> <!-- Thêm cột Số lượng -->
+                <th>Số lượng</th>
                 <th class="text-center" style="width: 120px;">Hành động</th>
             </tr>
         </thead>
         <tbody id="productTableBody"></tbody>
     </table>
+    <!-- Container cho các nút phân trang -->
+    <div id="pagination" class="d-flex justify-content-center mt-3"></div>
 </div>
 
 <!-- Modal Thêm Sản phẩm -->
@@ -121,7 +123,6 @@
     .carousel-control-prev-icon,
     .carousel-control-next-icon {
         background-image: none;
-        /* Xóa hình nền mặc định */
         width: 30px;
         height: 30px;
         position: relative;
@@ -135,7 +136,6 @@
         left: 50%;
         transform: translate(-50%, -50%);
         border: solid #555555;
-        /* Màu xám đậm */
         border-width: 0 3px 3px 0;
         display: inline-block;
         padding: 5px;
@@ -143,18 +143,15 @@
 
     .carousel-control-prev-icon::before {
         transform: translate(-50%, -50%) rotate(135deg);
-        /* Mũi tên trái */
     }
 
     .carousel-control-next-icon::before {
         transform: translate(-50%, -50%) rotate(-45deg);
-        /* Mũi tên phải */
     }
 
     .carousel-control-prev:hover .carousel-control-prev-icon::before,
     .carousel-control-next:hover .carousel-control-next-icon::before {
         border-color: #333333;
-        /* Màu gần đen khi hover */
     }
 
     .bg-green {
