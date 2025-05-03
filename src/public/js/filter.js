@@ -561,22 +561,34 @@ function handleSelectConfigItem(product) {
             let htmlMauSac = '';
             product.forEach((item) => {
                 if (item.Ram === selectedRam) {
-                    htmlMauSac += `<span idchsp=${item.IdCHSP}>${item.MauSac}</span>`;
+                    htmlMauSac += `<span idchsp=${item.IdCHSP} data-quantity="${item.SoLuong}">${item.MauSac}</span>`;
                 }
             });
             setUpAfterSelectedRam(product, selectedRam);
             ram = selectedRam;
             const colorContainer = document.getElementById("modalProductMauSac");
-            colorContainer.innerHTML = htmlMauSac;
-            const mauSacOptions = colorContainer.querySelectorAll('span');
-            mauSacOptions.forEach(colorOption => {
+            if (colorContainer) {
+                colorContainer.innerHTML = htmlMauSac;
+            }
+            
+            const mauSacOptions = colorContainer?.querySelectorAll('span');
+            mauSacOptions?.forEach(colorOption => {
                 colorOption.addEventListener('click', (e) => {
                     mauSacOptions.forEach(item => item.classList.remove('selected'));
                     colorOption.classList.add('selected');
                     const selectedColor = e.currentTarget.innerText;
                     setUpAfterSelectedColor(product, selectedColor, ram);
+                    
+                    // Cập nhật trạng thái số lượng hàng
+                    const quantity = parseInt(e.currentTarget.getAttribute('data-quantity'));
+                    const modalProductTrangThai = document.querySelector('#modalProductTrangThai');
+                    if (modalProductTrangThai) {
+                        modalProductTrangThai.textContent = quantity > 0 ? `Còn hàng (${quantity})` : 'Hết hàng';
+                        modalProductTrangThai.style.color = quantity > 0 ? '#28a745' : '#dc3545';
+                    }
                 });
             });
+            
             ramOptions.forEach(item => item.classList.remove('selected'));
             option.classList.add('selected');
         });
