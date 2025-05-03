@@ -10,6 +10,7 @@ function searchProducts(page = 1) {
             searchQuery = input.value.trim();
         }
     });
+    
     // Thu thập các bộ lọc hiện tại
     const filters = collectFilters();
 

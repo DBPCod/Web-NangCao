@@ -583,6 +583,29 @@ function handleSelectConfigItem(product) {
     });
 }
 
+function searchProductsInput(filters) {
+    console.log(filters);
+    const searchInputs = document.querySelectorAll('.search-bar input');
+    let searchQuery = '';
+
+    
+    // Lấy từ khóa từ input tìm kiếm (desktop hoặc mobile)
+    searchInputs.forEach(input => {
+        if (input.value.trim()) {
+            searchQuery = input.value.trim();
+        }
+    });
+
+    // Thêm từ khóa tìm kiếm vào filters
+    if (searchQuery) {
+        filters.searchQuery = searchQuery;
+    } else {
+        delete filters.searchQuery; // Xóa nếu không có từ khóa
+    }
+
+    return filters;
+}
+
 // Khởi tạo khi DOM được tải
 document.addEventListener('DOMContentLoaded', () => {
     renderBrands();
@@ -591,8 +614,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const applyFilterBtn = document.getElementById('applyFilterBtn');
     if (applyFilterBtn) {
         applyFilterBtn.addEventListener('click', () => {
-            const filters = collectFilters();
-            console.log(filters);
+            const filters = searchProductsInput(collectFilters());
             loadProducts(1, filters);
         });
     }
@@ -608,15 +630,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const pagination = document.querySelector('.pagination');
-    if (pagination) {
-        pagination.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (e.target.classList.contains('page-btn')) {
-                const page = parseInt(e.target.dataset.page);
-                const filters = collectFilters();
-                loadProducts(page, filters);
-            }
-        });
-    }
+    // const pagination = document.querySelector('.pagination');
+    // if (pagination) {
+    //     pagination.addEventListener('click', (e) => {
+    //         e.preventDefault();
+    //         if (e.target.classList.contains('page-btn')) {
+    //             const page = parseInt(e.target.dataset.page);
+    //             const filters = collectFilters();
+    //             loadProducts(page, filters);
+    //         }
+    //     });
+    // }
 });

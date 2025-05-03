@@ -271,8 +271,8 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("1");
         const filters = collectFilters();
         loadProducts(1, filters);
-            // Xóa input tìm kiếm sau khi tìm (tùy chọn)
-            const searchInputs = document.querySelectorAll('.search-bar input');
+        // Xóa input tìm kiếm sau khi tìm (tùy chọn)
+        const searchInputs = document.querySelectorAll('.search-bar input');
         searchInputs.forEach(input => {
             input.value = '';
         });
