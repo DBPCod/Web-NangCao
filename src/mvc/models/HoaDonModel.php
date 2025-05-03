@@ -40,6 +40,9 @@ class HoaDonModel {
             $types .= "s";
         }
 
+        // Add ORDER BY clause to sort by NgayTao in descending order
+        $query .= " ORDER BY h.NgayTao DESC";
+
         $stmt = $this->db->prepare($query);
         if (!empty($params)) {
             $stmt->bind_param($types, ...$params);
@@ -115,7 +118,6 @@ class HoaDonModel {
         return $result['total'];
     }
 
-    // Tính tổng doanh thu từ hóa đơn trong tháng hiện tại
     public function getTotalRevenueThisMonth() {
         $result = $this->db->query("
             SELECT SUM(ThanhTien) as totalRevenue
