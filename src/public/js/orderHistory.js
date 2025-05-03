@@ -131,14 +131,14 @@ async function viewOrderDetails(idHoaDon) {
         document.getElementById('viewTrangThai').value = order.TrangThai === 1 ? "Hoạt động" : "Đã xóa";
         document.getElementById('viewTinhTrang').value = statusMap[order.IdTinhTrang]?.text || "Không xác định";
 
-        // DIV để hiển thị mã vận chuyển
-        const vanChuyenDiv = document.createElement('div');
-        vanChuyenDiv.className = 'mb-3';
-        vanChuyenDiv.innerHTML = `
-            <label class="form-label fw-bold">Mã vận chuyển</label>
-            <input type="text" class="form-control" id="viewMaVanChuyen" value="${order.MaVanChuyen || 'Không có'}" readonly>
-        `;
-        document.querySelector('#viewOrderModal .modal-body').insertBefore(vanChuyenDiv, document.querySelector('#viewOrderModal .modal-body .mb-3:nth-child(6)'));
+        // // DIV để hiển thị mã vận chuyển
+        // const vanChuyenDiv = document.createElement('div');
+        // vanChuyenDiv.className = 'mb-3';
+        // vanChuyenDiv.innerHTML = `
+        //     <label class="form-label fw-bold">Mã vận chuyển</label>
+        //     <input type="text" class="form-control" id="viewMaVanChuyen" value="${order.MaVanChuyen || 'Không có'}" readonly>
+        // `;
+        // document.querySelector('#viewOrderModal .modal-body').insertBefore(vanChuyenDiv, document.querySelector('#viewOrderModal .modal-body .mb-3:nth-child(6)'));
 
         // Fetch product details (CTHoaDon)
         const ctResponse = await fetch(`/smartstation/src/mvc/controllers/CTHoaDonController.php?idHoaDon=${idHoaDon}`);
