@@ -187,7 +187,7 @@ class SanPhamModel {
                 $gia = $data['Gia'] ?? 0;
                 $trangThai = $data['TrangThai'] ?? 1;
                 $soLuong = $data['SoLuong'] ?? 0;
-                $stmt->bind_param("iidi", $data['IdCHSP'], $data['IdDongSanPham'], $soLuong, $gia, $trangThai);
+                $stmt->bind_param("iiidi", $data['IdCHSP'], $data['IdDongSanPham'], $soLuong, $gia, $trangThai);
                 $stmt->execute();
             }
 

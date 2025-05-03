@@ -27,13 +27,13 @@ const statusMap = {
 
 // Load order history with pagination and status filter
 async function loadOrderHistory(page = 1, limit = 5, statusId = 1) {
+    console.log("a");
     const idNguoiDung = getCookie('user');
     if (!idNguoiDung) {
         document.getElementById('orderHistoryEmpty').style.display = 'block';
         document.getElementById('pagination').innerHTML = '';
         return;
     }
-
     try {
         // Fetch orders with pagination and status filter
         const response = await fetch(`/smartstation/src/mvc/controllers/HoaDonController.php?idNguoiDung=${idNguoiDung}&page=${page}&limit=${limit}&statusId=${statusId}`, {
@@ -151,7 +151,7 @@ async function viewOrderDetails(idHoaDon) {
             `;
             productList.innerHTML += row;
         }
-
+        console.log("a");
         // Show modal
         const modal = new bootstrap.Modal(document.getElementById('viewOrderModal'));
         modal.show();
@@ -163,10 +163,20 @@ async function viewOrderDetails(idHoaDon) {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
+    // Load order history mặc định khi trang được tải
     loadOrderHistory(1, 5, 1); // Default to "Chưa xác nhận"
+
     // Add event listener for status filter dropdown
     document.getElementById('statusFilter').addEventListener('change', (e) => {
         const statusId = parseInt(e.target.value);
         loadOrderHistory(1, 5, statusId); // Reset to page 1 when filter changes
+    });
+
+    // Load order history with "Chưa xác nhận" when modal is shown
+    const viewOrderModal = document.getElementById('viewOrderModal');
+    viewOrderModal.addEventListener('shown.bs.modal', () => {
+        console.log("a");
+        document.getElementById('statusFilter').value = '1'; // Set dropdown to "Chưa xác nhận"
+        loadOrderHistory(1, 5, 1); // Load orders with status "Chưa xác nhận"
     });
 });

@@ -255,12 +255,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
         updateProfileForm.addEventListener('submit', function (e) {
             e.preventDefault();
-            const fullName = document.getElementById('updateFullName').value;
-            const phone = document.getElementById('updatePhone').value;
-            const email = document.getElementById('updateEmail').value;
-            const address = document.getElementById('updateAddress').value;
-            const newPassword = document.getElementById('updatePassword');
-            const confirmPassword = document.getElementById('updateConfirmPassword');
+            // const fullName = document.getElementById('updateFullName').value;
+            // const phone = document.getElementById('updatePhone').value;
+            // const email = document.getElementById('updateEmail').value;
+            // const address = document.getElementById('updateAddress').value;
+            // const newPassword = document.getElementById('updatePassword');
+            // const confirmPassword = document.getElementById('updateConfirmPassword');
             // if(CheckPass(taikhoan, currentPassword.value))
             // {
             //     // console.log(CheckPass(taikhoan, currentPassword.value));
@@ -272,33 +272,14 @@ document.addEventListener('DOMContentLoaded', function () {
             //     console.log("b");
             // }
 
+            // let checkChangePass = false;
+            // const pass = document.getElementById("currentPassword");
+            // pass.addEventListener("input", function () {
+            //     console.log("a");
+            //     CheckPass();
+            // });
             CheckPass();
-            if (newPassword && newPassword.length < 8) {
-                document.getElementById('updatePasswordLengthError').style.display = 'block';
-                return;
-            } else {
-                document.getElementById('updatePasswordLengthError').style.display = 'none';
-            }
-
-            if (newPassword && newPassword.value !== confirmPassword.value) {
-                document.getElementById('updatePasswordMatchError').style.display = 'block';
-                return;
-            } else {
-                document.getElementById('updatePasswordMatchError').style.display = 'none';
-            }
-            if(newPassword.value)
-            {
-                let taiKhoan = decodeEmail(getCookie('username'));
-                UpdatePass(newPassword.value,taiKhoan);
-                newPassword.innerText='';
-                confirmPassword.innerText='';
-            }else
-            {
-                UpdateInfor(fullName, phone, email , address);
-            }
             
-            const updateModal = bootstrap.Modal.getInstance(document.getElementById('updateProfile'));
-            updateModal.hide();
         });
     }
 
@@ -353,13 +334,10 @@ document.addEventListener('DOMContentLoaded', function () {
     //get mật khẩu từ tài khoản
     function CheckPass()
     {
-        // document.getElementById('updateFullName').value ="";
-        // document.getElementById('updatePhone').value="";
-        // document.getElementById('updateEmail').value="";
-        // document.getElementById('updateAddress').value="";
         const currentPassword = document.getElementById('currentPassword');
         const taikhoan = decodeEmail(getCookie('username'));
         const matkhau = currentPassword.value;
+        console.log(matkhau);
         fetch(`../../controllers/TaiKhoanController.php`,{
             method: "POST",
             headers: {"Content-Type" : "application/json" },
@@ -367,10 +345,41 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(response => response.json())
         .then(data =>{
-            
+            const fullName = document.getElementById('updateFullName').value;
+            const phone = document.getElementById('updatePhone').value;
+            const email = document.getElementById('updateEmail').value;
+            const address = document.getElementById('updateAddress').value;
+            const newPassword = document.getElementById('updatePassword');
+            const confirmPassword = document.getElementById('updateConfirmPassword');
             if(data.success)
             {
                 document.getElementById('currentPasswordError').style.display = 'none';
+                if (newPassword && newPassword.length < 8) {
+                    document.getElementById('updatePasswordLengthError').style.display = 'block';
+                    return;
+                } else {
+                    document.getElementById('updatePasswordLengthError').style.display = 'none';
+                }
+    
+                if (newPassword && newPassword.value !== confirmPassword.value) {
+                    document.getElementById('updatePasswordMatchError').style.display = 'block';
+                    return;
+                } else {
+                    document.getElementById('updatePasswordMatchError').style.display = 'none';
+                }
+                if(newPassword.value)
+                {
+                    let taiKhoan = decodeEmail(getCookie('username'));
+                    UpdatePass(newPassword.value,taiKhoan);
+                    newPassword.innerText='';
+                    confirmPassword.innerText='';
+                }else
+                {
+                    UpdateInfor(fullName, phone, email , address);
+                }
+                
+                const updateModal = bootstrap.Modal.getInstance(document.getElementById('updateProfile'));
+                updateModal.hide();
             }
             else {
                 document.getElementById('currentPasswordError').style.display = 'block';

@@ -218,6 +218,9 @@ function buildQueryString(filters, page) {
     if (filters.pins && filters.pins.length > 0) {
         params.append('pins', filters.pins.join(','));
     }
+    if (filters.searchQuery) {
+        params.append('q', filters.searchQuery); // Mã hóa từ khóa tìm kiếm
+    }
     if (filters.sort) {
         params.append('sort', filters.sort); // Thêm sort nếu tồn tại
     }
@@ -227,7 +230,10 @@ function buildQueryString(filters, page) {
 
 // Hàm tải sản phẩm với bộ lọc
 function loadProducts(page = 1, filters = null) {
+    console.log("a");
+    console.log(filters);
     const queryString = filters ? buildQueryString(filters, page) : `page=${page}`;
+    console.log(queryString);
     fetch(`/smartstation/src/public/api/SanPhamAPI.php?${queryString}`, {
         method: 'GET',
         headers: {
@@ -245,7 +251,6 @@ function loadProducts(page = 1, filters = null) {
         let productHTML = '';
 
         if (products && products.length > 0) {
-            console.log(products);
             products.forEach(product => {
                 const productName = product.name || 'Sản phẩm không xác định';
                 const giaGocNum = Number(product.giaGoc);
@@ -295,6 +300,33 @@ function loadProducts(page = 1, filters = null) {
         document.querySelector('.product-grid').innerHTML = '<div class="col text-center">Lỗi tải sản phẩm.</div>';
     });
 }
+
+
+
+// Hàm tìm kiếm sản phẩm
+function searchProductsInput(filters) {
+    console.log(filters);
+    const searchInputs = document.querySelectorAll('.search-bar input');
+    let searchQuery = '';
+
+    
+    // Lấy từ khóa từ input tìm kiếm (desktop hoặc mobile)
+    searchInputs.forEach(input => {
+        if (input.value.trim()) {
+            searchQuery = input.value.trim();
+        }
+    });
+
+    // Thêm từ khóa tìm kiếm vào filters
+    if (searchQuery) {
+        filters.searchQuery = searchQuery;
+    } else {
+        delete filters.searchQuery; // Xóa nếu không có từ khóa
+    }
+
+    return filters;
+}
+
 // Khởi tạo khi DOM được tải
 document.addEventListener('DOMContentLoaded', () => {
     // Render danh sách thương hiệu
@@ -308,6 +340,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const filters = collectFilters();
         console.log("Filters:", filters);
         loadProducts(1, filters);
+        // Xóa input tìm kiếm sau khi tìm (tùy chọn)
+        const searchInputs = document.querySelectorAll('.search-bar input');
+        searchInputs.forEach(input => {
+            input.value = '';
+        });
     });
 
     // Xử lý sự kiện click vào phân trang
@@ -315,7 +352,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         if (e.target.classList.contains('page-btn')) {
             const page = parseInt(e.target.dataset.page);
-            const filters = collectFilters();
+            const filters = searchProductsInput(collectFilters());
             loadProducts(page, filters);
         }
     });

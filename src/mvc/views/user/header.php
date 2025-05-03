@@ -39,7 +39,7 @@
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="accountDropdownDesktop">
                             <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#updateProfile">Cập nhật thông tin</a></li>
-                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#orderHistory">Lịch sử mua hàng</a></li>
+                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#orderHistory" onclick="loadOrderHistory(1,5,1)">Lịch sử mua hàng</a></li>
                             <li><a class="dropdown-item" href="#" id="logoutLinkDesktop">Đăng xuất</a></li>
                         </ul>
                     </div>
