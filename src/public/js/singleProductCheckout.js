@@ -214,7 +214,7 @@ async function SetInfor(product) {
                     <span class="config-value">${productData.MauSac}</span>
                 </div>
                 <div class="config-item">
-                    <span class="config-label">Độ phân giải</span>
+                    <span class="config-label">Camera</span>
                     <span class="config-value">${productData.Camera}</span>
                 </div>
             </div>`;

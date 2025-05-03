@@ -323,7 +323,7 @@ function loadListProduct() {
                 "Màn hình": "${product.screenSize || 'N/A'}",
                 "Dung lượng pin": "${product.pin || 'N/A'}",
                 "Màu sắc": "${product.color || 'N/A'}",
-                "Độ phân giải": "${product.camera || 'N/A'}"
+                "Camera": "${product.camera || 'N/A'}"
             }' data-price="${parseFormattedPrice(product.price)}" data-idCHSP="${product.idCHSP}" data-idDSP="${product.idDSP}">
                 <img src="${product.img}" alt="${product.name}" class="product-image" style="width: 80px;">
                 <div class="flex-grow-1">
