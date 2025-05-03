@@ -111,7 +111,6 @@ function getCookieValue(name) {
 
 // Handle "Mua ngay" button click (validate and fetch product image)
 function handleClickMuaNgay() {
-
     if(!getCookieValue("username"))
     {
         toast({
@@ -297,8 +296,6 @@ async function handleCheckout() {
             IdDongSanPham: idDongSanPham
         };
 
-        
-
         const hoaDonResponse = await fetch('/smartstation/src/mvc/controllers/HoaDonController.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -361,3 +358,150 @@ handleAddressInput('buyNowModal');
 buyNowModal.addEventListener('hidden.bs.modal', () => {
     isBuyNowQuantitySelectorsSetup = false;
 });
+
+// --- New Additions Below (No Changes to Above Code) ---
+
+// Global variable for stock
+let availableStock = 0;
+
+// Fetch stock for a product
+async function fetchStock(idCHSP, idDSP) {
+    try {
+        const response = await fetch(`/smartstation/src/mvc/controllers/SanPhamController.php?idDSP=${idDSP}&idCHSP=${idCHSP}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        if (!response.ok) throw new Error('Lỗi mạng khi lấy số lượng tồn kho');
+        const data = await response.json();
+        return data.SoLuong || 0;
+    } catch (error) {
+        console.error("Lỗi khi lấy số lượng tồn kho:", error);
+        toast({
+            title: "Lỗi",
+            message: "Không thể lấy số lượng tồn kho",
+            type: "error",
+            duration: 3000,
+        });
+        return 0;
+    }
+}
+
+// New function to update quantity buttons with stock limit
+function updateQuantityButtonsWithStock(value) {
+    buyNowBtnDecrement.disabled = value <= 1;
+    buyNowBtnIncrement.disabled = value >= availableStock;
+}
+
+// New function to increment quantity with stock limit
+function incrementQuantityWithStock() {
+    let value = parseInt(buyNowQuantityElement.textContent);
+    if (value < availableStock) {
+        buyNowQuantityElement.textContent = value + 1;
+        updateQuantityButtonsWithStock(value + 1);
+        updateModalTotalPrice(price, value + 1);
+    } else {
+        toast({
+            title: "Cảnh báo",
+            message: `Số lượng tồn kho chỉ còn ${availableStock} sản phẩm!`,
+            type: "warning",
+            duration: 3000,
+        });
+    }
+}
+
+// New function to setup quantity selectors with stock
+async function setupModalQuantitySelectorsWithStock() {
+    const idCHSP = buyNowModal.querySelector('.col-md-6').dataset.idCHSP;
+    const idDSP = buyNowModal.querySelector('.col-md-6').dataset.idDSP;
+
+    // Fetch stock
+    availableStock = await fetchStock(idCHSP, idDSP);
+
+    // Run original setup
+    setupModalQuantitySelectors();
+
+    // Override event listeners
+    if (isBuyNowQuantitySelectorsSetup) {
+        buyNowBtnIncrement.removeEventListener('click', incrementQuantity);
+        buyNowBtnDecrement.removeEventListener('click', decrementQuantity);
+    }
+
+    buyNowBtnIncrement.addEventListener('click', incrementQuantityWithStock);
+    buyNowBtnDecrement.addEventListener('click', decrementQuantity);
+    updateQuantityButtonsWithStock(parseInt(buyNowQuantityElement.textContent));
+}
+
+// Wrap handleClickMuaNgay to check stock
+const originalHandleClickMuaNgay = handleClickMuaNgay;
+handleClickMuaNgay = async function() {
+    const elementDSP = document.querySelector('#modalProductRam .selected');
+    const elementCHSP = document.querySelector('#modalProductMauSac .selected');
+
+    if (elementDSP && elementCHSP) {
+        const idDSP = elementDSP.getAttribute('iddsp');
+        const idCHSP = elementCHSP.getAttribute('idchsp');
+
+        // Check stock
+        const stock = await fetchStock(idCHSP, idDSP);
+        if (stock === 0) {
+            toast({
+                title: "Cảnh báo",
+                message: "Sản phẩm đã hết hàng! Vui lòng chọn sản phẩm khác.",
+                type: "warning",
+                duration: 3000,
+            });
+            return;
+        }
+    }
+
+    // Call original function
+    originalHandleClickMuaNgay();
+};
+
+// Override SetInfor to use new quantity selector setup
+const originalSetInfor = SetInfor;
+SetInfor = async function(product) {
+    await originalSetInfor(product);
+    await setupModalQuantitySelectorsWithStock();
+};
+
+// Sample addToCart function with stock validation
+async function addToCart(product) {
+    const stock = await fetchStock(product.idCHSP, product.idDSP);
+    if (stock === 0) {
+        toast({
+            title: "Cảnh báo",
+            message: "Sản phẩm đã hết hàng! Vui lòng chọn sản phẩm khác.",
+            type: "warning",
+            duration: 3000,
+        });
+        return false;
+    }
+
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const existingItem = cart.find(item => item.idCHSP === product.idCHSP && item.idDSP === product.idDSP);
+    if (existingItem) {
+        if (existingItem.quantity >= stock) {
+            toast({
+                title: "Cảnh báo",
+                message: `Số lượng tồn kho chỉ còn ${stock} sản phẩm!`,
+                type: "warning",
+                duration: 3000,
+            });
+            return false;
+        }
+        existingItem.quantity += 1;
+    } else {
+        product.quantity = 1;
+        cart.push(product);
+    }
+
+    localStorage.setItem('cart', JSON.stringify(cart));
+    toast({
+        title: "Thành công",
+        message: "Đã thêm sản phẩm vào giỏ hàng!",
+        type: "success",
+        duration: 3000,
+    });
+    return true;
+}
