@@ -27,7 +27,6 @@ const statusMap = {
 
 // Load order history with pagination and status filter
 async function loadOrderHistory(page = 1, limit = 5, statusId = 1) {
-    console.log("a");
     const idNguoiDung = getCookie('user');
     if (!idNguoiDung) {
         document.getElementById('orderHistoryEmpty').style.display = 'block';
@@ -151,7 +150,7 @@ async function viewOrderDetails(idHoaDon) {
             `;
             productList.innerHTML += row;
         }
-        console.log("a");
+
         // Show modal
         const modal = new bootstrap.Modal(document.getElementById('viewOrderModal'));
         modal.show();
@@ -175,7 +174,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Load order history with "Chưa xác nhận" when modal is shown
     const viewOrderModal = document.getElementById('viewOrderModal');
     viewOrderModal.addEventListener('shown.bs.modal', () => {
-        console.log("a");
         document.getElementById('statusFilter').value = '1'; // Set dropdown to "Chưa xác nhận"
         loadOrderHistory(1, 5, 1); // Load orders with status "Chưa xác nhận"
     });
