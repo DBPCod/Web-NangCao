@@ -26,7 +26,7 @@ const statusMap = {
 };
 
 // Load order history with pagination and status filter
-async function loadOrderHistory(page = 1, limit = 5, statusId = 1) {
+async function loadOrderHistory(page = 1, limit = 5, statusId = null) {
     const idNguoiDung = getCookie('user');
     if (!idNguoiDung) {
         document.getElementById('orderHistoryEmpty').style.display = 'block';
@@ -34,8 +34,14 @@ async function loadOrderHistory(page = 1, limit = 5, statusId = 1) {
         return;
     }
     try {
-        // Fetch orders with pagination and status filter
-        const response = await fetch(`/smartstation/src/mvc/controllers/HoaDonController.php?idNguoiDung=${idNguoiDung}&page=${page}&limit=${limit}&statusId=${statusId}`, {
+        // Build the URL dynamically based on whether statusId is provided
+        let url = `/smartstation/src/mvc/controllers/HoaDonController.php?idNguoiDung=${idNguoiDung}&page=${page}&limit=${limit}`;
+        if (statusId !== null) {
+            url += `&statusId=${statusId}`;
+        }
+        
+        // Fetch orders with pagination and optional status filter
+        const response = await fetch(url, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' }
         });
@@ -89,7 +95,7 @@ function renderPagination(totalOrders, currentPage, limit, statusId) {
     // Previous button
     pagination.innerHTML += `
         <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
-            <a class="page-link" href="#" onclick="loadOrderHistory(${currentPage - 1}, ${limit}, ${statusId})">Trước</a>
+            <a class="page-link" href="#" onclick="loadOrderHistory(${currentPage - 1}, ${limit}, ${statusId === null ? 'null' : statusId})">Trước</a>
         </li>
     `;
 
@@ -97,7 +103,7 @@ function renderPagination(totalOrders, currentPage, limit, statusId) {
     for (let i = 1; i <= totalPages; i++) {
         pagination.innerHTML += `
             <li class="page-item ${i === currentPage ? 'active' : ''}">
-                <a class="page-link" href="#" onclick="loadOrderHistory(${i}, ${limit}, ${statusId})">${i}</a>
+                <a class="page-link" href="#" onclick="loadOrderHistory(${i}, ${limit}, ${statusId === null ? 'null' : statusId})">${i}</a>
             </li>
         `;
     }
@@ -105,7 +111,7 @@ function renderPagination(totalOrders, currentPage, limit, statusId) {
     // Next button
     pagination.innerHTML += `
         <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
-            <a class="page-link" href="#" onclick="loadOrderHistory(${currentPage + 1}, ${limit}, ${statusId})">Sau</a>
+            <a class="page-link" href="#" onclick="loadOrderHistory(${currentPage + 1}, ${limit}, ${statusId === null ? 'null' : statusId})">Sau</a>
         </li>
     `;
 }
@@ -124,6 +130,15 @@ async function viewOrderDetails(idHoaDon) {
         document.getElementById('viewThanhTien').value = formatPrice(order.ThanhTien);
         document.getElementById('viewTrangThai').value = order.TrangThai === 1 ? "Hoạt động" : "Đã xóa";
         document.getElementById('viewTinhTrang').value = statusMap[order.IdTinhTrang]?.text || "Không xác định";
+
+        // DIV để hiển thị mã vận chuyển
+        const vanChuyenDiv = document.createElement('div');
+        vanChuyenDiv.className = 'mb-3';
+        vanChuyenDiv.innerHTML = `
+            <label class="form-label fw-bold">Mã vận chuyển</label>
+            <input type="text" class="form-control" id="viewMaVanChuyen" value="${order.MaVanChuyen || 'Không có'}" readonly>
+        `;
+        document.querySelector('#viewOrderModal .modal-body').insertBefore(vanChuyenDiv, document.querySelector('#viewOrderModal .modal-body .mb-3:nth-child(6)'));
 
         // Fetch product details (CTHoaDon)
         const ctResponse = await fetch(`/smartstation/src/mvc/controllers/CTHoaDonController.php?idHoaDon=${idHoaDon}`);
@@ -163,18 +178,18 @@ async function viewOrderDetails(idHoaDon) {
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     // Load order history mặc định khi trang được tải
-    loadOrderHistory(1, 5, 1); // Default to "Chưa xác nhận"
+    loadOrderHistory(1, 5, null); // Default to "Tất cả"
 
     // Add event listener for status filter dropdown
     document.getElementById('statusFilter').addEventListener('change', (e) => {
-        const statusId = parseInt(e.target.value);
+        const statusId = e.target.value ? parseInt(e.target.value) : null;
         loadOrderHistory(1, 5, statusId); // Reset to page 1 when filter changes
     });
 
-    // Load order history with "Chưa xác nhận" when modal is shown
-    const viewOrderModal = document.getElementById('viewOrderModal');
-    viewOrderModal.addEventListener('shown.bs.modal', () => {
-        document.getElementById('statusFilter').value = '1'; // Set dropdown to "Chưa xác nhận"
-        loadOrderHistory(1, 5, 1); // Load orders with status "Chưa xác nhận"
+    // Load order history with "Tất cả" when modal is shown
+    const orderHistoryModal = document.getElementById('orderHistory');
+    orderHistoryModal.addEventListener('shown.bs.modal', () => {
+        document.getElementById('statusFilter').value = ''; // Set dropdown to "Tất cả"
+        loadOrderHistory(1, 5, null); // Load all orders
     });
 });
