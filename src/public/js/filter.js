@@ -181,15 +181,28 @@ function collectFilters() {
     }
     
     // Lấy RAM được chọn
-    const ramCheckboxes = document.querySelectorAll('.ram-filter:checked');
+    const ramCheckboxes = document.querySelectorAll('.form-check-input[id^="ram"]:checked');
     if (ramCheckboxes.length > 0) {
-        filters.rams = Array.from(ramCheckboxes).map(cb => cb.value);
+        filters.rams = Array.from(ramCheckboxes).map(cb => cb.nextElementSibling.textContent.trim());
+    }
+    
+    // Lấy PIN được chọn
+    const pinCheckboxes = document.querySelectorAll('.form-check-input[id^="pin"]:checked');
+    if (pinCheckboxes.length > 0) {
+        filters.pins = Array.from(pinCheckboxes).map(cb => {
+            const pinLabel = cb.nextElementSibling.textContent.trim();
+            if (pinLabel === 'Dưới 3000mAh') return '0-3000';
+            else if (pinLabel === '3000 - 4000mAh') return '3000-4000';
+            else if (pinLabel === '4000 - 5000mAh') return '4000-5000';
+            else if (pinLabel === '5000mAh trở lên') return '5000-';
+            return '';
+        }).filter(pin => pin !== '');
     }
     
     // Lấy ROM được chọn
-    const romCheckboxes = document.querySelectorAll('.rom-filter:checked');
+    const romCheckboxes = document.querySelectorAll('.form-check-input[id^="rom"]:checked');
     if (romCheckboxes.length > 0) {
-        filters.roms = Array.from(romCheckboxes).map(cb => cb.value);
+        filters.roms = Array.from(romCheckboxes).map(cb => cb.nextElementSibling.textContent.trim());
     }
     
     return filters;
@@ -203,9 +216,6 @@ function buildQueryString(filters, page) {
     if (filters.brands && filters.brands.length > 0) {
         params.append('brands', filters.brands.join(','));
     }
-    if (filters.priceRanges && filters.priceRanges.length > 0) {
-        params.append('priceRanges', filters.priceRanges.join(','));
-    }
     if (filters.priceMin) {
         params.append('priceMin', filters.priceMin);
     }
@@ -218,11 +228,14 @@ function buildQueryString(filters, page) {
     if (filters.pins && filters.pins.length > 0) {
         params.append('pins', filters.pins.join(','));
     }
+    if (filters.roms && filters.roms.length > 0) {
+        params.append('roms', filters.roms.join(','));
+    }
     if (filters.searchQuery) {
-        params.append('q', filters.searchQuery); // Mã hóa từ khóa tìm kiếm
+        params.append('q', filters.searchQuery);
     }
     if (filters.sort) {
-        params.append('sort', filters.sort); // Thêm sort nếu tồn tại
+        params.append('sort', filters.sort);
     }
 
     return params.toString();
@@ -348,11 +361,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Xử lý sự kiện click vào phân trang
-    document.querySelector('.pagination').addEventListener('click', (e) => {
+    document.querySelector('.pagination')?.addEventListener('click', (e) => {
         e.preventDefault();
         if (e.target.classList.contains('page-btn')) {
             const page = parseInt(e.target.dataset.page);
-            const filters = searchProductsInput(collectFilters());
+            const filters = collectFilters();
             loadProducts(page, filters);
         }
     });
