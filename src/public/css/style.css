@@ -608,7 +608,7 @@ footer ul li a:hover {
 /* Đảm bảo carousel có chiều cao cố định */
 .carousel-inner {
     background-color: #f8f9fa;
-    min-height: 300px;
+    /* min-height: 300px; */
     display: flex;
     align-items: center;
 }
@@ -619,15 +619,6 @@ footer ul li a:hover {
     opacity: 1;
     width: 10%;
 }
-
-.carousel-control-prev:hover,
-.carousel-control-next:hover {
-    /* background: rgba(0, 0, 0, 0.2); */
-}
-
-
-
-
 
 /*chon ram va mau sac*/
 /* CSS cho viền của các span trong modalProductRam */
@@ -715,7 +706,7 @@ footer ul li a:hover {
     color: #dc3545;
 }
 .form-control {
-    margin-bottom: 15px;
+    /* margin-bottom: 15px; */
 }
 .btn-success {
     background-color: #28a745;

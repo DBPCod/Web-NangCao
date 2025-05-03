@@ -111,9 +111,7 @@ function getCookieValue(name) {
 
 // Handle "Mua ngay" button click (validate and fetch product image)
 function handleClickMuaNgay() {
-
-    if(!getCookieValue("username"))
-    {
+    if(!getCookieValue("username")) {
         toast({
             title: "Cảnh báo",
             message: "Đăng nhập trước khi mua hàng!",
@@ -131,7 +129,12 @@ function handleClickMuaNgay() {
         const priceProduct = document.querySelector('#modalProductPrice').innerText;
         getAnh(idCHSP, idDSP, priceProduct);
     } else {
-        alert('Vui lòng chọn phiên bản sản phẩm!');
+        toast({
+            title: "Cảnh báo",
+            message: "Vui lòng chọn đủ phiên bản sản phẩm!",
+            type: "warning",
+            duration: 3000,
+        });
     }
 }
 
@@ -161,7 +164,12 @@ function getAnh(idCHSP, idDSP, priceProduct) {
     })
     .catch(error => {
         console.error("Lỗi khi tải ảnh:", error);
-        alert("Lỗi: " + error.message);
+        toast({
+            title: "Lỗi",
+            message: "Lỗi: " + error.message,
+            type: "error",
+            duration: 3000,
+        });
     });
 }
 
@@ -236,7 +244,12 @@ async function SetInfor(product) {
         document.getElementById('address-input').disabled = true;
     } catch (error) {
         console.error("Lỗi khi thiết lập thông tin:", error);
-        alert("Lỗi: " + error.message);
+        toast({
+            title: "Lỗi",
+            message: "Lỗi: " + error.message,
+            type: "error",
+            duration: 3000,
+        });
     }
 }
 
@@ -297,8 +310,6 @@ async function handleCheckout() {
             IdDongSanPham: idDongSanPham
         };
 
-        
-
         const hoaDonResponse = await fetch('/smartstation/src/mvc/controllers/HoaDonController.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -345,12 +356,23 @@ async function handleCheckout() {
             }
         }
 
-        alert("Thanh toán thành công!");
+        toast({
+            title: "Thành công",
+            message: "Thanh toán thành công!",
+            type: "success",
+            duration: 3000,
+        });
+
         const myModal = bootstrap.Modal.getInstance(buyNowModal);
         myModal.hide();
     } catch (error) {
         console.error("Lỗi thanh toán:", error);
-        alert("Lỗi thanh toán: " + error.message);
+        toast({
+            title: "Lỗi",
+            message: "Lỗi thanh toán: " + error.message,
+            type: "error",
+            duration: 3000,
+        });
     }
 }
 

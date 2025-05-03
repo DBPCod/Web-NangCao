@@ -168,7 +168,12 @@ async function setUserInfo() {
         document.getElementById('checkoutAddressInput').value = userData.DiaChi || '';
     } catch (error) {
         console.error("Lỗi khi lấy thông tin người dùng:", error);
-        alert("Lỗi: " + error.message);
+        toast({
+            title: "Lỗi",
+            message: error.message,
+            type: "error",
+            duration: 3000,
+        });
     }
 }
 
@@ -293,14 +298,24 @@ async function handleMultiProductCheckout() {
 
         // Clear cart after successful checkout
         localStorage.removeItem('cart');
-        alert("Thanh toán thành công!");
+        toast({
+            title: "Thành công",
+            message: "Thanh toán thành công!",
+            type: "success",
+            duration: 3000,
+        });
         const myModal = bootstrap.Modal.getInstance(checkoutModal);
         myModal.hide();
         productList.innerHTML = ''; // Clear product list
         updateTotalPrice();
     } catch (error) {
         console.error("Lỗi thanh toán:", error);
-        alert("Lỗi thanh toán: " + error.message);
+        toast({
+            title: "Lỗi",
+            message: "Lỗi thanh toán: " + error.message,
+            type: "error",
+            duration: 3000,
+        });
     }
 }
 
@@ -347,7 +362,12 @@ function loadListProduct() {
 function handleClickCheckout() {
     const cart = JSON.parse(localStorage.getItem('cart')) || [];
     if (cart.length === 0) {
-        alert("Giỏ hàng trống!");
+        toast({
+            title: "Cảnh báo",
+            message: "Giỏ hàng trống!",
+            type: "warning",
+            duration: 3000,
+        });
         return;
     }
 
@@ -356,7 +376,7 @@ function handleClickCheckout() {
         {
             toast({
                 title: "Cảnh báo",
-                message: "Đăng nhập trước khi mua hàng!",
+                message: "Bạn phải đăng nhập trước khi mua hàng!",
                 type: "warning",
                 duration: 3000,
             });
