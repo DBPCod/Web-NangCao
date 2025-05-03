@@ -119,23 +119,42 @@ document.addEventListener('DOMContentLoaded', function () {
     //Xử lý sự kiện click thêm vào giỏ hàng
     var btnAddCart = document.querySelector(".btn-add-to-cart");
     btnAddCart.addEventListener("click", () => {
+        // Kiểm tra xem người dùng đã chọn RAM và màu sắc chưa
+        const ramSelected = document.querySelector("#modalProductRam .selected");
+        const colorSelected = document.querySelector("#modalProductMauSac .selected");
+        
+        if (!ramSelected || !colorSelected) {
+            toast({
+                title: "Cảnh báo",
+                message: "Vui lòng chọn đủ phiên bản sản phẩm!",
+                type: "warning",
+                duration: 3000,
+            });
+            return;
+        }
+        
         var rom = document.querySelector("#modalProductRom").innerText;
         var screenSize= document.querySelector("#modalProductManHinh").innerText;
         var camera= document.querySelector("#modalProductCamera").innerText;
         var pin= document.querySelector("#modalProductPin").innerText;
         var nameSP = document.querySelector("#modalProductName").innerText;
-        var ramSP = document.querySelector("#modalProductRam .selected").innerText;
-        var colorSP = document.querySelector("#modalProductMauSac .selected").innerText;
+        var ramSP = ramSelected.innerText;
+        var colorSP = colorSelected.innerText;
         var priceSP = document.querySelector("#modalProductPrice").innerText;
         var statusProduct = document.querySelector("#modalProductTrangThai").innerText;
-        var idDSP = document.querySelector('#modalProductRam .selected').getAttribute('iddsp');
-        var idCHSP = document.querySelector('#modalProductMauSac .selected').getAttribute('idchsp');
-    
+        var idDSP = ramSelected.getAttribute('iddsp');
+        var idCHSP = colorSelected.getAttribute('idchsp');
+
         if (statusProduct == "Hết hàng") {
-            alert("Hết hàng");
+            toast({
+                title: "Cảnh báo",
+                message: "Rất xin lỗi quý khách, sản phẩm tạm hết hàng, xin chọn sản phẩm khác.",
+                type: "warning",
+                duration: 3000,
+            });
             return;
         }
-    
+        
         // Lấy ảnh của sản phẩm
         fetch(`/smartstation/src/mvc/controllers/AnhController.php?idCHSP=${idCHSP}&idDSP=${idDSP}`, {
             method: 'GET',
@@ -154,16 +173,26 @@ document.addEventListener('DOMContentLoaded', function () {
             
             // Lấy giỏ hàng hiện tại từ localStorage (nếu có)
             let cart = JSON.parse(localStorage.getItem("cart")) || [];
-    
-            // Kiểm tra nếu sản phẩm đã có trong giỏ hàng, không thêm nếu đã có
-            const productExists = cart.some(item => item.idDSP === idDSP && item.idCHSP === idCHSP);
+
+            // Kiểm tra nếu sản phẩm đã có trong giỏ hàng
+            const existingProductIndex = cart.findIndex(item => item.idDSP === idDSP && item.idCHSP === idCHSP);
             
-            if (productExists) {
-                alert("Sản phẩm đã có trong giỏ hàng");
+            if (existingProductIndex !== -1) {
+                // Nếu sản phẩm đã tồn tại, tăng số lượng lên 1
+                cart[existingProductIndex].quantity = (cart[existingProductIndex].quantity || 1) + 1;
+                localStorage.setItem('cart', JSON.stringify(cart));
+                loadItemCountInCart();
+                
+                toast({
+                    title: "Thành công",
+                    message: "Đã thêm sản phẩm vào giỏ hàng",
+                    type: "success",
+                    duration: 3000,
+                });
                 return;
             }
-    
-            // Tạo đối tượng sản phẩm
+
+            // Tạo đối tượng sản phẩm mới nếu chưa có trong giỏ hàng
             const product = {
                 rom: rom,
                 screenSize: screenSize,
@@ -175,18 +204,26 @@ document.addEventListener('DOMContentLoaded', function () {
                 color: colorSP,
                 price: priceSP.replace(" VND", ""),
                 quantity: 1,
-                idDSP: idDSP,  // Thêm idDSP và idCHSP vào sản phẩm nếu cần
+                idDSP: idDSP,
                 idCHSP: idCHSP
             };
-    
+
             // Thêm sản phẩm mới vào giỏ hàng
             cart.push(product);
-    
+
             // Lưu lại giỏ hàng đã cập nhật vào localStorage
             localStorage.setItem("cart", JSON.stringify(cart));
-    
-            // Cập nhật số lượng sản phẩm trong giỏ hàng (nếu có hàm loadItemCountInCart)
+
+            // Cập nhật số lượng sản phẩm trong giỏ hàng
             loadItemCountInCart();
+
+            // Thêm thông báo toast khi thêm sản phẩm thành công
+            toast({
+                title: "Thành công",
+                message: "Đã thêm sản phẩm vào giỏ hàng",
+                type: "success",
+                duration: 3000,
+            });
         })
         .catch(error => {
             console.error("Lỗi khi tải ảnh:", error);

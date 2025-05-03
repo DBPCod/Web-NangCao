@@ -3,12 +3,14 @@ function searchProducts(page = 1) {
     const searchInputs = document.querySelectorAll('.search-bar input');
     let searchQuery = '';
 
+    
     // Lấy từ khóa từ input tìm kiếm (desktop hoặc mobile)
     searchInputs.forEach(input => {
         if (input.value.trim()) {
             searchQuery = input.value.trim();
         }
     });
+    
     // Thu thập các bộ lọc hiện tại
     const filters = collectFilters();
 
@@ -23,9 +25,9 @@ function searchProducts(page = 1) {
     loadProducts(page, filters);
 
     // Xóa input tìm kiếm sau khi tìm (tùy chọn)
-    searchInputs.forEach(input => {
-        input.value = '';
-    });
+    // searchInputs.forEach(input => {
+    //     input.value = '';
+    // });
 }
 
 // Cập nhật buildQueryString để hỗ trợ tham số tìm kiếm
@@ -60,7 +62,6 @@ function buildQueryString(filters, page) {
 
 // Hàm xử lý sự kiện click nút tìm kiếm
 function handleClickSearch() {
-    console.log("a");
     searchProducts(1);
 }
 
