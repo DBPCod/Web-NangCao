@@ -1,6 +1,5 @@
 var isLoading = false;
 var permissions = [];
-//-------------------------Thêm-----------------------------
 // Hàm lấy dữ liệu quyền từ server
 async function loadPermissions() {
     try {
@@ -30,40 +29,7 @@ function hasPermission(permissionName, action) {
         permission.TenQuyen === permissionName && permission[action]
     );
 }
-//------------------------------------------------
-// function loadRoles() {
-//     fetch("/smartstation/src/mvc/controllers/VaiTroController.php", {
-//         method: "GET",
-//     })
-//         .then((response) => {
-//             if (!response.ok) throw new Error("Network error: " + response.status);
-//             return response.json();
-//         })
-//         .then((roles) => {
-//             const tbody = document.getElementById("RolesBody");
-//             let rows = '';
-//             if (!roles || roles.length === 0) {
-//                 rows = '<tr><td colspan="4">Không có vai trò nào</td></tr>';
-//             } else {
-//                 roles.forEach((role) => {
-//                     rows += `
-//                         <tr onclick="viewRole(${role.IdVaiTro})" style="cursor: pointer;">
-//                             <td>${role.IdVaiTro}</td>
-//                             <td>${role.TenVaiTro}</td>
-//                             <td class="text-center">
-//                                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editRoleModal"
-//                                     data-id="${role.IdVaiTro}" data-name="${role.TenVaiTro}" onclick="event.stopPropagation()">Sửa</button>
-//                                 <button class="btn btn-danger" onclick="event.stopPropagation(); deleteRole(${role.IdVaiTro})">Xóa</button>
-//                             </td>
-//                         </tr>`;
-//                 });
-//             }
-//             tbody.innerHTML = rows;
-//         })
-//         .catch((error) => console.error("Fetch error:", error));
-// }
 
-//----------------------------------------
 async function loadRoles() {
     // Chờ lấy quyền trước khi tải vai trò
     await loadPermissions();
@@ -102,7 +68,7 @@ async function loadRoles() {
                             <td>${role.IdVaiTro}</td>
                             <td>${role.TenVaiTro}</td>
                             <td class="text-center">
-                                ${actionButtons || 'Không có hành động'}
+                                ${actionButtons || 'Không có quyền'}
                             </td>
                         </tr>`;
                 });
@@ -116,7 +82,6 @@ async function loadRoles() {
         })
         .catch((error) => console.error("Fetch error:", error));
 }
-//-----------------
 
 var viewOnlyPermissions = ['Khách hàng', 'Đơn hàng', 'Thống kê'];
 var notEditPermissions = ['Danh sách phiếu nhập'];

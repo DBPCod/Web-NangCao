@@ -385,7 +385,6 @@ CREATE TABLE `quyen` (
 --
 
 INSERT INTO `quyen` (`IdQuyen`, `TenQuyen`) VALUES
-<<<<<<< HEAD
 (1,	'Khách hàng'),
 (2,	'Danh sách sản phẩm'),
 (3,	'Dòng sản phẩm'),
@@ -397,19 +396,6 @@ INSERT INTO `quyen` (`IdQuyen`, `TenQuyen`) VALUES
 (9,	'Nhà cung cấp'),
 (10,	'Đơn hàng'),
 (11,	'Thống kê');
-=======
-(1, 'Khách hàng'),
-(2, 'Danh sách sản phẩm'),
-(3, 'Dòng sản phẩm'),
-(4, 'Cấu hình sản phẩm'),
-(5, 'Thương hiệu'),
-(6, 'Khuyến mãi'),
-(7, 'Bảo hành'),
-(8, 'Danh sách phiếu nhập'),
-(9, 'Nhà cung cấp'),
-(10, 'Đơn hàng'),
-(11, 'Thống kê');
->>>>>>> main
 
 -- --------------------------------------------------------
 
@@ -826,7 +812,6 @@ ALTER TABLE `taikhoan`
   MODIFY `IdTaiKhoan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
-<<<<<<< HEAD
 -- AUTO_INCREMENT cho bảng `vaitro`
 --
 ALTER TABLE `vaitro`
@@ -834,9 +819,7 @@ ALTER TABLE `vaitro`
 
 --
 -- AUTO_INCREMENT cho bảng `thuonghieu`
-=======
--- AUTO_INCREMENT for table `thuonghieu`
->>>>>>> main
+
 --
 ALTER TABLE `thuonghieu`
   MODIFY `IdThuongHieu` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;

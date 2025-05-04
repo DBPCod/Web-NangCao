@@ -3,12 +3,45 @@ var PRODUCTS_PER_PAGE = 8;
 var currentPage = 1;
 var allProducts = []; // Lưu trữ toàn bộ dữ liệu sản phẩm
 var isLoadingProducts = false; // Đặt cờ để kiểm tra trạng thái tải sản phẩm
+var permissions = [];
+// Hàm lấy dữ liệu quyền từ API
+async function loadPermissions() {
+    try {
+        const response = await fetch('/smartstation/src/mvc/controllers/get_permissions.php', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+        if (!response.ok) throw new Error('Lỗi khi lấy quyền: ' + response.status);
+        permissions = await response.json();
+        console.log('Permissions loaded:', permissions);
+    } catch (error) {
+        console.error('Lỗi khi lấy quyền:', error);
+        toast({
+            title: "Lỗi",
+            message: "Không thể tải dữ liệu quyền!",
+            type: "error",
+            duration: 3000,
+        });
+    }
+}
+
+// Hàm kiểm tra quyền
+function hasPermission(permissionName, action) {
+    return permissions.some(permission => 
+        permission.TenQuyen === permissionName && permission[action]
+    );
+}
 
 // Hàm tải danh sách sản phẩm
-function loadProducts() {
+async function loadProducts() {
+
+    // Chờ lấy quyền 
+    await loadPermissions();
+
     if (isLoadingProducts) return; // Bỏ qua nếu đang tải
     isLoadingProducts = true;
-
     fetch("/smartstation/src/mvc/controllers/SanPhamController.php", {
         method: "GET",
     })
@@ -19,7 +52,11 @@ function loadProducts() {
         .then((products) => {
             allProducts = products; // Lưu dữ liệu vào biến toàn cục
             renderProductsByPage(currentPage); // Render trang đầu tiên
-            renderPagination(); // Render nút phân trang
+            renderPagination();// Render nút phân trang
+
+            if (!hasPermission('Danh sách sản phẩm', 'them')) {
+                document.querySelector('.btn-success[data-bs-target="#addProductModal"]').style.display = 'none';
+            }
         })
         .catch((error) => {
             console.error("Fetch error:", error);
@@ -34,7 +71,7 @@ function loadProducts() {
 // Hàm render danh sách sản phẩm theo trang
 function renderProductsByPage(page) {
     const tbody = document.getElementById("productTableBody");
-    tbody.innerHTML = "";
+    let rows = '';
 
     if (!allProducts || allProducts.length === 0) {
         tbody.innerHTML = '<tr><td colspan="7">Không có sản phẩm nào</td></tr>';
@@ -46,6 +83,7 @@ function renderProductsByPage(page) {
     const endIndex = startIndex + PRODUCTS_PER_PAGE;
     const productsToDisplay = allProducts.slice(startIndex, endIndex);
 
+    const hasDeletePermission = hasPermission('Danh sách sản phẩm', 'xoa');
     Promise.all(productsToDisplay.map(product =>
         Promise.all([
             fetch(`/smartstation/src/mvc/controllers/DongSanPhamController.php?idDSP=${product.IdDongSanPham}`).then(res => res.json()),
@@ -69,7 +107,12 @@ function renderProductsByPage(page) {
         // Lọc bỏ các mục null
         const validProducts = productsWithDetails.filter(product => product);
         validProducts.forEach((product) => {
-            tbody.innerHTML += `
+            let actionButtons = '';
+            if (hasDeletePermission) {
+                actionButtons += `
+                <button class="btn btn-danger" onclick="deleteProduct('${product.IdCHSP}', '${product.IdDongSanPham}'); event.stopPropagation();">Xóa</button>`
+            }
+            rows += `
                 <tr onclick="showProductDetail('${product.IdCHSP}', '${product.IdDongSanPham}')" style="cursor: pointer;">
                     <td>${product.TenDong}</td>
                     <td>${product.Ram}</td>
@@ -78,10 +121,11 @@ function renderProductsByPage(page) {
                     <td>${product.Gia.toLocaleString('vi-VN')} VNĐ</td>
                     <td>${product.SoLuong}</td>
                     <td class="text-center">
-                        <button class="btn btn-danger" onclick="deleteProduct('${product.IdCHSP}', '${product.IdDongSanPham}'); event.stopPropagation();">Xóa</button>
+                       ${actionButtons || 'Không có quyền'}
                     </td>
                 </tr>`;
         });
+        tbody.innerHTML = rows;
     });
 }
 

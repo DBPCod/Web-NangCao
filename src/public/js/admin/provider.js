@@ -1,6 +1,37 @@
 var PROVIDERS_PER_PAGE = 8; // Số lượng nhà cung cấp mỗi trang
 var currentPage = 1; // Trang hiện tại
 var allProviders = []; // Lưu trữ toàn bộ dữ liệu nhà cung cấp
+var permissions = [];
+
+// Hàm lấy dữ liệu quyền từ API
+async function loadPermissions() {
+    try {
+        const response = await fetch('/smartstation/src/mvc/controllers/get_permissions.php', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+        if (!response.ok) throw new Error('Lỗi khi lấy quyền: ' + response.status);
+        permissions = await response.json();
+        console.log('Permissions loaded:', permissions);
+    } catch (error) {
+        console.error('Lỗi khi lấy quyền:', error);
+        toast({
+            title: "Lỗi",
+            message: "Không thể tải dữ liệu quyền!",
+            type: "error",
+            duration: 3000,
+        });
+    }
+}
+
+// Hàm kiểm tra quyền
+function hasPermission(permissionName, action) {
+    return permissions.some(permission => 
+        permission.TenQuyen === permissionName && permission[action]
+    );
+}
 
 // Hàm toast từ code của bạn
 function toast({ title = '', message = '', type = 'info', duration = 3000 }) {
@@ -49,7 +80,10 @@ function toast({ title = '', message = '', type = 'info', duration = 3000 }) {
 }
 
 // Load danh sách nhà cung cấp
-function loadProviders() {
+async function loadProviders() {
+
+    await loadPermissions();
+
   fetch("/smartstation/src/mvc/controllers/NhaCungCapController.php", {
       method: "GET",
   })
@@ -61,6 +95,10 @@ function loadProviders() {
           allProviders = providers; // Lưu dữ liệu vào biến toàn cục
           renderProvidersByPage(currentPage); // Render trang đầu tiên
           renderPagination(); // Render nút phân trang
+
+          if (!hasPermission('Nhà cung cấp', 'them')) {
+            document.querySelector('.btn-success[data-bs-target="#providerModal]').style.display = 'none';
+        }
       })
       .catch((error) => {
           console.error("Fetch error:", error);
@@ -78,7 +116,7 @@ function loadProviders() {
 // Render danh sách nhà cung cấp theo trang
 function renderProvidersByPage(page) {
   const tbody = document.getElementById("providerTableBody");
-  tbody.innerHTML = "";
+  rows = "";
 
   if (!allProviders || allProviders.length === 0) {
       tbody.innerHTML = '<tr><td colspan="7">Không có nhà cung cấp nào</td></tr>';
@@ -90,8 +128,22 @@ function renderProvidersByPage(page) {
   const endIndex = startIndex + PROVIDERS_PER_PAGE;
   const providersToDisplay = allProviders.slice(startIndex, endIndex);
 
+  const hasEditPermission = hasPermission('Nhà cung cấp', 'sua');
+  const hasDeletePermission = hasPermission('Nhà cung cấp', 'xoa');
+
   providersToDisplay.forEach((provider) => {
-      tbody.innerHTML += `
+    let actionButtons = '';
+        if (hasEditPermission) {
+            actionButtons += `
+                 <button class="btn btn-primary" onclick="openEditModal('${provider.IdNCC}')">Sửa</button>
+            `;
+        }
+        if (hasDeletePermission) {
+            actionButtons += `
+                <button class="btn btn-danger" onclick="deleteProvider('${provider.IdNCC}')">Xóa</button>
+            `;
+        }
+      rows += `
           <tr>
               <td>${provider.IdNCC}</td>
               <td>${provider.TenNCC}</td>
@@ -100,11 +152,11 @@ function renderProvidersByPage(page) {
               <td>${provider.Email}</td>
               <td>${provider.TrangThai == 1 ? "Hoạt động" : "Ngừng hoạt động"}</td>
               <td>
-                  <button class="btn btn-primary" onclick="openEditModal('${provider.IdNCC}')">Sửa</button>
-                  <button class="btn btn-danger" onclick="deleteProvider('${provider.IdNCC}')">Xóa</button>
+              ${actionButtons || 'Không có quyền'}
               </td>
           </tr>`;
   });
+  tbody.innerHTML = rows;
 }
 
 // Render nút phân trang
