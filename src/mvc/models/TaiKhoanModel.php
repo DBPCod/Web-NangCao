@@ -68,11 +68,17 @@ class TaiKhoanModel {
     }
 
     // Check mật khẩu
-    public function GetPass($input) {
-        $stmt = $this->db->prepare("SELECT * FROM TaiKhoan WHERE TaiKhoan = ?");
-        $stmt->bind_param("s", $input["TaiKhoan"]);
+    public function GetPass($taikhoan) {
+        $stmt = $this->db->prepare("SELECT MatKhau FROM taikhoan WHERE TaiKhoan = ?");
+        $stmt->bind_param("s", $taikhoan);
         $stmt->execute();
-        return $stmt->get_result()->fetch_assoc();
+        $result = $stmt->get_result();
+        
+        if ($result->num_rows > 0) {
+            return $result->fetch_assoc();
+        } else {
+            return null; // Trả về null nếu không tìm thấy tài khoản
+        }
     }
 
     // Lấy tổng số tài khoản đang hoạt động

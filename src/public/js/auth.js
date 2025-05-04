@@ -312,19 +312,65 @@ if (updateProfileForm) {
 // Verify current password and update new password
 function CheckPass(currentPassword, newPassword) {
     const taikhoan = decodeEmail(getCookie('username'));
-    fetch(`../../controllers/TaiKhoanController.php`, {
+    
+    // Kiểm tra xem taikhoan có tồn tại không
+    if (!taikhoan) {
+        toast({
+            title: 'Lỗi',
+            message: 'Không tìm thấy thông tin tài khoản. Vui lòng đăng nhập lại!',
+            type: 'error',
+            duration: 3000
+        });
+        return;
+    }
+    
+    console.log("Đang kiểm tra mật khẩu cho tài khoản:", taikhoan);
+    
+    // Sử dụng đường dẫn tuyệt đối và thêm timeout
+    fetch("/smartstation/src/mvc/controllers/TaiKhoanController.php", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ taikhoan, matkhau: currentPassword })
     })
-        .then(response => response.json())
+        .then(response => {
+            console.log("Response status:", response.status);
+            return response.text();
+        })
+        .then(text => {
+            console.log("Response text:", text.substring(0, 100));
+            
+            // Kiểm tra xem response có phải HTML không
+            if (text.includes('<!DOCTYPE html>') || text.includes('<br />') || text.includes('<html')) {
+                // Nếu là HTML lỗi, vẫn thử tìm JSON trong đó
+                const jsonMatch = text.match(/\{.*\}/);
+                if (jsonMatch) {
+                    try {
+                        return JSON.parse(jsonMatch[0]);
+                    } catch (e) {
+                        console.error('Không thể trích xuất JSON từ HTML:', e);
+                    }
+                }
+                
+                // Nếu không tìm thấy JSON, báo lỗi
+                console.error('Server trả về HTML thay vì JSON:', text.substring(0, 100));
+                throw new Error('Server đang gặp sự cố. Vui lòng thử lại sau!');
+            }
+            
+            try {
+                return JSON.parse(text);
+            } catch (e) {
+                console.error('Lỗi parse JSON:', e);
+                throw new Error('Định dạng dữ liệu không hợp lệ từ server');
+            }
+        })
         .then(data => {
+            console.log("Parsed data:", data);
+            
             if (data.success) {
                 document.getElementById('currentPasswordError').style.display = 'none';
                 if (newPassword) {
                     // Update password
-                    let taiKhoan = decodeEmail(getCookie('username'));
-                    UpdatePass(newPassword, taiKhoan);
+                    UpdatePass(newPassword, taikhoan);
                 } else {
                     toast({
                         title: 'Lỗi',
@@ -338,19 +384,73 @@ function CheckPass(currentPassword, newPassword) {
             } else {
                 document.getElementById('currentPasswordError').style.display = 'block';
                 document.getElementById('currentPassword').select();
+                
+                // Hiển thị thông báo lỗi cụ thể nếu có
+                if (data.message) {
+                    toast({
+                        title: 'Lỗi',
+                        message: data.message,
+                        type: 'error',
+                        duration: 3000
+                    });
+                }
             }
+        })
+        .catch(error => {
+            console.error('Lỗi kiểm tra mật khẩu:', error);
+            toast({
+                title: 'Lỗi',
+                message: error.message || 'Không thể kiểm tra mật khẩu. Vui lòng thử lại sau!',
+                type: 'error',
+                duration: 3000
+            });
         });
 }
 
 // Update password
 function UpdatePass(MatKhau, taiKhoan) {
-    fetch(`../../controllers/TaiKhoanController.php?taikhoan=${taiKhoan}`, {
+    if (!taiKhoan) {
+        toast({
+            title: 'Lỗi',
+            message: 'Không tìm thấy thông tin tài khoản. Vui lòng đăng nhập lại!',
+            type: 'error',
+            duration: 3000
+        });
+        return;
+    }
+    
+    console.log("Đang cập nhật mật khẩu cho tài khoản:", taiKhoan);
+    
+    // Sử dụng đường dẫn tuyệt đối
+    fetch(`/smartstation/src/mvc/controllers/TaiKhoanController.php?taikhoan=${encodeURIComponent(taiKhoan)}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ MatKhau, TrangThai: 1 })
     })
-        .then(response => response.json())
+        .then(response => {
+            console.log("Response status:", response.status);
+            if (!response.ok) {
+                throw new Error(`Lỗi kết nối đến server: ${response.status}`);
+            }
+            return response.text();
+        })
+        .then(text => {
+            console.log("Response text:", text.substring(0, 100));
+            // Kiểm tra xem response có phải HTML không
+            if (text.includes('<!DOCTYPE html>') || text.includes('<br />') || text.includes('<html')) {
+                console.error('Server trả về HTML thay vì JSON:', text.substring(0, 100));
+                throw new Error('Server đang gặp sự cố. Vui lòng thử lại sau!');
+            }
+            
+            try {
+                return JSON.parse(text);
+            } catch (e) {
+                console.error('Lỗi parse JSON:', e);
+                throw new Error('Định dạng dữ liệu không hợp lệ từ server');
+            }
+        })
         .then(data => {
+            console.log("Parsed data:", data);
             if (data.success) {
                 toast({
                     title: 'Thành công',
@@ -362,11 +462,20 @@ function UpdatePass(MatKhau, taiKhoan) {
             } else {
                 toast({
                     title: 'Lỗi',
-                    message: 'Cập nhật mật khẩu thất bại, vui lòng thử lại!',
+                    message: data.message || 'Cập nhật mật khẩu thất bại, vui lòng thử lại!',
                     type: 'error',
                     duration: 3000
                 });
             }
+        })
+        .catch(error => {
+            console.error('Lỗi cập nhật mật khẩu:', error);
+            toast({
+                title: 'Lỗi',
+                message: error.message || 'Không thể cập nhật mật khẩu. Vui lòng thử lại sau!',
+                type: 'error',
+                duration: 3000
+            });
         });
 }
 
