@@ -137,7 +137,7 @@ function renderGRNsByPage(page) {
     const endIndex = startIndex + GRNS_PER_PAGE;
     const phieuNhapsToDisplay = allGRNs.slice(startIndex, endIndex);
 
-    const hasDeletePermission = hasPermission('Thương hiệu', 'xoa');
+    const hasDeletePermission = hasPermission('Danh sách phiếu nhập', 'xoa');
 
     Promise.all(phieuNhapsToDisplay.map(phieuNhap => 
         fetch(`/smartstation/src/mvc/controllers/NhaCungCapController.php?idNCC=${phieuNhap.IdNCC}`)
