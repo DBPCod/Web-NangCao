@@ -55,155 +55,73 @@ function updatePriceRange() {
         const minPrice = data.minPrice || 400000; // Giá trị mặc định nếu không có dữ liệu
         const maxPrice = data.maxPrice || 48500000;
 
-        // Khởi tạo range slider
-        initRangeSlider(minPrice, maxPrice);
+        // Cập nhật thanh trượt min-price
+        const minPriceSlider = document.querySelector('.price-slider.min-price');
+        minPriceSlider.min = minPrice;
+        minPriceSlider.max = maxPrice;
+        minPriceSlider.value = minPrice;
+        document.querySelector('.min-price-display').textContent = formatPrice(minPrice);
+
+        // Cập nhật thanh trượt max-price
+        const maxPriceSlider = document.querySelector('.price-slider.max-price');
+        maxPriceSlider.min = minPrice;
+        maxPriceSlider.max = maxPrice;
+        maxPriceSlider.value = maxPrice;
+        document.querySelector('.max-price-display').textContent = formatPrice(maxPrice);
     })
     .catch(error => {
         console.error('Lỗi tải khoảng giá:', error);
     });
 }
 
-// Khởi tạo range slider
-function initRangeSlider(minPrice, maxPrice) {
-    const slider = document.querySelector('.range-slider');
-    if (!slider) return;
-    
-    const minDisplay = document.querySelector('.min-price-display');
-    const maxDisplay = document.querySelector('.max-price-display');
-    const thumbs = document.querySelectorAll('.range-slider__thumb');
-    const progress = document.querySelector('.range-slider__progress');
-    
-    // Thiết lập giá trị ban đầu
-    let minVal = minPrice;
-    let maxVal = maxPrice;
-    
-    // Hiển thị giá trị ban đầu
-    minDisplay.textContent = formatPrice(minVal);
-    maxDisplay.textContent = formatPrice(maxVal);
-    
-    // Thiết lập vị trí ban đầu cho thumbs
-    thumbs[0].style.left = '0%';
-    thumbs[1].style.left = '100%';
-    progress.style.left = '0%';
-    progress.style.width = '100%';
-    
-    // Xử lý sự kiện kéo thumb
-    let activeThumb = null;
-    
-    // Xử lý sự kiện mousedown trên thumbs
-    thumbs.forEach((thumb, index) => {
-        thumb.addEventListener('mousedown', function(e) {
-            e.preventDefault();
-            activeThumb = {
-                element: thumb,
-                index: index,
-                startX: e.clientX,
-                startLeft: parseFloat(thumb.style.left || (index === 0 ? '0' : '100'))
-            };
-            
-            document.addEventListener('mousemove', onMouseMove);
-            document.addEventListener('mouseup', onMouseUp);
-        });
-    });
-    
-    // Xử lý sự kiện mousemove
-    function onMouseMove(e) {
-        if (!activeThumb) return;
-        
-        const container = slider.getBoundingClientRect();
-        const containerWidth = container.width;
-        
-        // Tính toán vị trí mới
-        const deltaX = e.clientX - activeThumb.startX;
-        let newLeft = activeThumb.startLeft + (deltaX / containerWidth * 100);
-        
-        // Giới hạn trong khoảng 0-100%
-        newLeft = Math.max(0, Math.min(100, newLeft));
-        
-        // Cập nhật vị trí
-        activeThumb.element.style.left = `${newLeft}%`;
-        
-        // Tính giá trị mới dựa trên vị trí
-        const leftThumbPos = parseFloat(thumbs[0].style.left || '0');
-        const rightThumbPos = parseFloat(thumbs[1].style.left || '100');
-        
-        // Xác định thumb nào ở bên trái, thumb nào ở bên phải
-        const leftPos = Math.min(leftThumbPos, rightThumbPos);
-        const rightPos = Math.max(leftThumbPos, rightThumbPos);
-        
-        // Tính giá trị tương ứng
-        const leftValue = Math.round(minPrice + (leftPos / 100) * (maxPrice - minPrice));
-        const rightValue = Math.round(minPrice + (rightPos / 100) * (maxPrice - minPrice));
-        
-        // Cập nhật giá trị min/max
-        minVal = leftValue;
-        maxVal = rightValue;
-        
-        // Cập nhật thanh progress
-        progress.style.left = `${leftPos}%`;
-        progress.style.width = `${rightPos - leftPos}%`;
-        
-        // Cập nhật hiển thị giá trị
-        minDisplay.textContent = formatPrice(minVal);
-        maxDisplay.textContent = formatPrice(maxVal);
-    }
-    
-    // Xử lý sự kiện mouseup
-    function onMouseUp() {
-        activeThumb = null;
-        document.removeEventListener('mousemove', onMouseMove);
-        document.removeEventListener('mouseup', onMouseUp);
-    }
-}
-
 // Hàm thu thập các bộ lọc
 function collectFilters() {
-    const filters = {};
-    
-    // Lấy các thương hiệu được chọn
-    const brandCheckboxes = document.querySelectorAll('.form-check-input[data-brand]:checked');
-    if (brandCheckboxes.length > 0) {
-        filters.brands = Array.from(brandCheckboxes).map(cb => cb.getAttribute('data-brand'));
-    }
-    
-    // Lấy khoảng giá từ range slider
-    const minDisplay = document.querySelector('.min-price-display');
-    const maxDisplay = document.querySelector('.max-price-display');
-    
-    if (minDisplay && maxDisplay) {
-        // Chuyển đổi từ định dạng "400.000 VNĐ" sang số
-        const minPrice = parseFloat(minDisplay.textContent.replace(/[^\d]/g, ''));
-        const maxPrice = parseFloat(maxDisplay.textContent.replace(/[^\d]/g, ''));
-        
-        filters.priceMin = minPrice;
-        filters.priceMax = maxPrice;
-    }
-    
-    // Lấy RAM được chọn
-    const ramCheckboxes = document.querySelectorAll('.form-check-input[id^="ram"]:checked');
-    if (ramCheckboxes.length > 0) {
-        filters.rams = Array.from(ramCheckboxes).map(cb => cb.nextElementSibling.textContent.trim());
-    }
-    
-    // Lấy PIN được chọn
-    const pinCheckboxes = document.querySelectorAll('.form-check-input[id^="pin"]:checked');
-    if (pinCheckboxes.length > 0) {
-        filters.pins = Array.from(pinCheckboxes).map(cb => {
-            const pinLabel = cb.nextElementSibling.textContent.trim();
-            if (pinLabel === 'Dưới 3000mAh') return '0-3000';
-            else if (pinLabel === '3000 - 4000mAh') return '3000-4000';
-            else if (pinLabel === '4000 - 5000mAh') return '4000-5000';
-            else if (pinLabel === '5000mAh trở lên') return '5000-';
-            return '';
-        }).filter(pin => pin !== '');
-    }
-    
-    // Lấy ROM được chọn
-    const romCheckboxes = document.querySelectorAll('.form-check-input[id^="rom"]:checked');
-    if (romCheckboxes.length > 0) {
-        filters.roms = Array.from(romCheckboxes).map(cb => cb.nextElementSibling.textContent.trim());
-    }
-    
+    const filters = {
+        brands: [],
+        priceRanges: [],
+        priceMin: null,
+        priceMax: null,
+        rams: [],
+        pins: []
+    };
+
+    // Lấy các hãng được chọn
+    document.querySelectorAll('.filter-section .form-check-input[data-brand]').forEach(checkbox => {
+        if (checkbox.checked) {
+            filters.brands.push(checkbox.getAttribute('data-brand'));
+        }
+    });
+
+    // Lấy khoảng giá từ checkbox
+    if (document.querySelector('#app1').checked) filters.priceRanges.push('0-3000000');
+    if (document.querySelector('#app2').checked) filters.priceRanges.push('3000000-6000000');
+    if (document.querySelector('#app3').checked || document.querySelector('#app4').checked) filters.priceRanges.push('6000000-10000000');
+    if (document.querySelector('#app5').checked) filters.priceRanges.push('10000000-');
+
+    // Lấy giá từ thanh trượt
+    const minPriceSlider = document.querySelector('.price-slider.min-price');
+    const maxPriceSlider = document.querySelector('.price-slider.max-price');
+    filters.priceMin = parseInt(minPriceSlider.value);
+    filters.priceMax = parseInt(maxPriceSlider.value);
+
+    // Lấy RAM
+    document.querySelectorAll('.filter-section .form-check-input[id^="ram"]').forEach(checkbox => {
+        if (checkbox.checked) {
+            const ramValue = checkbox.nextElementSibling.textContent;
+            filters.rams.push(ramValue);
+        }
+    });
+
+    // Lấy Pin
+    document.querySelectorAll('.filter-section .form-check-input[id^="pin"]').forEach(checkbox => {
+        if (checkbox.checked) {
+            const pinLabel = checkbox.nextElementSibling.textContent;
+            if (pinLabel === 'Dưới 3000mAh') filters.pins.push('0-3000');
+            else if (pinLabel === '3000 - 4000mAh') filters.pins.push('3000-4000');
+            else if (pinLabel === '4000 - 5000mAh') filters.pins.push('4000-5000');
+            else if (pinLabel === '5000mAh trở lên') filters.pins.push('5000-');
+        }
+    });
     return filters;
 }
 
@@ -214,6 +132,9 @@ function buildQueryString(filters, page) {
 
     if (filters.brands && filters.brands.length > 0) {
         params.append('brands', filters.brands.join(','));
+    }
+    if (filters.priceRanges && filters.priceRanges.length > 0) {
+        params.append('priceRanges', filters.priceRanges.join(','));
     }
     if (filters.priceMin) {
         params.append('priceMin', filters.priceMin);
@@ -227,14 +148,11 @@ function buildQueryString(filters, page) {
     if (filters.pins && filters.pins.length > 0) {
         params.append('pins', filters.pins.join(','));
     }
-    if (filters.roms && filters.roms.length > 0) {
-        params.append('roms', filters.roms.join(','));
-    }
     if (filters.searchQuery) {
-        params.append('q', filters.searchQuery);
+        params.append('q', filters.searchQuery); // Mã hóa từ khóa tìm kiếm
     }
     if (filters.sort) {
-        params.append('sort', filters.sort);
+        params.append('sort', filters.sort); // Thêm sort nếu tồn tại
     }
 
     return params.toString();
@@ -452,7 +370,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Xử lý sự kiện nút LỌC
     document.getElementById('applyFilterBtn').addEventListener('click', () => {
         const filters = collectFilters();
-        console.log("Filters:", filters);
         loadProducts(1, filters);
         // Xóa input tìm kiếm sau khi tìm (tùy chọn)
         const searchInputs = document.querySelectorAll('.search-bar input');
@@ -461,12 +378,24 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Xử lý sự kiện thay đổi thanh trượt giá
+    const minPriceSlider = document.querySelector('.price-slider.min-price');
+    const maxPriceSlider = document.querySelector('.price-slider.max-price');
+    minPriceSlider.addEventListener('input', () => {
+        const value = parseInt(minPriceSlider.value);
+        document.querySelector('.min-price-display').textContent = formatPrice(value);
+    });
+    maxPriceSlider.addEventListener('input', () => {
+        const value = parseInt(maxPriceSlider.value);
+        document.querySelector('.max-price-display').textContent = formatPrice(value);
+    });
+
     // Xử lý sự kiện click vào phân trang
-    document.querySelector('.pagination')?.addEventListener('click', (e) => {
+    document.querySelector('.pagination').addEventListener('click', (e) => {
         e.preventDefault();
         if (e.target.classList.contains('page-btn')) {
             const page = parseInt(e.target.dataset.page);
-            const filters = collectFilters();
+            const filters = searchProductsInput(collectFilters());
             loadProducts(page, filters);
         }
     });

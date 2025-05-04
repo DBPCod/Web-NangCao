@@ -111,7 +111,6 @@ function getCookieValue(name) {
 
 // Handle "Mua ngay" button click (validate and fetch product image)
 function handleClickMuaNgay() {
-
     if(!getCookieValue("username"))
     {
         toast({
@@ -131,12 +130,7 @@ function handleClickMuaNgay() {
         const priceProduct = document.querySelector('#modalProductPrice').innerText;
         getAnh(idCHSP, idDSP, priceProduct);
     } else {
-        toast({
-            title: "Cảnh báo",
-            message: "Vui lòng chọn đủ phiên bản sản phẩm!",
-            type: "warning",
-            duration: 3000,
-        });
+        alert('Vui lòng chọn phiên bản sản phẩm!');
     }
 }
 
@@ -166,12 +160,7 @@ function getAnh(idCHSP, idDSP, priceProduct) {
     })
     .catch(error => {
         console.error("Lỗi khi tải ảnh:", error);
-        toast({
-            title: "Lỗi",
-            message: "Lỗi: " + error.message,
-            type: "error",
-            duration: 3000,
-        });
+        alert("Lỗi: " + error.message);
     });
 }
 
@@ -247,12 +236,7 @@ async function SetInfor(product) {
         document.getElementById('address-input').disabled = true;
     } catch (error) {
         console.error("Lỗi khi thiết lập thông tin:", error);
-        toast({
-            title: "Lỗi",
-            message: "Lỗi: " + error.message,
-            type: "error",
-            duration: 3000,
-        });
+        alert("Lỗi: " + error.message);
     }
 }
 
@@ -312,8 +296,6 @@ async function handleCheckout() {
             IdCHSP: idCHSP,
             IdDongSanPham: idDongSanPham
         };
-
-
         const hoaDonResponse = await fetch('/smartstation/src/mvc/controllers/HoaDonController.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

@@ -119,32 +119,18 @@ document.addEventListener('DOMContentLoaded', function () {
     //Xử lý sự kiện click thêm vào giỏ hàng
     var btnAddCart = document.querySelector(".btn-add-to-cart");
     btnAddCart.addEventListener("click", () => {
-        // Kiểm tra xem người dùng đã chọn RAM và màu sắc chưa
-        const ramSelected = document.querySelector("#modalProductRam .selected");
-        const colorSelected = document.querySelector("#modalProductMauSac .selected");
-        
-        if (!ramSelected || !colorSelected) {
-            toast({
-                title: "Cảnh báo",
-                message: "Vui lòng chọn đủ phiên bản sản phẩm!",
-                type: "warning",
-                duration: 3000,
-            });
-            return;
-        }
-        
         var rom = document.querySelector("#modalProductRom").innerText;
         var screenSize= document.querySelector("#modalProductManHinh").innerText;
         var camera= document.querySelector("#modalProductCamera").innerText;
         var pin= document.querySelector("#modalProductPin").innerText;
         var nameSP = document.querySelector("#modalProductName").innerText;
-        var ramSP = ramSelected.innerText;
-        var colorSP = colorSelected.innerText;
+        var ramSP = document.querySelector("#modalProductRam .selected").innerText;
+        var colorSP = document.querySelector("#modalProductMauSac .selected").innerText;
         var priceSP = document.querySelector("#modalProductPrice").innerText;
         var statusProduct = document.querySelector("#modalProductTrangThai").innerText;
-        var idDSP = ramSelected.getAttribute('iddsp');
-        var idCHSP = colorSelected.getAttribute('idchsp');
-
+        var idDSP = document.querySelector('#modalProductRam .selected').getAttribute('iddsp');
+        var idCHSP = document.querySelector('#modalProductMauSac .selected').getAttribute('idchsp');
+    
         if (statusProduct == "Hết hàng") {
             toast({
                 title: "Cảnh báo",
@@ -154,7 +140,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
             return;
         }
-        
+    
         // Lấy ảnh của sản phẩm
         fetch(`/smartstation/src/mvc/controllers/AnhController.php?idCHSP=${idCHSP}&idDSP=${idDSP}`, {
             method: 'GET',
