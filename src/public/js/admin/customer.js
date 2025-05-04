@@ -35,7 +35,7 @@ function renderUsersByPage(page) {
     tbody.innerHTML = "";
 
     if (allUsers.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" class="text-center">Không có khách hàng nào.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="9" class="text-center">Không có khách hàng nào.</td></tr>';
         return;
     }
 
@@ -45,22 +45,45 @@ function renderUsersByPage(page) {
     const usersToDisplay = allUsers.slice(startIndex, endIndex);
 
     const userPromises = usersToDisplay.map((user) => {
-        return fetch(`/smartstation/src/mvc/controllers/TaiKhoanController.php?idNguoiDung=${user.IdNguoiDung}`)
+        // Lấy thông tin tài khoản
+        const accountPromise = fetch(`/smartstation/src/mvc/controllers/TaiKhoanController.php?idNguoiDung=${user.IdNguoiDung}`)
             .then((response) => response.json())
-            .then((data) => {
+            .catch(() => ({ TaiKhoan: "Lỗi khi lấy tài khoản" }));
+        
+        // Kết hợp promise
+        return accountPromise.then(accountData => {
+            // Nếu có IdVaiTro trong tài khoản, lấy thông tin vai trò
+            if (accountData.IdVaiTro) {
+                return fetch(`/smartstation/src/mvc/controllers/VaiTroController.php?idVaiTro=${accountData.IdVaiTro}`)
+                    .then(response => response.json())
+                    .then(vaiTroData => {
+                        return {
+                            ...user,
+                            TaiKhoan: accountData.TaiKhoan || "Chưa có",
+                            VaiTro: vaiTroData.TenVaiTro || "Chưa có vai trò"
+                        };
+                    })
+                    .catch(() => {
+                        return {
+                            ...user,
+                            TaiKhoan: accountData.TaiKhoan || "Chưa có",
+                            VaiTro: "Không xác định"
+                        };
+                    });
+            } else {
                 return {
                     ...user,
-                    TaiKhoan: data.TaiKhoan || "Chưa có",
+                    TaiKhoan: accountData.TaiKhoan || "Chưa có",
+                    VaiTro: "Chưa có vai trò"
                 };
-            })
-            .catch(() => ({
-                ...user,
-                TaiKhoan: "Lỗi khi lấy tài khoản",
-            }));
+            }
+        });
     });
 
-    Promise.all(userPromises).then((usersWithAccount) => {
-        usersWithAccount.forEach((user) => {
+    
+    Promise.all(userPromises).then((usersWithData) => {
+        console.log(usersWithData);
+        usersWithData.forEach((user) => {
             const tr = document.createElement("tr");
             const buttonText = user.TrangThai == 1 ? "Khóa" : "Mở khóa";
             const buttonClass = user.TrangThai == 1 ? "btn-danger" : "btn-success";
@@ -72,6 +95,7 @@ function renderUsersByPage(page) {
                 <td>${user.SoDienThoai || "Chưa có"}</td>
                 <td class="status">${user.TrangThai == 1 ? "Đang hoạt động" : "Ngừng hoạt động"}</td>
                 <td>${user.TaiKhoan}</td>
+                <td>${user.VaiTro}</td>
                 <td>
                     <button class="btn ${buttonClass} btn-toggle-lock" data-id="${user.IdNguoiDung}" data-status="${user.TrangThai}">
                         ${buttonText}
