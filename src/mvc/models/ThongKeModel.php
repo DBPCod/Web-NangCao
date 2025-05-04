@@ -35,7 +35,8 @@ class ThongKeModel {
                     hd.IdHoaDon,
                     hd.NgayTao,
                     hd.ThanhTien,
-                    ttv.TenTinhTrang
+                    ttv.TenTinhTrang,
+                    nd.DiaChi
                 FROM hoadon hd
                 JOIN taikhoan tk ON hd.IdTaiKhoan = tk.IdTaiKhoan
                 JOIN nguoidung nd ON tk.IdNguoiDung = nd.IdNguoiDung
