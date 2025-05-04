@@ -7,6 +7,9 @@ const idNguoiDung = getCookieValue('user');
 let isBuyNowQuantitySelectorsSetup = false;
 let price; // Biến toàn cục để lưu giá sản phẩm đơn vị
 
+// Thêm biến để theo dõi trạng thái thanh toán
+let isProcessingPayment = false;
+
 // Format price with commas (e.g., 30190000 -> 30,190,000 đ)
 function formatPrice(price) {
     return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " đ";
