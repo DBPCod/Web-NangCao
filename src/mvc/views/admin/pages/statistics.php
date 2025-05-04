@@ -87,7 +87,7 @@
         <p id="orderDate"><strong>Ngày đặt:</strong></p>
         <p id="orderStatus"><strong>Trạng thái:</strong></p>
         <p id="orderPayment"><strong>Phương thức thanh toán:</strong> Chuyển khoản</p>
-        <p id="adress"><strong>Địa chỉ giao hàng:</strong> 123 Trần Hưng Đạo, Q1, TP.HCM</p>
+        <p id="adress"><strong>Địa chỉ giao hàng:</strong></p>
 
         <div class="table-responsive mt-3">
           <table class="table">
