@@ -151,7 +151,7 @@ function renderProvidersByPage(page) {
               <td>${provider.SoDienThoai}</td>
               <td>${provider.Email}</td>
               <td>${provider.TrangThai == 1 ? "Hoạt động" : "Ngừng hoạt động"}</td>
-              <td>
+              <td class="text-center">
               ${actionButtons || 'Không có quyền'}
               </td>
           </tr>`;
