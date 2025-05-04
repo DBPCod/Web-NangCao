@@ -24,7 +24,7 @@ class CTPhieuNhapModel {
         $stmt = $this->db->prepare("SELECT * FROM ctphieunhap WHERE IdPhieuNhap = ?");
         $stmt->bind_param("i", $idPhieuNhap);
         $stmt->execute();
-        return $stmt->get_result()->fetch_assoc();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
 
     public function addCTPhieuNhap($data) {
