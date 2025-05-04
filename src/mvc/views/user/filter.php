@@ -41,10 +41,6 @@
             <label class="form-check-label" for="app3">6 đến 10 triệu</label>
         </div>
         <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="app4" />
-            <label class="form-check-label" for="app4">6 đến 10 triệu</label>
-        </div>
-        <div class="form-check">
             <input class="form-check-input" type="checkbox" id="app5" />
             <label class="form-check-label" for="app5">Trên 10 triệu</label>
         </div>

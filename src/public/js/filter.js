@@ -398,7 +398,7 @@ function loadFilteredProducts(page, filters, limit, type) {
 }
 
 function filterNewProducts() {
-    const filters = collectFilters();
+    var filters = collectFilters();
     filters = searchProductsInput(filters);
     filters.sort = 'latest';
     const limit = 10;
@@ -406,7 +406,7 @@ function filterNewProducts() {
 }
 
 function filterBestSellingProducts() {
-    const filters = collectFilters();
+    var filters = collectFilters();
     filters = searchProductsInput(filters);
     filters.sort = 'bestselling';
     const limit = 6;
