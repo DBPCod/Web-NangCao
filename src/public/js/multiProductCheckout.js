@@ -8,6 +8,9 @@ const checkoutModal = document.getElementById('checkoutModal');
 const productList = checkoutModal.querySelector('#product-list');
 let isQuantitySelectorsSetup = false;
 
+// Thêm biến để theo dõi trạng thái thanh toán
+let isProcessingMultiCheckout = false;
+
 /**
  * Format price with commas (e.g., 30190000 -> 30,190,000 đ)
  * @param {number} price - Price to format
@@ -510,10 +513,18 @@ function validateCheckoutForm() {
  * Handle multi-product checkout
  */
 async function handleMultiProductCheckout() {
+    // Kiểm tra nếu đang xử lý thanh toán, không cho phép gọi lại
+    if (isProcessingMultiCheckout) {
+        return;
+    }
+    
     // Validate form
     if (!validateCheckoutForm()) {
         return;
     }
+    
+    // Đánh dấu đang xử lý thanh toán
+    isProcessingMultiCheckout = true;
     
     // Hiển thị loading spinner
     const checkoutBtn = checkoutModal.querySelector('.checkout-btn');
@@ -800,6 +811,9 @@ async function handleMultiProductCheckout() {
             duration: 5000,
         });
     } finally {
+        // Đặt lại trạng thái khi hoàn thành
+        isProcessingMultiCheckout = false;
+        
         // Khôi phục trạng thái nút thanh toán
         checkoutBtn.disabled = false;
         checkoutBtn.innerHTML = originalBtnText;

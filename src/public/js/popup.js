@@ -80,16 +80,28 @@ document.addEventListener('DOMContentLoaded', function () {
     
     function attachEventListeners() {
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
-    
+
         // Xử lý nút tăng số lượng
         document.querySelectorAll(".btn-increase").forEach((button, index) => {
-            button.addEventListener("click", () => {
-                cart[index].quantity = (cart[index].quantity || 1) + 1;
-                localStorage.setItem('cart', JSON.stringify(cart));
-                loadItemInCart(); // Tải lại giỏ hàng
+            button.addEventListener("click", async () => {
+                const product = cart[index];
+                const stock = await fetchStock(product.idCHSP, product.idDSP);
+                
+                if ((product.quantity || 1) < stock) {
+                    product.quantity = (product.quantity || 1) + 1;
+                    localStorage.setItem('cart', JSON.stringify(cart));
+                    loadItemInCart(); // Tải lại giỏ hàng
+                } else {
+                    toast({
+                        title: "Cảnh báo",
+                        message: `Số lượng tồn kho chỉ còn ${stock} sản phẩm!`,
+                        type: "warning",
+                        duration: 3000,
+                    });
+                }
             });
         });
-    
+
         // Xử lý nút giảm số lượng
         document.querySelectorAll(".btn-decrease").forEach((button, index) => {
             button.addEventListener("click", () => {
@@ -100,11 +112,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
         });
-    
+
         // Xử lý nút xóa
         document.querySelectorAll(".btn-danger").forEach((button, index) => {
             button.addEventListener("click", () => {
-   
                 cart.splice(index, 1); // Xóa sản phẩm khỏi mảng
                 localStorage.setItem('cart', JSON.stringify(cart));
                 loadItemCountInCart(); // Tải lại giỏ hàng
@@ -459,12 +470,60 @@ function showTab(tabName) {
     }
 }
 
+// Thêm hàm kiểm tra tồn kho
+async function fetchStock(idCHSP, idDSP) {
+    try {
+        const response = await fetch(`/smartstation/src/mvc/controllers/SanPhamController.php?idDSP=${idDSP}&idCHSP=${idCHSP}`);
+        if (!response.ok) throw new Error('Lỗi mạng khi lấy số lượng tồn kho');
+        const data = await response.json();
+        return data.SoLuong || 0;
+    } catch (error) {
+        console.error("Lỗi khi lấy số lượng tồn kho:", error);
+        return 0;
+    }
+}
+
 //tang so luong cua cart
 document.addEventListener('DOMContentLoaded', function () {
+    // Xử lý khi người dùng thay đổi giá trị trong input
+    document.addEventListener('change', async function(e) {
+        if (e.target && e.target.classList.contains('quantity-input')) {
+            const input = e.target;
+            const cartItemElement = input.closest('.cart-item');
+            const index = Array.from(document.querySelectorAll('.cart-item')).indexOf(cartItemElement);
+            
+            if (index !== -1) {
+                let cart = JSON.parse(localStorage.getItem('cart')) || [];
+                const product = cart[index];
+                const stock = await fetchStock(product.idCHSP, product.idDSP);
+                
+                let value = parseInt(input.value);
+                if (isNaN(value) || value < 1) value = 1;
+                if (value > stock) {
+                    value = stock;
+                    toast({
+                        title: "Cảnh báo",
+                        message: `Số lượng tồn kho chỉ còn ${stock} sản phẩm!`,
+                        type: "warning",
+                        duration: 3000,
+                    });
+                }
+                
+                input.value = value;
+                product.quantity = value;
+                localStorage.setItem('cart', JSON.stringify(cart));
+                loadItemInCart();
+            }
+        }
+    }, true);
+
+    // Giữ nguyên các event listeners khác
     document.querySelectorAll('.btn-increase').forEach(btn => {
         btn.addEventListener('click', function () {
             const input = this.previousElementSibling;
             input.value = parseInt(input.value) + 1;
+            // Kích hoạt sự kiện change để kiểm tra tồn kho
+            input.dispatchEvent(new Event('change'));
         });
     });
 
@@ -474,6 +533,8 @@ document.addEventListener('DOMContentLoaded', function () {
             let value = parseInt(input.value);
             if (value > 1) {
                 input.value = value - 1;
+                // Kích hoạt sự kiện change để cập nhật giỏ hàng
+                input.dispatchEvent(new Event('change'));
             }
         });
     });
