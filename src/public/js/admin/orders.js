@@ -1,4 +1,4 @@
-var ORDERS_PER_PAGE = 5; // Số lượng hóa đơn mỗi trang
+var ORDERS_PER_PAGE = 8; // Số lượng hóa đơn mỗi trang
 var currentPage = 1; // Trang hiện tại
 var allOrders = []; // Lưu trữ toàn bộ dữ liệu hóa đơn
 var currentFilters = {}; // Lưu trữ bộ lọc hiện tại

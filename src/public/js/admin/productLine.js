@@ -1,5 +1,5 @@
 // Số lượng dòng sản phẩm mỗi trang
-var PRODUCT_LINES_PER_PAGE = 5;
+var PRODUCT_LINES_PER_PAGE = 8;
 var currentPage = 1;
 var allProductLines = []; // Lưu trữ toàn bộ dữ liệu dòng sản phẩm
 

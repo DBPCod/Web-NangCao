@@ -1,5 +1,5 @@
 // Số lượng sản phẩm mỗi trang
-var PRODUCTS_PER_PAGE = 5;
+var PRODUCTS_PER_PAGE = 8;
 var currentPage = 1;
 var allProducts = []; // Lưu trữ toàn bộ dữ liệu sản phẩm
 var isLoadingProducts = false; // Đặt cờ để kiểm tra trạng thái tải sản phẩm

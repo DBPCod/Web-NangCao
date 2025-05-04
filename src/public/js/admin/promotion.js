@@ -1,7 +1,7 @@
 var allProductLines = [];
 var selectedProductLines = new Set();
 var allPromotions = []; // Lưu trữ toàn bộ dữ liệu khuyến mãi
-var PROMOTIONS_PER_PAGE = 5; // Số lượng khuyến mãi mỗi trang
+var PROMOTIONS_PER_PAGE = 8; // Số lượng khuyến mãi mỗi trang
 var currentPage = 1; // Trang hiện tại
 
 // Hàm tải danh sách khuyến mãi

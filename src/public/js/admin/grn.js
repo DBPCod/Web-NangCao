@@ -1,4 +1,4 @@
-var GRNS_PER_PAGE = 5; // Số lượng phiếu nhập mỗi trang
+var GRNS_PER_PAGE = 8; // Số lượng phiếu nhập mỗi trang
 var currentPage = 1; // Trang hiện tại
 var allGRNs = []; // Lưu trữ toàn bộ dữ liệu phiếu nhập
 
@@ -203,6 +203,7 @@ function viewGRN(idPhieuNhap) {
                             return res.json();
                         })
                         .then(ctPhieuNhaps => {
+                            console.log(ctPhieuNhaps);
                             // Điền thông tin phiếu nhập vào modal
                             document.getElementById("viewIdPhieuNhap").value = phieuNhap.IdPhieuNhap;
                             document.getElementById("viewTenNCC").value = ncc ? ncc.TenNCC : "Không xác định";

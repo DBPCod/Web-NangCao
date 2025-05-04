@@ -1,5 +1,5 @@
 // Số lượng người dùng mỗi trang
-var USERS_PER_PAGE = 5;
+var USERS_PER_PAGE = 8;
 var currentPage = 1;
 var allUsers = []; // Lưu trữ toàn bộ dữ liệu người dùng
 

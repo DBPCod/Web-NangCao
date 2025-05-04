@@ -1,4 +1,4 @@
-var PROVIDERS_PER_PAGE = 5; // Số lượng nhà cung cấp mỗi trang
+var PROVIDERS_PER_PAGE = 8; // Số lượng nhà cung cấp mỗi trang
 var currentPage = 1; // Trang hiện tại
 var allProviders = []; // Lưu trữ toàn bộ dữ liệu nhà cung cấp
 

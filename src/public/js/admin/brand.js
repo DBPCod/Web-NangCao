@@ -1,5 +1,5 @@
 // Số lượng thương hiệu mỗi trang
-var BRANDS_PER_PAGE = 5;
+var BRANDS_PER_PAGE = 8;
 var currentPage = 1;
 var allBrands = []; // Lưu trữ toàn bộ dữ liệu thương hiệu
 
