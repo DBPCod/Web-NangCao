@@ -856,19 +856,26 @@ function loadListProduct() {
 function handleClickCheckout() {
     const cart = JSON.parse(localStorage.getItem('cart')) || [];
     if (cart.length === 0) {
-        alert("Giỏ hàng trống!");
-        return;
-    }
-
-    if(!getCookieValue("username")) {
         toast({
             title: "Cảnh báo",
-            message: "Đăng nhập trước khi mua hàng!",
+            message: "Giỏ hàng trống!",
             type: "warning",
             duration: 3000,
         });
         return;
     }
+
+
+    if(!getCookieValue("username"))
+        {
+            toast({
+                title: "Cảnh báo",
+                message: "Bạn phải đăng nhập trước khi mua hàng!",
+                type: "warning",
+                duration: 3000,
+            });
+            return;
+        }ain
 
     const myModal = new bootstrap.Modal(checkoutModal);
     myModal.show();
