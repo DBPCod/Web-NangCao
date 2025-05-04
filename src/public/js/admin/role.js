@@ -84,7 +84,7 @@ async function loadRoles() {
 }
 
 var viewOnlyPermissions = ['Khách hàng', 'Đơn hàng', 'Thống kê'];
-var notEditPermissions = ['Danh sách phiếu nhập'];
+var notEditPermissions = ['Danh sách phiếu nhập', 'Danh sách sản phẩm', 'Khuyến mãi'];
 
 function loadPermissionTable(tbodyId, idVaiTro = null) {
     const tbody = document.getElementById(tbodyId);

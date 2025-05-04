@@ -234,8 +234,28 @@ CREATE TABLE `ctquyen` (
   `xem` tinyint(1) DEFAULT 0,
   `them` tinyint(1) DEFAULT 0,
   `sua` tinyint(1) DEFAULT 0,
-  `xoa` tinyint(1) DEFAULT 0,
+  `xoa` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `ctquyen`
+--
+
+
+INSERT INTO `ctquyen`(`IdQuyen`, `IdVaiTro`, `xem`, `them`, `sua`, `xoa`) 
+VALUES 
+        (1,1,1,0,0,0),
+        (2,1,1,1,0,1),
+        (3,1,1,1,1,1),
+        (4,1,1,1,1,1),
+        (5,1,1,1,1,1),
+        (6,1,1,1,0,1),
+        (7,1,1,1,1,1),
+        (8,1,1,1,0,1),
+        (9,1,1,1,1,1),
+        (10,1,1,0,0,0),
+        (11,1,1,0,0,0),
+        (12,1,1,1,1,1);
 
 -- --------------------------------------------------------
 
@@ -395,7 +415,8 @@ INSERT INTO `quyen` (`IdQuyen`, `TenQuyen`) VALUES
 (8,	'Danh sách phiếu nhập'),
 (9,	'Nhà cung cấp'),
 (10,	'Đơn hàng'),
-(11,	'Thống kê');
+(11,	'Thống kê'),
+(12, 'Quản trị');
 
 -- --------------------------------------------------------
 
@@ -803,7 +824,7 @@ ALTER TABLE `phieunhap`
 -- AUTO_INCREMENT for table `quyen`
 --
 ALTER TABLE `quyen`
-  MODIFY `IdQuyen` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `IdQuyen` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `taikhoan`
