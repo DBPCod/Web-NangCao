@@ -262,7 +262,21 @@ async function getIdTaiKhoan(idNguoiDung) {
 
 // Handle checkout process
 async function handleCheckout() {
+    // Ngăn chặn nhiều lần nhấn
+    if (isProcessingPayment) {
+        return;
+    }
+    
+    // Lấy nút thanh toán
+    const checkoutBtn = document.querySelector('#buyNowModal .btn-secondary');
+    const originalBtnText = checkoutBtn.innerHTML;
+    
     try {
+        // Đánh dấu đang xử lý và vô hiệu hóa nút
+        isProcessingPayment = true;
+        checkoutBtn.disabled = true;
+        checkoutBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Đang xử lý...';
+        
         // Get form data
         const radioBtn = document.getElementById('edit-address');
         const newAddress = document.getElementById('address-input').value;
@@ -371,6 +385,11 @@ async function handleCheckout() {
             type: "error",
             duration: 5000,
         });
+    } finally {
+        // Luôn đặt lại trạng thái và nút khi hoàn thành hoặc có lỗi
+        isProcessingPayment = false;
+        checkoutBtn.disabled = false;
+        checkoutBtn.innerHTML = originalBtnText;
     }
 }
 
