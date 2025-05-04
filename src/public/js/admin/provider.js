@@ -104,7 +104,7 @@ async function loadProviders() {
           console.error("Fetch error:", error);
           document.getElementById("providerTableBody").innerHTML =
               '<tr><td colspan="7">Đã xảy ra lỗi khi tải dữ liệu.</td></tr>';
-          toast({
+          toast({  
               title: "Lỗi",
               message: "Không thể tải danh sách nhà cung cấp",
               type: "error",

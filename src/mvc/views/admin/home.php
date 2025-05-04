@@ -31,140 +31,140 @@
     <script src="../../../public/toast_message/main.js"></script>
     <script>
         $(document).ready(async function() {
-    let permissions = [];
+            let permissions = [];
 
-    // Hàm lấy dữ liệu quyền từ API
-    async function loadPermissions() {
-        try {
-            const response = await fetch('/smartstation/src/mvc/controllers/get_permissions.php', {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json'
+            // Hàm lấy dữ liệu quyền từ API
+            async function loadPermissions() {
+                try {
+                    const response = await fetch('/smartstation/src/mvc/controllers/get_permissions.php', {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+                    if (!response.ok) throw new Error('Lỗi khi lấy quyền: ' + response.status);
+                    permissions = await response.json();
+                    console.log('Permissions loaded:', permissions);
+                } catch (error) {
+                    console.error('Lỗi khi lấy quyền:', error);
+                    alert('Không thể tải dữ liệu quyền!');
+                }
+            }
+
+            // Hàm kiểm tra quyền
+            function hasPermission(permissionName, action) {
+                return permissions.some(permission => 
+                    permission.TenQuyen === permissionName && permission[action]
+                );
+            }
+
+            // Ánh xạ section với TenQuyen
+            const sectionPermissions = {
+                'customers': 'Khách hàng',
+                'products': 'Danh sách sản phẩm',
+                'productLine': 'Dòng sản phẩm',
+                'productConfig': 'Cấu hình sản phẩm',
+                'brand': 'Thương hiệu',
+                'promotions': 'Khuyến mãi',
+                'warranty': 'Bảo hành',
+                'grn': 'Danh sách phiếu nhập',
+                'providers': 'Nhà cung cấp',
+                'orders': 'Đơn hàng',
+                'statistics': 'Thống kê',
+                'users': 'Quản trị'
+            };
+
+            // Tải dữ liệu quyền trước khi xử lý giao diện
+            await loadPermissions();
+
+            // Ẩn các section không có quyền truy cập
+            $(".nav-link[data-section]").each(function() {
+                const section = $(this).data("section");
+                const permissionName = sectionPermissions[section];
+                if (permissionName && !hasPermission(permissionName, "xem")) {
+                    $(this).hide();
                 }
             });
-            if (!response.ok) throw new Error('Lỗi khi lấy quyền: ' + response.status);
-            permissions = await response.json();
-            console.log('Permissions loaded:', permissions);
-        } catch (error) {
-            console.error('Lỗi khi lấy quyền:', error);
-            alert('Không thể tải dữ liệu quyền!');
-        }
-    }
 
-    // Hàm kiểm tra quyền
-    function hasPermission(permissionName, action) {
-        return permissions.some(permission => 
-            permission.TenQuyen === permissionName && permission[action]
-        );
-    }
+            // // Ẩn các menu cha nếu tất cả menu con bị ẩn
+            // const collapsibleMenus = [
+            //     { parent: '#userMenu', toggle: 'a[href="#userMenu"]' },
+            //     { parent: '#productMenu', toggle: 'a[href="#productMenu"]' },
+            //     { parent: '#grnMenu', toggle: 'a[href="#grnMenu"]' }
+            // ];
 
-    // Ánh xạ section với TenQuyen
-    const sectionPermissions = {
-        'customers': 'Khách hàng',
-        'products': 'Danh sách sản phẩm',
-        'productLine': 'Dòng sản phẩm',
-        'productConfig': 'Cấu hình sản phẩm',
-        'brand': 'Thương hiệu',
-        'promotions': 'Khuyến mãi',
-        'warranty': 'Bảo hành',
-        'grn': 'Danh sách phiếu nhập',
-        'providers': 'Nhà cung cấp',
-        'orders': 'Đơn hàng',
-        'statistics': 'Thống kê',
-        'users': 'Quản trị'
-    };
+            // collapsibleMenus.forEach(menu => {
+            //     const $collapse = $(menu.parent);
+            //     const $childLinks = $collapse.find('.nav-link[data-section]');
+            //     const allChildrenHidden = $childLinks.length > 0 && $childLinks.toArray().every(link => $(link).is(':hidden'));
+            //     if (allChildrenHidden) {
+            //         $(menu.toggle).hide();
+            //         $collapse.hide();
+            //     }
+            // });
 
-    // Tải dữ liệu quyền trước khi xử lý giao diện
-    await loadPermissions();
+            // Load trang tổng quan ban đầu
+            $("#contentArea").load("../../../mvc/views/admin/pages/overview.php");
 
-    // Ẩn các section không có quyền truy cập
-    $(".nav-link[data-section]").each(function() {
-        const section = $(this).data("section");
-        const permissionName = sectionPermissions[section];
-        if (permissionName && !hasPermission(permissionName, "xem")) {
-            $(this).hide();
-        }
-    });
+            // Xử lý click vào nav-link
+            $(".nav-link[data-section]").click(function(e) {
+                e.preventDefault();
+                let section = $(this).data("section");
 
-    // // Ẩn các menu cha nếu tất cả menu con bị ẩn
-    // const collapsibleMenus = [
-    //     { parent: '#userMenu', toggle: 'a[href="#userMenu"]' },
-    //     { parent: '#productMenu', toggle: 'a[href="#productMenu"]' },
-    //     { parent: '#grnMenu', toggle: 'a[href="#grnMenu"]' }
-    // ];
+                if (section) {
+                    let newUrl = `http://localhost/smartstation/src/mvc/views/admin/?page=${section}`;
+                    window.history.pushState({
+                        section: section
+                    }, '', newUrl);
 
-    // collapsibleMenus.forEach(menu => {
-    //     const $collapse = $(menu.parent);
-    //     const $childLinks = $collapse.find('.nav-link[data-section]');
-    //     const allChildrenHidden = $childLinks.length > 0 && $childLinks.toArray().every(link => $(link).is(':hidden'));
-    //     if (allChildrenHidden) {
-    //         $(menu.toggle).hide();
-    //         $collapse.hide();
-    //     }
-    // });
-
-    // Load trang tổng quan ban đầu
-    $("#contentArea").load("../../../mvc/views/admin/pages/overview.php");
-
-    // Xử lý click vào nav-link
-    $(".nav-link[data-section]").click(function(e) {
-        e.preventDefault();
-        let section = $(this).data("section");
-
-        if (section) {
-            let newUrl = `http://localhost/smartstation/src/mvc/views/admin/?page=${section}`;
-            window.history.pushState({
-                section: section
-            }, '', newUrl);
-
-            $.ajax({
-                url: "../../../mvc/views/admin/pages/" + section + ".php",
-                type: "GET",
-                success: function(data) {
-                    $("#contentArea").html(data);
-                    if (section === 'products' && typeof loadProducts === 'function') {
-                        loadProducts();
-                    }
-                    if (section === 'statistics' && typeof loadTopUsers === 'function') {
-                        loadTopUsers();
-                    }
-                    if (section === 'users' && typeof loadRoles === 'function') {
-                        loadRoles();
-                    }
-                },
-                error: function() {
-                    $("#contentArea").html("<p class='text-danger'>Không thể tải trang!</p>");
+                    $.ajax({
+                        url: "../../../mvc/views/admin/pages/" + section + ".php",
+                        type: "GET",
+                        success: function(data) {
+                            $("#contentArea").html(data);
+                            if (section === 'products' && typeof loadProducts === 'function') {
+                                loadProducts();
+                            }
+                            if (section === 'statistics' && typeof loadTopUsers === 'function') {
+                                loadTopUsers();
+                            }
+                            if (section === 'users' && typeof loadRoles === 'function') {
+                                loadRoles();
+                            }
+                        },
+                        error: function() {
+                            $("#contentArea").html("<p class='text-danger'>Không thể tải trang!</p>");
+                        }
+                    });
                 }
             });
-        }
-    });
 
-    // Toggle sidebar
-    $("#sidebarToggle").click(function() {
-        console.log('Toggle clicked');
-        if ($(window).width() <= 767) {
-            $(".sidebar").toggleClass("show");
-        } else {
-            $(".sidebar").toggleClass("hidden");
-            $(".header").toggleClass("full-width");
-            $(".content-area").toggleClass("full-width");
-        }
-    });
+            // Toggle sidebar
+            $("#sidebarToggle").click(function() {
+                console.log('Toggle clicked');
+                if ($(window).width() <= 767) {
+                    $(".sidebar").toggleClass("show");
+                } else {
+                    $(".sidebar").toggleClass("hidden");
+                    $(".header").toggleClass("full-width");
+                    $(".content-area").toggleClass("full-width");
+                }
+            });
 
-    // Xử lý khi người dùng nhấn back/forward trên trình duyệt
-    window.onpopstate = function(event) {
-        if (event.state && event.state.section) {
-            $("#contentArea").load("../../../mvc/views/admin/pages/" + event.state.section + ".php");
-        }
-    };
+            // Xử lý khi người dùng nhấn back/forward trên trình duyệt
+            window.onpopstate = function(event) {
+                if (event.state && event.state.section) {
+                    $("#contentArea").load("../../../mvc/views/admin/pages/" + event.state.section + ".php");
+                }
+            };
 
-    // Load trang ban đầu từ URL nếu có param
-    const urlParams = new URLSearchParams(window.location.search);
-    const initialPage = urlParams.get('page');
-    if (initialPage) {
-        $("#contentArea").load("../../../mvc/views/admin/pages/" + initialPage + ".php");
-    }
-});
+            // Load trang ban đầu từ URL nếu có param
+            const urlParams = new URLSearchParams(window.location.search);
+            const initialPage = urlParams.get('page');
+            if (initialPage) {
+                $("#contentArea").load("../../../mvc/views/admin/pages/" + initialPage + ".php");
+            }
+        });
     </script>
 </body>
 
