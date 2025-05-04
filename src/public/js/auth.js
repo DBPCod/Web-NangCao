@@ -360,6 +360,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 } else {
                     document.getElementById('updatePasswordLengthError').style.display = 'none';
                 }
+
+                
     
                 if (newPassword && newPassword.value !== confirmPassword.value) {
                     document.getElementById('updatePasswordMatchError').style.display = 'block';

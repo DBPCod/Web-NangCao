@@ -7,7 +7,7 @@
   <table class="table table-hover">
     <thead>
       <tr>
-        <th>ID tên quyền</th>
+        <th>ID quyền</th>
         <th>Tên quyền</th>
         <th class="text-center" style="width: 140px">Hành động</th>
       </tr>

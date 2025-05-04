@@ -1,6 +1,73 @@
-let isLoading = false;
+var isLoading = false;
+var permissions = [];
+//-------------------------Thêm-----------------------------
+// Hàm lấy dữ liệu quyền từ server
+async function loadPermissions() {
+    try {
+        const response = await fetch('/smartstation/src/mvc/controllers/get_permissions.php', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+        if (!response.ok) throw new Error('Lỗi khi lấy quyền: ' + response.status);
+        permissions = await response.json();
+        console.log('Permissions loaded:', permissions);
+    } catch (error) {
+        console.error('Lỗi khi lấy quyền:', error);
+        toast({
+            title: "Lỗi",
+            message: "Không thể tải dữ liệu quyền!",
+            type: "error",
+            duration: 3000,
+        });
+    }
+}
 
-function loadRoles() {
+// Hàm kiểm tra quyền
+function hasPermission(permissionName, action) {
+    return permissions.some(permission => 
+        permission.TenQuyen === permissionName && permission[action]
+    );
+}
+//------------------------------------------------
+// function loadRoles() {
+//     fetch("/smartstation/src/mvc/controllers/VaiTroController.php", {
+//         method: "GET",
+//     })
+//         .then((response) => {
+//             if (!response.ok) throw new Error("Network error: " + response.status);
+//             return response.json();
+//         })
+//         .then((roles) => {
+//             const tbody = document.getElementById("RolesBody");
+//             let rows = '';
+//             if (!roles || roles.length === 0) {
+//                 rows = '<tr><td colspan="4">Không có vai trò nào</td></tr>';
+//             } else {
+//                 roles.forEach((role) => {
+//                     rows += `
+//                         <tr onclick="viewRole(${role.IdVaiTro})" style="cursor: pointer;">
+//                             <td>${role.IdVaiTro}</td>
+//                             <td>${role.TenVaiTro}</td>
+//                             <td class="text-center">
+//                                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editRoleModal"
+//                                     data-id="${role.IdVaiTro}" data-name="${role.TenVaiTro}" onclick="event.stopPropagation()">Sửa</button>
+//                                 <button class="btn btn-danger" onclick="event.stopPropagation(); deleteRole(${role.IdVaiTro})">Xóa</button>
+//                             </td>
+//                         </tr>`;
+//                 });
+//             }
+//             tbody.innerHTML = rows;
+//         })
+//         .catch((error) => console.error("Fetch error:", error));
+// }
+
+//----------------------------------------
+async function loadRoles() {
+    // Chờ lấy quyền trước khi tải vai trò
+    await loadPermissions();
+
     fetch("/smartstation/src/mvc/controllers/VaiTroController.php", {
         method: "GET",
     })
@@ -15,29 +82,46 @@ function loadRoles() {
             if (!roles || roles.length === 0) {
                 rows = '<tr><td colspan="4">Không có vai trò nào</td></tr>';
             } else {
+                const hasEditPermission = hasPermission('Quản trị', 'sua');
+                const hasDeletePermission = hasPermission('Quản trị', 'xoa');
                 roles.forEach((role) => {
+                    let actionButtons = '';
+                    if (hasEditPermission) {
+                        actionButtons += `
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editRoleModal"
+                                data-id="${role.IdVaiTro}" data-name="${role.TenVaiTro}" onclick="event.stopPropagation()">Sửa</button>
+                        `;
+                    }
+                    if (hasDeletePermission) {
+                        actionButtons += `
+                            <button class="btn btn-danger" onclick="event.stopPropagation(); deleteRole(${role.IdVaiTro})">Xóa</button>
+                        `;
+                    }
                     rows += `
                         <tr onclick="viewRole(${role.IdVaiTro})" style="cursor: pointer;">
                             <td>${role.IdVaiTro}</td>
                             <td>${role.TenVaiTro}</td>
                             <td class="text-center">
-                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editRoleModal"
-                                    data-id="${role.IdVaiTro}" data-name="${role.TenVaiTro}" onclick="event.stopPropagation()">Sửa</button>
-                                <button class="btn btn-danger" onclick="event.stopPropagation(); deleteRole(${role.IdVaiTro})">Xóa</button>
+                                ${actionButtons || 'Không có hành động'}
                             </td>
                         </tr>`;
                 });
             }
             tbody.innerHTML = rows;
+
+            // Ẩn nút "Thêm vai trò" nếu không có quyền them
+            if (!hasPermission('Quản trị', 'them')) {
+                document.querySelector('.btn-success[data-bs-target="#addRoleModal"]').style.display = 'none';
+            }
         })
         .catch((error) => console.error("Fetch error:", error));
 }
+//-----------------
 
-const viewOnlyPermissions = ['Khách hàng', 'Đơn hàng', 'Thống kê'];
-const notEditPermissions = ['Danh sách phiếu nhập'];
+var viewOnlyPermissions = ['Khách hàng', 'Đơn hàng', 'Thống kê'];
+var notEditPermissions = ['Danh sách phiếu nhập'];
 
 function loadPermissionTable(tbodyId, idVaiTro = null) {
-    console.log(`Loading permissions for tbody: ${tbodyId}, idVaiTro: ${idVaiTro}`);
     const tbody = document.getElementById(tbodyId);
     if (!tbody) {
         console.error(`Tbody with ID ${tbodyId} not found!`);
@@ -52,7 +136,6 @@ function loadPermissionTable(tbodyId, idVaiTro = null) {
             return response.json();
         })
         .then(permissions => {
-            console.log('Permissions received:', permissions);
             const isViewMode = tbodyId === 'viewPermissionsBody';
             let rows = '';
             if (!permissions || permissions.length === 0) {
@@ -74,10 +157,8 @@ function loadPermissionTable(tbodyId, idVaiTro = null) {
                 });
             }
             tbody.innerHTML = rows;
-            console.log('Table rendered for tbody:', tbodyId);
 
             if (idVaiTro) {
-                console.log(`Fetching permissions for role: ${idVaiTro}`);
                 fetch(`/smartstation/src/mvc/controllers/VaiTroController.php?permissions=true&idVaiTro=${idVaiTro}`, {
                     method: 'GET'
                 })
@@ -86,7 +167,6 @@ function loadPermissionTable(tbodyId, idVaiTro = null) {
                         return response.json();
                     })
                     .then(rolePermissions => {
-                        console.log('Role permissions received:', rolePermissions);
                         rolePermissions.forEach(perm => {
                             const xemCheckbox = document.querySelector(`#${tbodyId} input[name="permissions[${perm.IdQuyen}][xem]"]`);
                             const themCheckbox = document.querySelector(`#${tbodyId} input[name="permissions[${perm.IdQuyen}][them]"]`);
@@ -345,12 +425,10 @@ document.addEventListener('show.bs.modal', function (event) {
     const targetId = event.target.id;
 
     if (targetId === 'addRoleModal') {
-        console.log('addRoleModal opened');
         loadPermissionTable('addPermissionsBody', null);
     }
 
     if (targetId === 'editRoleModal') {
-        console.log('editRoleModal opened');
         const button = event.relatedTarget;
         const idVaiTro = button.getAttribute('data-id');
         const tenVaiTro = button.getAttribute('data-name');

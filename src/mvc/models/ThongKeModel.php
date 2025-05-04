@@ -9,7 +9,7 @@ class ThongKeModel {
     }
 
     // Lấy top 5 khách hàng có tổng mua cao nhất
-    public function getTopKhachHang($sort = 'ASC') {
+    public function getTopKhachHang($sort = 'DESC') {
         $sort = strtoupper($sort) === 'ASC' ? 'ASC' : 'DESC';
         $sql = "SELECT
                     nd.IdNguoiDung,
@@ -81,7 +81,7 @@ class ThongKeModel {
     }
 
     //Lấy 5 người từ theo ngày
-    public function getTopUsersByDateRange($from, $to, $sort = 'ASC') {
+    public function getTopUsersByDateRange($from, $to, $sort = 'DESC') {
         $sort = strtoupper($sort) === 'ASC' ? 'ASC' : 'DESC';
         $sql = "SELECT
                     nd.IdNguoiDung,
