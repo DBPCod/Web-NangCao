@@ -1075,3 +1075,67 @@ button.btn.btn-info.btn-sm.action-btn:hover {
     margin: 0;
     padding: 0;
 }
+
+/* Container cho thanh trượt */
+.range-slider {
+    position: relative;
+    width: 100%;
+    height: 8px;
+    background: #e9ecef;
+    border-radius: 4px;
+    margin: 20px 0;
+}
+
+/* Đường nền của thanh trượt */
+.range-slider__track {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+}
+
+/* Phần tiến trình (khoảng giá đã chọn) */
+.range-slider__progress {
+    position: absolute;
+    height: 100%;
+    background: #007bff;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+/* Thumb (nút kéo) */
+.range-slider__thumb {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: #007bff;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: background 0.2s ease;
+}
+
+.range-slider__thumb:hover {
+    background: #0056b3;
+}
+
+/* Hiển thị giá */
+.min-price-display, .max-price-display {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+    .range-slider {
+        margin: 15px 0;
+    }
+    .range-slider__thumb {
+        width: 18px;
+        height: 18px;
+    }
+}
