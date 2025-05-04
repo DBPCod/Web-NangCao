@@ -158,10 +158,17 @@ function collectFilters() {
         }
     });
 
-    if (document.querySelector('#app1').checked) filters.priceRanges.push('0-3000000');
-    if (document.querySelector('#app2').checked) filters.priceRanges.push('3000000-6000000');
-    if (document.querySelector('#app3').checked || document.querySelector('#app4').checked) filters.priceRanges.push('6000000-10000000');
-    if (document.querySelector('#app5').checked) filters.priceRanges.push('10000000-');
+    // Thêm kiểm tra null trước khi truy cập thuộc tính checked
+    const app1 = document.querySelector('#app1');
+    const app2 = document.querySelector('#app2');
+    const app3 = document.querySelector('#app3');
+    const app4 = document.querySelector('#app4');
+    const app5 = document.querySelector('#app5');
+
+    if (app1 && app1.checked) filters.priceRanges.push('0-3000000');
+    if (app2 && app2.checked) filters.priceRanges.push('3000000-6000000');
+    if ((app3 && app3.checked) || (app4 && app4.checked)) filters.priceRanges.push('6000000-10000000');
+    if (app5 && app5.checked) filters.priceRanges.push('10000000-');
 
     const minDisplay = document.querySelector('.min-price-display');
     const maxDisplay = document.querySelector('.max-price-display');

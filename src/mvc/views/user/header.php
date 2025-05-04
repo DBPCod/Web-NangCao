@@ -65,7 +65,7 @@
         <!-- Search Bar trong offcanvas -->
         <div class="input-group search-bar mb-3">
             <input type="text" class="form-control" placeholder="Hôm nay bạn muốn tìm kiếm gì?" />
-            <button class="btn btn-outline-secondary" type="button" aria-label="Tìm kiếm">
+            <button class="btn btn-outline-secondary" type="button" aria-label="Tìm kiếm" onclick="handleClickSearch()">
                 <i class="bi bi-search"></i>
             </button>
         </div>
