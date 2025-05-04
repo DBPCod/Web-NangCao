@@ -36,7 +36,7 @@
                     <!-- Bảng 2: Đổi mật khẩu -->
                     <div id="passwords" class="tab-content">
                         <div class="mb-3">
-                            <input type="password" class="form-control custom-input" id="currentPassword" name="current_password" placeholder="Nhập mật khẩu hiện tại" required>
+                            <input type="password" class="form-control custom-input" id="currentPassword" name="current_password" placeholder="Nhập mật khẩu hiện tại">
                             <div id="currentPasswordError" class="text-danger mt-2" style="display: none;">Mật khẩu hiện tại không đúng!</div>
                         </div>
                         <div class="mb-3">

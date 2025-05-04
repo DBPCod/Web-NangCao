@@ -40,6 +40,9 @@ class HoaDonModel {
             $types .= "s";
         }
 
+        // Add ORDER BY clause to sort by NgayTao in descending order
+        $query .= " ORDER BY h.NgayTao DESC";
+
         $stmt = $this->db->prepare($query);
         if (!empty($params)) {
             $stmt->bind_param($types, ...$params);
@@ -115,7 +118,6 @@ class HoaDonModel {
         return $result['total'];
     }
 
-    // Tính tổng doanh thu từ hóa đơn trong tháng hiện tại
     public function getTotalRevenueThisMonth() {
         $result = $this->db->query("
             SELECT SUM(ThanhTien) as totalRevenue
@@ -132,11 +134,26 @@ class HoaDonModel {
     public function addHoaDon($data) {
         $this->db->begin_transaction();
         try {
+            // Kiểm tra số lượng tồn kho
+            $stmt = $this->db->prepare("
+                SELECT SoLuong 
+                FROM sanpham 
+                WHERE IdCHSP = ? AND IdDongSanPham = ? AND TrangThai = 1
+            ");
+            $stmt->bind_param("ii", $data['IdCHSP'], $data['IdDongSanPham']);
+            $stmt->execute();
+            $result = $stmt->get_result()->fetch_assoc();
+            
+            if (!$result || $result['SoLuong'] < $data['SoLuong']) {
+                throw new Exception("Số lượng sản phẩm không đủ trong kho");
+            }
+    
+            // Tiếp tục tạo hóa đơn
             $stmt = $this->db->prepare("
                 INSERT INTO hoadon (IdTaiKhoan, NgayTao, ThanhTien, TrangThai, IdTinhTrang) 
                 VALUES (?, ?, ?, ?, ?)
             ");
-            $stmt->bind_param("isdis", 
+            $stmt->bind_param("isdii", 
                 $data['IdTaiKhoan'], 
                 $data['NgayTao'], 
                 $data['ThanhTien'], 
@@ -145,37 +162,27 @@ class HoaDonModel {
             );
             $stmt->execute();
             $idHoaDon = $this->db->insert_id;
-
+    
+            // Cập nhật số lượng và đã bán
             $stmt = $this->db->prepare("
                 UPDATE sanpham 
-                SET SoLuong = SoLuong - ? 
-                WHERE IdCHSP = ? AND IdDongSanPham = ? AND SoLuong >= ?
+                SET SoLuong = SoLuong - ?, 
+                    DaBan = DaBan + ? 
+                WHERE IdCHSP = ? AND IdDongSanPham = ?
             ");
             $stmt->bind_param("iiii", 
                 $data['SoLuong'], 
-                $data['IdCHSP'], 
-                $data['IdDongSanPham'], 
-                $data['SoLuong']
-            );
-            $stmt->execute();
-
-            $stmt = $this->db->prepare("
-                UPDATE sanpham 
-                SET DaBan = DaBan + ?
-                WHERE IdCHSP = ? AND IdDongSanPham = ? AND SoLuong >= ?
-            ");
-            $stmt->bind_param("iiii", 
                 $data['SoLuong'], 
                 $data['IdCHSP'], 
-                $data['IdDongSanPham'], 
-                $data['SoLuong']
+                $data['IdDongSanPham']
             );
             $stmt->execute();
-
+    
             if ($stmt->affected_rows === 0) {
-                throw new Exception("Số lượng sản phẩm không đủ hoặc sản phẩm không tồn tại");
+                throw new Exception("Sản phẩm không tồn tại hoặc lỗi khi cập nhật kho");
             }
-
+    
+            // Cập nhật số lượng dòng sản phẩm
             $stmt = $this->db->prepare("
                 UPDATE dongsanpham 
                 SET SoLuong = (
@@ -187,7 +194,7 @@ class HoaDonModel {
             ");
             $stmt->bind_param("ii", $data['IdDongSanPham'], $data['IdDongSanPham']);
             $stmt->execute();
-
+    
             $this->db->commit();
             return $this->getHoaDonById($idHoaDon);
         } catch (Exception $e) {
@@ -199,11 +206,29 @@ class HoaDonModel {
     public function addMultiProductHoaDon($data) {
         $this->db->begin_transaction();
         try {
+            // Kiểm tra số lượng tồn kho trước khi bắt đầu giao dịch
+            foreach ($data['products'] as $product) {
+                $stmt = $this->db->prepare("
+                    SELECT SoLuong 
+                    FROM sanpham 
+                    WHERE IdCHSP = ? AND IdDongSanPham = ? AND TrangThai = 1
+                ");
+                $stmt->bind_param("ii", $product['IdCHSP'], $product['IdDongSanPham']);
+                $stmt->execute();
+                $result = $stmt->get_result()->fetch_assoc();
+                
+                if (!$result || $result['SoLuong'] < $product['SoLuong']) {
+                    throw new Exception("Sản phẩm với IdCHSP: {$product['IdCHSP']} và IdDongSanPham: {$product['IdDongSanPham']} chỉ còn " . 
+                        ($result ? $result['SoLuong'] : 0) . " trong kho, không đủ " . $product['SoLuong'] . " sản phẩm yêu cầu");
+                }
+            }
+
+            // Tạo hóa đơn
             $stmt = $this->db->prepare("
                 INSERT INTO hoadon (IdTaiKhoan, NgayTao, ThanhTien, TrangThai, IdTinhTrang) 
                 VALUES (?, ?, ?, ?, ?)
             ");
-            $stmt->bind_param("isdis", 
+            $stmt->bind_param("isdii", 
                 $data['IdTaiKhoan'], 
                 $data['NgayTao'], 
                 $data['ThanhTien'], 
@@ -213,37 +238,28 @@ class HoaDonModel {
             $stmt->execute();
             $idHoaDon = $this->db->insert_id;
 
+            // Cập nhật số lượng sản phẩm
             foreach ($data['products'] as $product) {
+                // Cập nhật số lượng
                 $stmt = $this->db->prepare("
                     UPDATE sanpham 
-                    SET SoLuong = SoLuong - ? 
-                    WHERE IdCHSP = ? AND IdDongSanPham = ? AND SoLuong >= ?
+                    SET SoLuong = SoLuong - ?, 
+                        DaBan = DaBan + ? 
+                    WHERE IdCHSP = ? AND IdDongSanPham = ? AND TrangThai = 1
                 ");
                 $stmt->bind_param("iiii", 
                     $product['SoLuong'], 
-                    $product['IdCHSP'], 
-                    $product['IdDongSanPham'], 
-                    $product['SoLuong']
-                );
-                $stmt->execute();
-
-                $stmt = $this->db->prepare("
-                    UPDATE sanpham 
-                    SET DaBan = DaBan + ?
-                    WHERE IdCHSP = ? AND IdDongSanPham = ? AND SoLuong >= ?
-                ");
-                $stmt->bind_param("iiii", 
                     $product['SoLuong'], 
                     $product['IdCHSP'], 
-                    $product['IdDongSanPham'], 
-                    $product['SoLuong']
+                    $product['IdDongSanPham']
                 );
                 $stmt->execute();
 
                 if ($stmt->affected_rows === 0) {
-                    throw new Exception("Số lượng sản phẩm không đủ hoặc sản phẩm không tồn tại cho IdCHSP: {$product['IdCHSP']}");
+                    throw new Exception("Không thể cập nhật số lượng cho sản phẩm với IdCHSP: {$product['IdCHSP']} và IdDongSanPham: {$product['IdDongSanPham']}");
                 }
 
+                // Cập nhật tổng số lượng dòng sản phẩm
                 $stmt = $this->db->prepare("
                     UPDATE dongsanpham 
                     SET SoLuong = (

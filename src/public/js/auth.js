@@ -239,111 +239,146 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Xử lý form cập nhật thông tin
-    const updateProfileForm = document.querySelector('#updateProfileForm');
-    if (updateProfileForm) {
-        let cookie = getCookie('username');
-        const updateProfileModal = document.getElementById('updateProfile');
-        updateProfileModal.addEventListener('show.bs.modal', function () {
-            console.log(cookie);
-            SetInfor(cookie);
-            // document.getElementById('updateUsername').value = localStorage.getItem('username') || '';
-            // document.getElementById('updateFullName').value = localStorage.getItem('fullName') || '';
-            // document.getElementById('updatePhone').value = localStorage.getItem('phone') || '';
-            // document.getElementById('updateEmail').value = localStorage.getItem('email') || '';
-            // document.getElementById('updateAddress').value = localStorage.getItem('address') || '';
-        });
+    // Xử lý form cập nhật thông tin
+const updateProfileForm = document.querySelector('#updateProfileForm');
+if (updateProfileForm) {
+    let cookie = getCookie('username');
+    const updateProfileModal = document.getElementById('updateProfile');
+    updateProfileModal.addEventListener('show.bs.modal', function () {
+        SetInfor(cookie);
+    });
 
-        updateProfileForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-            // const fullName = document.getElementById('updateFullName').value;
-            // const phone = document.getElementById('updatePhone').value;
-            // const email = document.getElementById('updateEmail').value;
-            // const address = document.getElementById('updateAddress').value;
-            // const newPassword = document.getElementById('updatePassword');
-            // const confirmPassword = document.getElementById('updateConfirmPassword');
-            // if(CheckPass(taikhoan, currentPassword.value))
-            // {
-            //     // console.log(CheckPass(taikhoan, currentPassword.value));
-            //     document.getElementById('currentPasswordError').style.display = 'none';
-            //     console.log('aaa');
-            // }
-            // else {
-            //     document.getElementById('currentPasswordError').style.display = 'block';
-            //     console.log("b");
-            // }
+    updateProfileForm.addEventListener('submit', function (e) {
+        e.preventDefault();
 
-            // let checkChangePass = false;
-            // const pass = document.getElementById("currentPassword");
-            // pass.addEventListener("input", function () {
-            //     console.log("a");
-            //     CheckPass();
-            // });
-            CheckPass();
-            
-        });
-    }
+        // Get form values
+        const fullName = document.getElementById('updateFullName').value;
+        const phone = document.getElementById('updatePhone').value;
+        const email = document.getElementById('updateEmail').value;
+        const address = document.getElementById('updateAddress').value;
+        const currentPassword = document.getElementById('currentPassword').value;
+        const newPassword = document.getElementById('updatePassword').value;
+        const confirmPassword = document.getElementById('updateConfirmPassword').value;
 
-    //reset popup thong tin
-    function ResetPopupInfo()
-    {
-        const newPassword = document.getElementById('updatePassword');
-        const confirmPassword = document.getElementById('updateConfirmPassword');
-        const currentPassword = document.getElementById('currentPassword');
-        newPassword.value = '';
-        confirmPassword.value = '';
-        currentPassword.value = '';
+        // Determine which tab is active
+        const activeTab = document.querySelector('.tab-content.active').id;
 
-        showTab('info');
-        // xoa cac element ben doi mat khau
-        const selectedBtn = document.querySelector(`button[onclick="showTab('info')"]`);
-        selectedBtn.classList.add('active');
-    }
+        if (activeTab === 'info') {
+            // Validate user information
+            if (!fullName || !phone || !email || !address) {
+                toast({
+                    title: 'Lỗi',
+                    message: 'Vui lòng điền đầy đủ thông tin!',
+                    type: 'error',
+                    duration: 3000
+                });
+                return;
+            }
 
-    //update mật khẩu
-    function UpdatePass(MatKhau,taiKhoan)
-    {
-        fetch(`../../controllers/TaiKhoanController.php?taikhoan=${taiKhoan}`,{
-            method: "PUT",
-            headers: {"Content-Type" : "application/json" },
-            body: JSON.stringify({MatKhau,TrangThai: 1})
-        })
+            // Update user information
+            UpdateInfor(fullName, phone, email, address);
+            const updateModal = bootstrap.Modal.getInstance(document.getElementById('updateProfile'));
+            updateModal.hide();
+        } else if (activeTab === 'passwords') {
+            // Validate password fields
+            if (!currentPassword) {
+                document.getElementById('currentPasswordError').style.display = 'block';
+                document.getElementById('currentPassword').select();
+                return;
+            }
+
+            if (newPassword && newPassword.length < 8) {
+                document.getElementById('updatePasswordLengthError').style.display = 'block';
+                document.getElementById('updatePassword').select();
+                return;
+            } else {
+                document.getElementById('updatePasswordLengthError').style.display = 'none';
+            }
+
+            if (newPassword && newPassword !== confirmPassword) {
+                document.getElementById('updatePasswordMatchError').style.display = 'block';
+                document.getElementById('updateConfirmPassword').select();
+                return;
+            } else {
+                document.getElementById('updatePasswordMatchError').style.display = 'none';
+            }
+
+            // Verify current password and update new password
+            CheckPass(currentPassword, newPassword);
+        }
+    });
+}
+
+// Verify current password and update new password
+function CheckPass(currentPassword, newPassword) {
+    const taikhoan = decodeEmail(getCookie('username'));
+    fetch(`../../controllers/TaiKhoanController.php`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ taikhoan, matkhau: currentPassword })
+    })
         .then(response => response.json())
-        .then(data =>{
-            if(data.success){
-                
+        .then(data => {
+            if (data.success) {
+                document.getElementById('currentPasswordError').style.display = 'none';
+                if (newPassword) {
+                    // Update password
+                    let taiKhoan = decodeEmail(getCookie('username'));
+                    UpdatePass(newPassword, taiKhoan);
+                } else {
+                    toast({
+                        title: 'Lỗi',
+                        message: 'Vui lòng nhập mật khẩu mới!',
+                        type: 'error',
+                        duration: 3000
+                    });
+                }
+                const updateModal = bootstrap.Modal.getInstance(document.getElementById('updateProfile'));
+                updateModal.hide();
+            } else {
+                document.getElementById('currentPasswordError').style.display = 'block';
+                document.getElementById('currentPassword').select();
+            }
+        });
+}
+
+// Update password
+function UpdatePass(MatKhau, taiKhoan) {
+    fetch(`../../controllers/TaiKhoanController.php?taikhoan=${taiKhoan}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ MatKhau, TrangThai: 1 })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
                 toast({
                     title: 'Thành công',
-                    message: 'Cập nhật thành công!',
+                    message: 'Cập nhật mật khẩu thành công!',
                     type: 'success',
                     duration: 3000
                 });
-                ResetPopupInfo()
-
+                ResetPopupInfo();
             } else {
                 toast({
                     title: 'Lỗi',
-                    message: 'Cập nhật thất bại, vui lòng thử lại!',
+                    message: 'Cập nhật mật khẩu thất bại, vui lòng thử lại!',
                     type: 'error',
                     duration: 3000
                 });
             }
-        }) 
-    }
+        });
+}
 
-
-    //get mật khẩu từ tài khoản
-    function CheckPass()
-    {
-        const currentPassword = document.getElementById('currentPassword');
-        const taikhoan = decodeEmail(getCookie('username'));
-        const matkhau = currentPassword.value;
-        console.log(matkhau);
-        fetch(`../../controllers/TaiKhoanController.php`,{
-            method: "POST",
-            headers: {"Content-Type" : "application/json" },
-            body: JSON.stringify({taikhoan,matkhau})
-        })
+// Update user information
+function UpdateInfor(HoVaTen, SoDienThoai, Email, DiaChi) {
+    fetch(`../../controllers/NguoiDungController.php?idNguoiDung=${dataCookie.user.idnguoidung}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ HoVaTen, SoDienThoai, Email, DiaChi, TrangThai: 1 })
+    })
         .then(response => response.json())
+<<<<<<< HEAD
         .then(data =>{
             const fullName = document.getElementById('updateFullName').value;
             const phone = document.getElementById('updatePhone').value;
@@ -402,81 +437,53 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(data =>{
             if(data.success){
                 
+=======
+        .then(data => {
+            if (data.success) {
+>>>>>>> main
                 toast({
                     title: 'Thành công',
-                    message: 'Cập nhật thành công!',
+                    message: 'Cập nhật thông tin thành công!',
                     type: 'success',
                     duration: 3000
                 });
                 document.getElementById('accountTextDesktop').innerText = HoVaTen;
-
-
             } else {
                 toast({
                     title: 'Lỗi',
-                    message: 'Cập nhật thất bại, vui lòng thử lại!',
+                    message: 'Cập nhật thông tin thất bại, vui lòng thử lại!',
                     type: 'error',
                     duration: 3000
                 });
             }
-        }) 
-    }
+        });
+}
 
-    //get thông tin khách hàng
-    function SetInfor()
-    {
-        fetch(`/smartstation/src/mvc/controllers/NguoiDungController.php?idNguoiDung=${dataCookie.user.idnguoidung}`)
+// Get user information
+function SetInfor() {
+    fetch(`/smartstation/src/mvc/controllers/NguoiDungController.php?idNguoiDung=${dataCookie.user.idnguoidung}`)
         .then(response => response.json())
-        .then(data =>{
-            console.log(data);
+        .then(data => {
             document.getElementById('updateFullName').value = data.HoVaTen || '';
             document.getElementById('updatePhone').value = data.SoDienThoai || '';
             document.getElementById('updateEmail').value = data.Email || '';
             document.getElementById('updateAddress').value = data.DiaChi || '';
-        })     
-    }
+        });
+}
 
-    // Xử lý modal lịch sử mua hàng
-    // const orderHistoryModal = document.getElementById('orderHistory');
-    // if (orderHistoryModal) {
-    //     orderHistoryModal.addEventListener('show.bs.modal', function () {
-    //         const orderHistoryList = document.getElementById('orderHistoryList');
-    //         const orderHistoryEmpty = document.getElementById('orderHistoryEmpty');
-    //         const username = localStorage.getItem('username');
-    //         const orders = JSON.parse(localStorage.getItem(`orders_${username}`)) || [];
+// Reset popup info
+function ResetPopupInfo() {
+    const newPassword = document.getElementById('updatePassword');
+    const confirmPassword = document.getElementById('updateConfirmPassword');
+    const currentPassword = document.getElementById('currentPassword');
+    newPassword.value = '';
+    confirmPassword.value = '';
+    currentPassword.value = '';
 
-    //         if (orders.length === 0) {
-    //             orderHistoryList.innerHTML = '';
-    //             orderHistoryList.style.display = 'none';
-    //             orderHistoryEmpty.style.display = 'block';
-    //         } else {
-    //             orderHistoryEmpty.style.display = 'none';
-    //             orderHistoryList.style.display = 'block';
-    //             orderHistoryList.innerHTML = `
-    //                 <table class="table table-bordered">
-    //                     <thead>
-    //                         <tr>
-    //                             <th>Mã đơn hàng</th>
-    //                             <th>Ngày đặt</th>
-    //                             <th>Tổng tiền</th>
-    //                             <th>Trạng thái</th>
-    //                         </tr>
-    //                     </thead>
-    //                     <tbody>
-    //                         ${orders.map(order => `
-    //                             <tr>
-    //                                 <td>${order.orderId}</td>
-    //                                 <td>${order.date}</td>
-    //                                 <td>${order.total.toLocaleString('vi-VN')}đ</td>
-    //                                 <td>${order.status}</td>
-    //                             </tr>
-    //                         `).join('')}
-    //                     </tbody>
-    //                 </table>
-    //             `;
-    //         }
-    //     });
-    // }
+    showTab('info');
+    const selectedBtn = document.querySelector(`button[onclick="showTab('info')"]`);
+    selectedBtn.classList.add('active');
+}
 });
 
 

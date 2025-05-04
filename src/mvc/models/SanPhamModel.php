@@ -233,6 +233,13 @@ class SanPhamModel {
             $stmt->bind_param("ii", $idCHSP, $idDSP);
             $stmt->execute();
 
+            $stmt = $this->db->prepare("
+                delete from anh 
+                WHERE IdCHSP = ? AND IdDongSanPham = ?
+            ");
+            $stmt->bind_param("ii", $idCHSP, $idDSP);
+            $stmt->execute();
+
             $this->updateDongSanPhamQuantity($idDSP);
 
             $this->db->commit();

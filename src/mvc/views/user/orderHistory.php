@@ -10,7 +10,9 @@
                 <div class="mb-3">
                     <label for="statusFilter" class="form-label fw-bold">Lọc theo tình trạng</label>
                     <select id="statusFilter" class="form-select">
-                        <option value="1" selected>Chưa xác nhận</option>
+                        <option value="" selected>Tất cả</option>
+                        <option value="1">Chưa xác nhận</option>
+                        <option value="2">Đã xác nhận</option>
                         <option value="3">Thành công</option>
                         <option value="4">Hủy</option>
                     </select>

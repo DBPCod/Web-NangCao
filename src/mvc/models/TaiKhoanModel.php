@@ -24,7 +24,7 @@ class TaiKhoanModel {
 
     // Lấy tài khoản theo IdTaiKhoan
     public function getTaiKhoanById($taiKhoan) {
-        $stmt = $this->db->prepare("SELECT * FROM TaiKhoan WHERE taiKhoan = ?");
+        $stmt = $this->db->prepare("SELECT * FROM TaiKhoan WHERE TaiKhoan = ?");
         $stmt->bind_param("s", $taiKhoan);
         $stmt->execute();
         return $stmt->get_result()->fetch_assoc();
@@ -47,15 +47,17 @@ class TaiKhoanModel {
 
     // Cập nhật tài khoản
     public function updateTaiKhoan($taiKhoan, $data) {
-        $hashedPassword = password_hash($data['MatKhau'], PASSWORD_DEFAULT);
-        $stmt = $this->db->prepare("UPDATE TaiKhoan SET MatKhau = ?, TrangThai = ? WHERE TaiKhoan = ?");
-        $stmt->bind_param(
-            "sis",
-            $hashedPassword,
-            $data['TrangThai'],
-            $taiKhoan
-        );
-        return $stmt->execute();
+        if (isset($data['IdVaiTro'])) {
+            $stmt = $this->db->prepare("UPDATE TaiKhoan SET IdVaiTro = ? WHERE TaiKhoan = ?");
+            $stmt->bind_param("is", $data['IdVaiTro'], $taiKhoan);
+            return $stmt->execute();
+        } elseif (isset($data['MatKhau'])) {
+            $hashedPassword = password_hash($data['MatKhau'], PASSWORD_DEFAULT);
+            $stmt = $this->db->prepare("UPDATE TaiKhoan SET MatKhau = ?, TrangThai = ? WHERE TaiKhoan = ?");
+            $stmt->bind_param("sis", $hashedPassword, $data['TrangThai'], $taiKhoan);
+            return $stmt->execute();
+        }
+        return false;
     }
 
     // Xóa tài khoản (cập nhật trạng thái TrangThai = 0)
@@ -67,8 +69,8 @@ class TaiKhoanModel {
 
     // Check mật khẩu
     public function GetPass($input) {
-        $stmt = $this->db->prepare("SELECT * FROM TaiKhoan WHERE taiKhoan = ?");
-        $stmt->bind_param("s", $input["taikhoan"]);
+        $stmt = $this->db->prepare("SELECT * FROM TaiKhoan WHERE TaiKhoan = ?");
+        $stmt->bind_param("s", $input["TaiKhoan"]);
         $stmt->execute();
         return $stmt->get_result()->fetch_assoc();
     }

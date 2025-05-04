@@ -111,7 +111,6 @@ function getCookieValue(name) {
 
 // Handle "Mua ngay" button click (validate and fetch product image)
 function handleClickMuaNgay() {
-
     if(!getCookieValue("username"))
     {
         toast({
@@ -178,6 +177,7 @@ async function SetInfor(product) {
         // Fetch user data
         const userResponse = await fetch(`/smartstation/src/mvc/controllers/NguoiDungController.php?idNguoiDung=${idNguoiDung}`);
         const userData = await userResponse.json();
+        console.log(userData);
         document.getElementById('FullName').value = userData.HoVaTen || '';
         document.getElementById('PhoneNumber').value = userData.SoDienThoai || '';
         document.getElementById('Email').value = userData.Email || '';
@@ -214,7 +214,7 @@ async function SetInfor(product) {
                     <span class="config-value">${productData.MauSac}</span>
                 </div>
                 <div class="config-item">
-                    <span class="config-label">Độ phân giải</span>
+                    <span class="config-label">Camera</span>
                     <span class="config-value">${productData.Camera}</span>
                 </div>
             </div>`;
@@ -273,16 +273,16 @@ async function handleCheckout() {
         const idTaiKhoan = await getIdTaiKhoan(idNguoiDung);
 
         // Fetch multiple IMEIs in one request
-        const response = await fetch(`/smartstation/src/mvc/controllers/SanPhamChiTietController.php?idCHSP=${idCHSP}&idDongSanPham=${idDongSanPham}&quantity=${quantity}`, {
+        const imeiResponse = await fetch(`/smartstation/src/mvc/controllers/SanPhamChiTietController.php?idCHSP=${idCHSP}&idDongSanPham=${idDongSanPham}&quantity=${quantity}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' }
         });
-        if (!response.ok) {
-            throw new Error("Lỗi mạng khi lấy danh sách IMEI");
+        if (!imeiResponse.ok) {
+            throw new Error(`Lỗi mạng khi lấy danh sách IMEI cho sản phẩm (CHSP: ${idCHSP}, DSP: ${idDongSanPham})`);
         }
-        const data = await response.json();
-        if (!data.Imeis || data.Imeis.length < quantity) {
-            throw new Error(data.message || `Không đủ sản phẩm trong kho. Yêu cầu: ${quantity}, Còn lại: ${data.Imeis ? data.Imeis.length : 0}`);
+        const imeiData = await imeiResponse.json();
+        if (!imeiData.Imeis || imeiData.Imeis.length < quantity) {
+            throw new Error(imeiData.message || `Không đủ sản phẩm trong kho. Yêu cầu: ${quantity}, Còn lại: ${imeiData.Imeis ? imeiData.Imeis.length : 0}`);
         }
 
         // Create invoice (HoaDon)
@@ -296,37 +296,34 @@ async function handleCheckout() {
             IdCHSP: idCHSP,
             IdDongSanPham: idDongSanPham
         };
-
-        
-
         const hoaDonResponse = await fetch('/smartstation/src/mvc/controllers/HoaDonController.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(hoaDonData)
         });
         const hoaDonDataResult = await hoaDonResponse.json();
-        if (!hoaDonDataResult.HoaDon) {
-            throw new Error("Thêm hóa đơn thất bại");
+        if (!hoaDonDataResult.HoaDon || !hoaDonDataResult.HoaDon.IdHoaDon) {
+            throw new Error("Thêm hóa đơn thất bại. Vui lòng thử lại.");
         }
 
         const idHoaDon = hoaDonDataResult.HoaDon.IdHoaDon;
 
         // Update address if edited
         if (radioBtn.checked && newAddress) {
-            const response = await fetch(`/smartstation/src/mvc/controllers/NguoiDungController.php?idNguoiDung=${idNguoiDung}`, {
+            const addressResponse = await fetch(`/smartstation/src/mvc/controllers/NguoiDungController.php?idNguoiDung=${idNguoiDung}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ DiaChi: newAddress })
             });
-            const data = await response.json();
-            if (!data.success) {
-                throw new Error("Cập nhật địa chỉ thất bại");
+            const addressData = await addressResponse.json();
+            if (!addressData.success) {
+                throw new Error("Cập nhật địa chỉ thất bại. Vui lòng kiểm tra lại thông tin địa chỉ.");
             }
         }
 
         // Create CTHoaDon for each IMEI
-        for (let i = 0; i < data.Imeis.length; i++) {
-            const imei = data.Imeis[i];
+        for (let i = 0; i < imeiData.Imeis.length; i++) {
+            const imei = imeiData.Imeis[i];
             const ctHoaDonData = {
                 IdHoaDon: idHoaDon,
                 GiaTien: unitPrice,
@@ -341,16 +338,36 @@ async function handleCheckout() {
             });
             const ctHoaDonResult = await ctHoaDonResponse.json();
             if (!ctHoaDonResult.message.includes("thành công")) {
-                throw new Error(`Thêm chi tiết hóa đơn cho sản phẩm thứ ${i + 1} thất bại`);
+                throw new Error(`Thêm chi tiết hóa đơn cho sản phẩm thứ ${i + 1} thất bại. IMEI: ${imei}`);
             }
         }
 
-        alert("Thanh toán thành công!");
+        // Verify invoice status
+        // const verifyResponse = await fetch(`/smartstation/src/mvc/controllers/HoaDonController.php?idHoaDon=${idHoaDon}`, {
+        //     method: 'GET',
+        //     headers: { 'Content-Type': 'application/json' }
+        // });
+        // const verifyData = await verifyResponse.json();
+        // if (!verifyData.HoaDon || verifyData.HoaDon.IdTinhTrang !== 1 || verifyData.HoaDon.TrangThai !== 1) {
+        //     throw new Error("Hóa đơn không ở trạng thái hợp lệ sau khi tạo. Vui lòng liên hệ hỗ trợ.");
+        // }
+
+        toast({
+            title: "Thành công",
+            message: "Thanh toán thành công! Cảm ơn bạn đã mua hàng.",
+            type: "success",
+            duration: 3000,
+        });
         const myModal = bootstrap.Modal.getInstance(buyNowModal);
         myModal.hide();
     } catch (error) {
         console.error("Lỗi thanh toán:", error);
-        alert("Lỗi thanh toán: " + error.message);
+        toast({
+            title: "Lỗi thanh toán",
+            message: error.message || "Đã xảy ra lỗi trong quá trình thanh toán. Vui lòng thử lại sau.",
+            type: "error",
+            duration: 5000,
+        });
     }
 }
 
@@ -361,3 +378,150 @@ handleAddressInput('buyNowModal');
 buyNowModal.addEventListener('hidden.bs.modal', () => {
     isBuyNowQuantitySelectorsSetup = false;
 });
+
+// --- New Additions Below (No Changes to Above Code) ---
+
+// Global variable for stock
+let availableStock = 0;
+
+// Fetch stock for a product
+async function fetchStock(idCHSP, idDSP) {
+    try {
+        const response = await fetch(`/smartstation/src/mvc/controllers/SanPhamController.php?idDSP=${idDSP}&idCHSP=${idCHSP}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        if (!response.ok) throw new Error('Lỗi mạng khi lấy số lượng tồn kho');
+        const data = await response.json();
+        return data.SoLuong || 0;
+    } catch (error) {
+        console.error("Lỗi khi lấy số lượng tồn kho:", error);
+        toast({
+            title: "Lỗi",
+            message: "Không thể lấy số lượng tồn kho",
+            type: "error",
+            duration: 3000,
+        });
+        return 0;
+    }
+}
+
+// New function to update quantity buttons with stock limit
+function updateQuantityButtonsWithStock(value) {
+    buyNowBtnDecrement.disabled = value <= 1;
+    buyNowBtnIncrement.disabled = value >= availableStock;
+}
+
+// New function to increment quantity with stock limit
+function incrementQuantityWithStock() {
+    let value = parseInt(buyNowQuantityElement.textContent);
+    if (value < availableStock) {
+        buyNowQuantityElement.textContent = value + 1;
+        updateQuantityButtonsWithStock(value + 1);
+        updateModalTotalPrice(price, value + 1);
+    } else {
+        toast({
+            title: "Cảnh báo",
+            message: `Số lượng tồn kho chỉ còn ${availableStock} sản phẩm!`,
+            type: "warning",
+            duration: 3000,
+        });
+    }
+}
+
+// New function to setup quantity selectors with stock
+async function setupModalQuantitySelectorsWithStock() {
+    const idCHSP = buyNowModal.querySelector('.col-md-6').dataset.idCHSP;
+    const idDSP = buyNowModal.querySelector('.col-md-6').dataset.idDSP;
+
+    // Fetch stock
+    availableStock = await fetchStock(idCHSP, idDSP);
+
+    // Run original setup
+    setupModalQuantitySelectors();
+
+    // Override event listeners
+    if (isBuyNowQuantitySelectorsSetup) {
+        buyNowBtnIncrement.removeEventListener('click', incrementQuantity);
+        buyNowBtnDecrement.removeEventListener('click', decrementQuantity);
+    }
+
+    buyNowBtnIncrement.addEventListener('click', incrementQuantityWithStock);
+    buyNowBtnDecrement.addEventListener('click', decrementQuantity);
+    updateQuantityButtonsWithStock(parseInt(buyNowQuantityElement.textContent));
+}
+
+// Wrap handleClickMuaNgay to check stock
+const originalHandleClickMuaNgay = handleClickMuaNgay;
+handleClickMuaNgay = async function() {
+    const elementDSP = document.querySelector('#modalProductRam .selected');
+    const elementCHSP = document.querySelector('#modalProductMauSac .selected');
+
+    if (elementDSP && elementCHSP) {
+        const idDSP = elementDSP.getAttribute('iddsp');
+        const idCHSP = elementCHSP.getAttribute('idchsp');
+
+        // Check stock
+        const stock = await fetchStock(idCHSP, idDSP);
+        if (stock === 0) {
+            toast({
+                title: "Cảnh báo",
+                message: "Sản phẩm đã hết hàng! Vui lòng chọn sản phẩm khác.",
+                type: "warning",
+                duration: 3000,
+            });
+            return;
+        }
+    }
+
+    // Call original function
+    originalHandleClickMuaNgay();
+};
+
+// Override SetInfor to use new quantity selector setup
+const originalSetInfor = SetInfor;
+SetInfor = async function(product) {
+    await originalSetInfor(product);
+    await setupModalQuantitySelectorsWithStock();
+};
+
+// Sample addToCart function with stock validation
+async function addToCart(product) {
+    const stock = await fetchStock(product.idCHSP, product.idDSP);
+    if (stock === 0) {
+        toast({
+            title: "Cảnh báo",
+            message: "Sản phẩm đã hết hàng! Vui lòng chọn sản phẩm khác.",
+            type: "warning",
+            duration: 3000,
+        });
+        return false;
+    }
+
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const existingItem = cart.find(item => item.idCHSP === product.idCHSP && item.idDSP === product.idDSP);
+    if (existingItem) {
+        if (existingItem.quantity >= stock) {
+            toast({
+                title: "Cảnh báo",
+                message: `Số lượng tồn kho chỉ còn ${stock} sản phẩm!`,
+                type: "warning",
+                duration: 3000,
+            });
+            return false;
+        }
+        existingItem.quantity += 1;
+    } else {
+        product.quantity = 1;
+        cart.push(product);
+    }
+
+    localStorage.setItem('cart', JSON.stringify(cart));
+    toast({
+        title: "Thành công",
+        message: "Đã thêm sản phẩm vào giỏ hàng!",
+        type: "success",
+        duration: 3000,
+    });
+    return true;
+}

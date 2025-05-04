@@ -1,5 +1,5 @@
 // Số lượng người dùng mỗi trang
-var USERS_PER_PAGE = 5;
+var USERS_PER_PAGE = 8;
 var currentPage = 1;
 var allUsers = []; // Lưu trữ toàn bộ dữ liệu người dùng
 
@@ -35,7 +35,7 @@ function renderUsersByPage(page) {
     tbody.innerHTML = "";
 
     if (allUsers.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" class="text-center">Không có khách hàng nào.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="9" class="text-center">Không có khách hàng nào.</td></tr>';
         return;
     }
 
@@ -45,22 +45,45 @@ function renderUsersByPage(page) {
     const usersToDisplay = allUsers.slice(startIndex, endIndex);
 
     const userPromises = usersToDisplay.map((user) => {
-        return fetch(`/smartstation/src/mvc/controllers/TaiKhoanController.php?idNguoiDung=${user.IdNguoiDung}`)
+        // Lấy thông tin tài khoản
+        const accountPromise = fetch(`/smartstation/src/mvc/controllers/TaiKhoanController.php?idNguoiDung=${user.IdNguoiDung}`)
             .then((response) => response.json())
-            .then((data) => {
+            .catch(() => ({ TaiKhoan: "Lỗi khi lấy tài khoản" }));
+        
+        // Kết hợp promise
+        return accountPromise.then(accountData => {
+            // Nếu có IdVaiTro trong tài khoản, lấy thông tin vai trò
+            if (accountData.IdVaiTro) {
+                return fetch(`/smartstation/src/mvc/controllers/VaiTroController.php?idVaiTro=${accountData.IdVaiTro}`)
+                    .then(response => response.json())
+                    .then(vaiTroData => {
+                        return {
+                            ...user,
+                            TaiKhoan: accountData.TaiKhoan || "Chưa có",
+                            VaiTro: vaiTroData.TenVaiTro || "Chưa có vai trò"
+                        };
+                    })
+                    .catch(() => {
+                        return {
+                            ...user,
+                            TaiKhoan: accountData.TaiKhoan || "Chưa có",
+                            VaiTro: "Không xác định"
+                        };
+                    });
+            } else {
                 return {
                     ...user,
-                    TaiKhoan: data.TaiKhoan || "Chưa có",
+                    TaiKhoan: accountData.TaiKhoan || "Chưa có",
+                    VaiTro: "Chưa có vai trò"
                 };
-            })
-            .catch(() => ({
-                ...user,
-                TaiKhoan: "Lỗi khi lấy tài khoản",
-            }));
+            }
+        });
     });
 
-    Promise.all(userPromises).then((usersWithAccount) => {
-        usersWithAccount.forEach((user) => {
+    
+    Promise.all(userPromises).then((usersWithData) => {
+        console.log(usersWithData);
+        usersWithData.forEach((user) => {
             const tr = document.createElement("tr");
             const buttonText = user.TrangThai == 1 ? "Khóa" : "Mở khóa";
             const buttonClass = user.TrangThai == 1 ? "btn-danger" : "btn-success";
@@ -72,9 +95,13 @@ function renderUsersByPage(page) {
                 <td>${user.SoDienThoai || "Chưa có"}</td>
                 <td class="status">${user.TrangThai == 1 ? "Đang hoạt động" : "Ngừng hoạt động"}</td>
                 <td>${user.TaiKhoan}</td>
+                <td>${user.VaiTro}</td>
                 <td>
                     <button class="btn ${buttonClass} btn-toggle-lock" data-id="${user.IdNguoiDung}" data-status="${user.TrangThai}">
                         ${buttonText}
+                    </button>
+                    <button class="btn btn-primary btn-edit-role" data-id="${user.IdNguoiDung}" data-account="${user.TaiKhoan}">
+                        Sửa vai trò
                     </button>
                 </td>
             `;
@@ -92,50 +119,63 @@ function renderPagination() {
     const paginationContainer = document.querySelector("#pagination");
     paginationContainer.innerHTML = "";
 
-    // Nút Previous
-    const prevButton = document.createElement("button");
-    prevButton.className = "btn btn-secondary mx-1";
-    prevButton.textContent = "Previous";
-    prevButton.disabled = currentPage === 1;
-    prevButton.addEventListener("click", () => {
-        if (currentPage > 1) {
-            currentPage--;
-            renderUsersByPage(currentPage);
-            renderPagination();
+    // Helper để thêm nút
+    const addPage = (text, page, isActive = false, isDisabled = false) => {
+        const btn = document.createElement("button");
+        btn.innerText = text;
+        btn.className = `btn mx-1 ${isActive ? 'btn-primary' : 'btn-secondary'}`;
+        
+        if (isDisabled) {
+            btn.disabled = true;
+        } else {
+            btn.addEventListener("click", () => {
+                currentPage = page;
+                renderUsersByPage(currentPage);
+                renderPagination();
+            });
         }
-    });
-    paginationContainer.appendChild(prevButton);
+        paginationContainer.appendChild(btn);
+    };
 
-    // Nút số trang
-    for (let i = 1; i <= totalPages; i++) {
-        const pageButton = document.createElement("button");
-        pageButton.className = `btn mx-1 ${i === currentPage ? "btn-primary" : "btn-secondary"}`;
-        pageButton.textContent = i;
-        pageButton.addEventListener("click", () => {
-            currentPage = i;
-            renderUsersByPage(currentPage);
-            renderPagination();
-        });
-        paginationContainer.appendChild(pageButton);
+    // Nút "Prev"
+    addPage("« Prev", currentPage - 1, false, currentPage === 1);
+
+    // Luôn hiển thị trang đầu tiên
+    addPage("1", 1, currentPage === 1);
+
+    // Dấu ... nếu cần
+    if (currentPage > 4) {
+        const dots = document.createElement("span");
+        dots.innerText = "...";
+        dots.className = "mx-1";
+        paginationContainer.appendChild(dots);
     }
 
-    // Nút Next
-    const nextButton = document.createElement("button");
-    nextButton.className = "btn btn-secondary mx-1";
-    nextButton.textContent = "Next";
-    nextButton.disabled = currentPage === totalPages;
-    nextButton.addEventListener("click", () => {
-        if (currentPage < totalPages) {
-            currentPage++;
-            renderUsersByPage(currentPage);
-            renderPagination();
-        }
-    });
-    paginationContainer.appendChild(nextButton);
+    // Các trang gần currentPage
+    for (let i = Math.max(2, currentPage - 2); i <= Math.min(totalPages - 1, currentPage + 2); i++) {
+        addPage(i.toString(), i, currentPage === i);
+    }
+
+    // Dấu ... nếu cần
+    if (currentPage < totalPages - 3) {
+        const dots = document.createElement("span");
+        dots.innerText = "...";
+        dots.className = "mx-1";
+        paginationContainer.appendChild(dots);
+    }
+
+    // Luôn hiển thị trang cuối cùng nếu có nhiều hơn 1 trang
+    if (totalPages > 1) {
+        addPage(totalPages.toString(), totalPages, currentPage === totalPages);
+    }
+
+    // Nút "Next"
+    addPage("Next »", currentPage + 1, false, currentPage === totalPages);
 }
 
-// Hàm gắn sự kiện cho các nút khóa/mở khóa
+// Hàm gắn sự kiện cho các nút
 function attachEventListeners() {
+    // Sự kiện cho nút khóa/mở khóa
     document.querySelectorAll(".btn-toggle-lock").forEach((button) => {
         button.addEventListener("click", function () {
             const id = this.getAttribute("data-id");
@@ -146,6 +186,15 @@ function attachEventListeners() {
             if (confirm(`Bạn có chắc muốn ${action} khách hàng này?`)) {
                 toggleUserLock(id, newStatus, this);
             }
+        });
+    });
+
+    // Sự kiện cho nút sửa vai trò
+    document.querySelectorAll(".btn-edit-role").forEach((button) => {
+        button.addEventListener("click", function() {
+            const userId = this.getAttribute("data-id");
+            const accountName = this.getAttribute("data-account");
+            openEditRoleModal(userId, accountName);
         });
     });
 }
@@ -196,3 +245,136 @@ function toggleUserLock(id, newStatus, button) {
 
 // Gọi hàm để tải danh sách người dùng khi trang được tải
 fetchAndRenderUsers();
+
+// Hàm mở modal chỉnh sửa vai trò
+function openEditRoleModal(userId, accountName) {
+    // Lấy danh sách vai trò
+    fetch("/smartstation/src/mvc/controllers/VaiTroController.php", {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+    .then(response => response.json())
+    .then(roles => {
+        // Lấy thông tin tài khoản hiện tại để biết vai trò hiện tại
+        fetch(`/smartstation/src/mvc/controllers/TaiKhoanController.php?idNguoiDung=${userId}`)
+        .then(response => response.json())
+        .then(accountData => {
+            const roleSelect = document.getElementById("roleSelect");
+            roleSelect.innerHTML = "";
+            
+            // Thêm các option cho select
+            roles.forEach(role => {
+                const option = document.createElement("option");
+                option.value = role.IdVaiTro;
+                option.textContent = role.TenVaiTro;
+                
+                // Nếu là vai trò hiện tại thì chọn sẵn
+                if (accountData.IdVaiTro == role.IdVaiTro) {
+                    option.selected = true;
+                }
+                
+                roleSelect.appendChild(option);
+            });
+            
+            // Lưu userId vào nút lưu để sử dụng khi lưu
+            document.getElementById("saveRoleBtn").setAttribute("data-user-id", userId);
+            document.getElementById("saveRoleBtn").setAttribute("data-account", accountName);
+            
+            // Hiển thị modal
+            const modal = document.getElementById("editRoleModal");
+            modal.style.display = "flex";
+            
+            // Gắn lại sự kiện cho các nút
+            setupModalButtons();
+        });
+    })
+    .catch(error => {
+        console.error("Error loading roles:", error);
+        alert("Đã xảy ra lỗi khi tải danh sách vai trò.");
+    });
+}
+
+// Hàm đóng modal
+function closeEditRoleModal() {
+    const modal = document.getElementById("editRoleModal");
+    modal.style.display = "none";
+}
+
+// Hàm lưu vai trò mới
+function saveRole() {
+    const roleSelect = document.getElementById("roleSelect");
+    const newRoleId = roleSelect.value;
+    const userId = document.getElementById("saveRoleBtn").getAttribute("data-user-id");
+    const accountName = document.getElementById("saveRoleBtn").getAttribute("data-account");
+    console.log("Saving role:", newRoleId, "for account:", accountName);
+    
+    // Gọi API để cập nhật vai trò
+    fetch(`/smartstation/src/mvc/controllers/TaiKhoanController.php?taikhoan=${accountName}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            IdVaiTro: newRoleId
+        }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert("Cập nhật vai trò thành công!");
+            closeEditRoleModal();
+            // Tải lại danh sách người dùng để cập nhật giao diện
+            fetchAndRenderUsers();
+        } else {
+            alert("Cập nhật vai trò thất bại: " + data.message);
+        }
+    })
+    .catch(error => {
+        console.error("Error updating role:", error);
+        alert("Đã xảy ra lỗi khi cập nhật vai trò.");
+    });
+}
+
+// Gắn sự kiện cho các nút trong modal
+document.addEventListener("DOMContentLoaded", function() {
+    // Nút đóng modal
+    document.getElementById("closeModalBtn").addEventListener("click", closeEditRoleModal);
+    
+    // Nút lưu vai trò - gắn sự kiện trực tiếp
+    document.getElementById("saveRoleBtn").addEventListener("click", saveRole);
+    
+    // Gọi hàm để tải danh sách người dùng khi trang được tải
+    fetchAndRenderUsers();
+});
+
+// Thêm một cách gắn sự kiện khác để đảm bảo nút lưu hoạt động
+function setupModalButtons() {
+    // Gắn sự kiện cho nút lưu vai trò
+    const saveRoleBtn = document.getElementById("saveRoleBtn");
+    if (saveRoleBtn) {
+        // Xóa tất cả event listeners cũ
+        const newSaveBtn = saveRoleBtn.cloneNode(true);
+        saveRoleBtn.parentNode.replaceChild(newSaveBtn, saveRoleBtn);
+        
+        // Thêm event listener mới
+        newSaveBtn.addEventListener("click", function() {
+            console.log("Save button clicked");
+            saveRole();
+        });
+    }
+    
+    // Gắn sự kiện cho nút đóng modal
+    const closeModalBtn = document.getElementById("closeModalBtn");
+    if (closeModalBtn) {
+        // Xóa tất cả event listeners cũ
+        const newCloseBtn = closeModalBtn.cloneNode(true);
+        closeModalBtn.parentNode.replaceChild(newCloseBtn, closeModalBtn);
+        
+        // Thêm event listener mới
+        newCloseBtn.addEventListener("click", function() {
+            closeEditRoleModal();
+        });
+    }
+}

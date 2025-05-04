@@ -54,17 +54,14 @@ class TaiKhoanController {
                 break;
 
             case 'PUT':
-                $json = file_get_contents("php://input");
-                $_PUT = json_decode($json, true);
-
                 if (isset($_GET['taikhoan'])) {
-                    $result = $this->model->updateTaiKhoan($_GET['taikhoan'], $_PUT);
+                    $result = $this->model->updateTaiKhoan($_GET['taikhoan'], $input);
                     echo json_encode([
                         "success" => $result,
                         "message" => $result ? "Cập nhật thành công" : "Cập nhật thất bại"
                     ]);
                 } else {
-                    echo json_encode(["message" => "Thiếu IdTaiKhoan để cập nhật"]);
+                    echo json_encode(["message" => "Thiếu taikhoan để cập nhật"]);
                 }
                 break;
 
