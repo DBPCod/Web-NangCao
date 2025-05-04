@@ -1,5 +1,5 @@
 // Số lượng bảo hành mỗi trang
-var WARRANTIES_PER_PAGE = 5;
+var WARRANTIES_PER_PAGE = 8;
 var currentPage = 1;
 var allWarranties = []; // Lưu trữ toàn bộ dữ liệu bảo hành
 

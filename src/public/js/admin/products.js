@@ -1,5 +1,5 @@
 // Số lượng sản phẩm mỗi trang
-var PRODUCTS_PER_PAGE = 5;
+var PRODUCTS_PER_PAGE = 8;
 var currentPage = 1;
 var allProducts = []; // Lưu trữ toàn bộ dữ liệu sản phẩm
 var isLoadingProducts = false; // Đặt cờ để kiểm tra trạng thái tải sản phẩm
@@ -91,46 +91,58 @@ function renderPagination() {
     const paginationContainer = document.querySelector("#pagination");
     paginationContainer.innerHTML = "";
 
-    // Nút Previous
-    const prevButton = document.createElement("button");
-    prevButton.className = "btn btn-secondary mx-1";
-    prevButton.textContent = "Previous";
-    prevButton.disabled = currentPage === 1;
-    prevButton.addEventListener("click", () => {
-        if (currentPage > 1) {
-            currentPage--;
-            renderProductsByPage(currentPage);
-            renderPagination();
+    // Helper để thêm nút
+    const addPage = (text, page, isActive = false, isDisabled = false) => {
+        const btn = document.createElement("button");
+        btn.innerText = text;
+        btn.className = `btn mx-1 ${isActive ? 'btn-primary' : 'btn-secondary'}`;
+        
+        if (isDisabled) {
+            btn.disabled = true;
+        } else {
+            btn.addEventListener("click", () => {
+                currentPage = page;
+                renderProductsByPage(currentPage);
+                renderPagination();
+            });
         }
-    });
-    paginationContainer.appendChild(prevButton);
+        paginationContainer.appendChild(btn);
+    };
 
-    // Nút số trang
-    for (let i = 1; i <= totalPages; i++) {
-        const pageButton = document.createElement("button");
-        pageButton.className = `btn mx-1 ${i === currentPage ? "btn-primary" : "btn-secondary"}`;
-        pageButton.textContent = i;
-        pageButton.addEventListener("click", () => {
-            currentPage = i;
-            renderProductsByPage(currentPage);
-            renderPagination();
-        });
-        paginationContainer.appendChild(pageButton);
+    // Nút "Prev"
+    addPage("« Prev", currentPage - 1, false, currentPage === 1);
+
+    // Luôn hiển thị trang đầu tiên
+    addPage("1", 1, currentPage === 1);
+
+    // Dấu ... nếu cần
+    if (currentPage > 4) {
+        const dots = document.createElement("span");
+        dots.innerText = "...";
+        dots.className = "mx-1";
+        paginationContainer.appendChild(dots);
     }
 
-    // Nút Next
-    const nextButton = document.createElement("button");
-    nextButton.className = "btn btn-secondary mx-1";
-    nextButton.textContent = "Next";
-    nextButton.disabled = currentPage === totalPages;
-    nextButton.addEventListener("click", () => {
-        if (currentPage < totalPages) {
-            currentPage++;
-            renderProductsByPage(currentPage);
-            renderPagination();
-        }
-    });
-    paginationContainer.appendChild(nextButton);
+    // Các trang gần currentPage
+    for (let i = Math.max(2, currentPage - 2); i <= Math.min(totalPages - 1, currentPage + 2); i++) {
+        addPage(i.toString(), i, currentPage === i);
+    }
+
+    // Dấu ... nếu cần
+    if (currentPage < totalPages - 3) {
+        const dots = document.createElement("span");
+        dots.innerText = "...";
+        dots.className = "mx-1";
+        paginationContainer.appendChild(dots);
+    }
+
+    // Luôn hiển thị trang cuối cùng nếu có nhiều hơn 1 trang
+    if (totalPages > 1) {
+        addPage(totalPages.toString(), totalPages, currentPage === totalPages);
+    }
+
+    // Nút "Next"
+    addPage("Next »", currentPage + 1, false, currentPage === totalPages);
 }
 
 // Hàm tải danh sách dòng sản phẩm vào modal thêm
