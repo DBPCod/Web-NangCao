@@ -160,8 +160,8 @@ function collectFilters() {
 
     if (document.querySelector('#app1').checked) filters.priceRanges.push('0-3000000');
     if (document.querySelector('#app2').checked) filters.priceRanges.push('3000000-6000000');
-    if (document.querySelector('#app3').checked || document.querySelector('#app4').checked) filters.priceRanges.push('6000000-10000000');
-    if (document.querySelector('#app5').checked) filters.priceRanges.push('10000000-');
+    if (document.querySelector('#app3').checked)  filters.priceRanges.push('6000000-10000000');
+    if (document.querySelector('#app4').checked) filters.priceRanges.push('10000000-');
 
     const minDisplay = document.querySelector('.min-price-display');
     const maxDisplay = document.querySelector('.max-price-display');
