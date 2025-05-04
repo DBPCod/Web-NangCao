@@ -262,7 +262,11 @@ INSERT INTO `ctphieunhap` (`IdPhieuNhap`, `GiaNhap`, `SoLuong`, `IdCHSP`, `IdDon
 
 CREATE TABLE `ctquyen` (
   `IdQuyen` int(11) NOT NULL,
-  `IdVaiTro` int(11) NOT NULL
+  `IdVaiTro` int(11) NOT NULL,
+  `xem` tinyint(1) DEFAULT 0,
+  `them` tinyint(1) DEFAULT 0,
+  `sua` tinyint(1) DEFAULT 0,
+  `xoa` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -415,21 +419,21 @@ CREATE TABLE `quyen` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `quyen`
+-- Dumping data for table `quyen`
 --
 
 INSERT INTO `quyen` (`IdQuyen`, `TenQuyen`) VALUES
-(1, 'Khách hàng'),
-(2, 'Danh sách sản phẩm'),
-(3, 'Dòng sản phẩm'),
-(4, 'Cấu hình sản phẩm'),
-(5, 'Thương hiệu'),
-(6, 'Khuyến mãi'),
-(7, 'Bảo hành'),
-(8, 'Danh sách phiếu nhập'),
-(9, 'Nhà cung cấp'),
-(10, 'Đơn hàng'),
-(11, 'Thống kê');
+(1,	'Khách hàng'),
+(2,	'Danh sách sản phẩm'),
+(3,	'Dòng sản phẩm'),
+(4,	'Cấu hình sản phẩm'),
+(5,	'Thương hiệu'),
+(6,	'Khuyến mãi'),
+(7,	'Bảo hành'),
+(8,	'Danh sách phiếu nhập'),
+(9,	'Nhà cung cấp'),
+(10,	'Đơn hàng'),
+(11,	'Thống kê');
 
 -- --------------------------------------------------------
 
