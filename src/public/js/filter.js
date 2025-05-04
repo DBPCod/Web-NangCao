@@ -346,6 +346,7 @@ function loadFilteredProducts(page, filters, limit, type) {
 // Hàm lọc sản phẩm mới nhất
 function filterNewProducts() {
     const filters = collectFilters();
+    filters = searchProductsInput(filters);
     filters.sort = 'latest';
     const limit = 10; // Giới hạn 10 sản phẩm mỗi trang
     loadFilteredProducts(1, filters, limit, 'new-products');
@@ -354,6 +355,7 @@ function filterNewProducts() {
 // Hàm lọc sản phẩm bán chạy
 function filterBestSellingProducts() {
     const filters = collectFilters();
+    filters = searchProductsInput(filters);
     filters.sort = 'bestselling';
     const limit = 6; // Giới hạn 6 sản phẩm mỗi trang
     loadFilteredProducts(1, filters, limit, 'best-selling');
