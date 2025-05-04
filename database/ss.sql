@@ -318,7 +318,7 @@ CREATE TABLE `nguoidung` (
 --
 
 INSERT INTO `nguoidung` (`IdNguoiDung`, `HoVaTen`, `Email`, `DiaChi`, `SoDienThoai`, `TrangThai`) VALUES
-(1, 'Nguyễn Văn A', 'nguyenvana@gmail.com', '53 Trần Bình Trọng, p3, q5, TpHCM', '0797923412', 0),
+(1, 'Nguyễn Văn A', 'nguyenvana@gmail.com', '53 Trần Bình Trọng, p3, q5, TpHCM', '0797923412', 1),
 (2, 'Admin', 'admin@gmail.com', 'admin', '0123456789', 1);
 
 -- --------------------------------------------------------
