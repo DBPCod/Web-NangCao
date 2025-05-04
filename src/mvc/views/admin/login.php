@@ -26,16 +26,46 @@ function LayThongTinNguoiDung($username)
     return $stmt->get_result()->fetch_assoc();
 }
 
+//--------------Permission------------------
+function GetPermissions($idVaiTro)
+{
+    global $db;
+    $stmt = $db->prepare("SELECT q.TenQuyen, qv.xem, qv.them, qv.sua, qv.xoa 
+        FROM ctquyen qv 
+        JOIN quyen q ON qv.IdQuyen = q.IdQuyen 
+        WHERE qv.IdVaiTro = ?");
+    $stmt->bind_param("i", $idVaiTro);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $permissions = [];
+    while ($row = $result->fetch_assoc()) {
+        $permissions[] = $row;
+    }
+    return $permissions;
+}
+//---------------------------------------------
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'] ?? '';
     $password = $_POST['password'] ?? '';
 
     $hashedPassword = GetMatKhau($username);
 
-    if ($hashedPassword && password_verify($password, $hashedPassword["MatKhau"]) && $hashedPassword["IdVaiTro"] == 1) {
+    if ($hashedPassword && password_verify($password, $hashedPassword["MatKhau"])) {
         $userInfo = LayThongTinNguoiDung($username);
+        //Lấy vai trò
+        $idVaiTro = $hashedPassword["IdVaiTro"];
+
+        //Lấy danh sách quyền
+        $permissions = GetPermissions($idVaiTro);
+
+        //Lưu vào session 
         $_SESSION['admin_logged_in'] = true;
         $_SESSION['admin_info'] = $userInfo;
+        //Vai trò và quyền
+        $_SESSION['IdVaiTro'] = $idVaiTro;
+        $_SESSION['Permissions'] = $permissions;
+
         // Lưu thông tin vào cookie (thời gian sống: 30 ngày)
         $cookie_expiry = time() + (1 * 24 * 60 * 60); // 30 ngày
         setcookie('admin_idnguoidung', $userInfo['idnguoidung'], $cookie_expiry, '/');

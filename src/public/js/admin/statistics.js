@@ -148,6 +148,7 @@ document.addEventListener("click", function (e) {
                                         data-ngay="${order.NgayTao}"
                                         data-trangthai="${order.TenTinhTrang}"
                                         data-thanhtien="${order.ThanhTien}"
+                                        data-diachi="${order.DiaChi}"
                                         data-bs-toggle="modal" 
                                         data-bs-target="#orderDetailModal">
                                     Xem chi tiết
@@ -167,12 +168,13 @@ document.addEventListener("click", function (e) {
         const ngay = e.target.dataset.ngay;
         const trangThai = e.target.dataset.trangthai;
         const thanhtien = e.target.dataset.thanhtien;
-
+        const diachi = e.target.dataset.diachi;
 
         //Đổi các label 
         document.getElementById("orderDetailModalLabel").textContent = `Chi tiết hóa đơn #${idHoaDon}`;
         document.getElementById("orderDate").innerHTML = `<strong>Ngày đặt: </strong>${ngay}`;
         document.getElementById("orderStatus").innerHTML= `<strong>Trạng thái: </strong>${trangThai}`;
+        document.getElementById("adress").innerHTML= `<strong>Địa chỉ giao hàng:</strong>${diachi}`;
 
         // Gọi controller để lấy chi tiet hoa don
         fetch(`/smartstation/src/mvc/controllers/ThongKeController.php?idHoaDon=${idHoaDon}`)
@@ -186,21 +188,19 @@ document.addEventListener("click", function (e) {
                 if (!orderDetails || orderDetails.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="4">Không có đơn hàng nào</td></tr>';
                 } else {
-                    let total = 0;
                     orderDetails.forEach((orderDetail) => {
                     tbody.innerHTML += `
                         <tr>
                             <td>${orderDetail.TenDong}</td>
                             <td>${orderDetail.SoLuong}</td>
                             <td>${Number(orderDetail.Gia).toLocaleString()} đ</td>
-                            <td>${Number(thanhtien).toLocaleString()}</td>
+                            <td>${Number(orderDetail.Gia).toLocaleString()}</td>
                         </tr>`;
-                        total += Number(thanhtien);
                     }); 
                     tbody.insertAdjacentHTML("beforeend", `
                         <tr class="table-warning">
                             <td colspan="3" class="text-end"><strong>Tổng cộng:</strong></td>
-                            <td><strong>${Number(total).toLocaleString()} đ</strong></td>
+                            <td><strong>${Number(thanhtien).toLocaleString()} đ</strong></td>
                         </tr>
                     `);
                     

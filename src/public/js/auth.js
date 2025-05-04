@@ -378,8 +378,64 @@ function UpdateInfor(HoVaTen, SoDienThoai, Email, DiaChi) {
         body: JSON.stringify({ HoVaTen, SoDienThoai, Email, DiaChi, TrangThai: 1 })
     })
         .then(response => response.json())
-        .then(data => {
-            if (data.success) {
+        .then(data =>{
+            const fullName = document.getElementById('updateFullName').value;
+            const phone = document.getElementById('updatePhone').value;
+            const email = document.getElementById('updateEmail').value;
+            const address = document.getElementById('updateAddress').value;
+            const newPassword = document.getElementById('updatePassword');
+            const confirmPassword = document.getElementById('updateConfirmPassword');
+            if(data.success)
+            {
+                document.getElementById('currentPasswordError').style.display = 'none';
+                if (newPassword && newPassword.length < 8) {
+                    document.getElementById('updatePasswordLengthError').style.display = 'block';
+                    return;
+                } else {
+                    document.getElementById('updatePasswordLengthError').style.display = 'none';
+                }
+
+                
+    
+                if (newPassword && newPassword.value !== confirmPassword.value) {
+                    document.getElementById('updatePasswordMatchError').style.display = 'block';
+                    return;
+                } else {
+                    document.getElementById('updatePasswordMatchError').style.display = 'none';
+                }
+                if(newPassword.value)
+                {
+                    let taiKhoan = decodeEmail(getCookie('username'));
+                    UpdatePass(newPassword.value,taiKhoan);
+                    newPassword.innerText='';
+                    confirmPassword.innerText='';
+                }else
+                {
+                    UpdateInfor(fullName, phone, email , address);
+                }
+                
+                const updateModal = bootstrap.Modal.getInstance(document.getElementById('updateProfile'));
+                updateModal.hide();
+            }
+            else {
+                document.getElementById('currentPasswordError').style.display = 'block';
+                currentPassword.select();
+            }
+        })  
+    }
+
+    //update thong tin khach hang
+    function UpdateInfor(HoVaTen, SoDienThoai, Email , DiaChi)
+    {
+        fetch(`../../controllers/NguoiDungController.php?idNguoiDung=${dataCookie.user.idnguoidung}`,{
+            method: "PUT",
+            headers: {"Content-Type" : "application/json" },
+            body: JSON.stringify({HoVaTen, SoDienThoai, Email , DiaChi,TrangThai: 1})
+        })
+        .then(response => response.json())
+        .then(data =>{
+            if(data.success){
+                
                 toast({
                     title: 'Thành công',
                     message: 'Cập nhật thông tin thành công!',
