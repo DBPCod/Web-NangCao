@@ -100,6 +100,9 @@ function renderUsersByPage(page) {
                     <button class="btn ${buttonClass} btn-toggle-lock" data-id="${user.IdNguoiDung}" data-status="${user.TrangThai}">
                         ${buttonText}
                     </button>
+                    <button class="btn btn-primary btn-edit-role" data-id="${user.IdNguoiDung}" data-account="${user.TaiKhoan}">
+                        Sửa vai trò
+                    </button>
                 </td>
             `;
             tbody.appendChild(tr);
@@ -158,8 +161,9 @@ function renderPagination() {
     paginationContainer.appendChild(nextButton);
 }
 
-// Hàm gắn sự kiện cho các nút khóa/mở khóa
+// Hàm gắn sự kiện cho các nút
 function attachEventListeners() {
+    // Sự kiện cho nút khóa/mở khóa
     document.querySelectorAll(".btn-toggle-lock").forEach((button) => {
         button.addEventListener("click", function () {
             const id = this.getAttribute("data-id");
@@ -170,6 +174,15 @@ function attachEventListeners() {
             if (confirm(`Bạn có chắc muốn ${action} khách hàng này?`)) {
                 toggleUserLock(id, newStatus, this);
             }
+        });
+    });
+
+    // Sự kiện cho nút sửa vai trò
+    document.querySelectorAll(".btn-edit-role").forEach((button) => {
+        button.addEventListener("click", function() {
+            const userId = this.getAttribute("data-id");
+            const accountName = this.getAttribute("data-account");
+            openEditRoleModal(userId, accountName);
         });
     });
 }
@@ -220,3 +233,136 @@ function toggleUserLock(id, newStatus, button) {
 
 // Gọi hàm để tải danh sách người dùng khi trang được tải
 fetchAndRenderUsers();
+
+// Hàm mở modal chỉnh sửa vai trò
+function openEditRoleModal(userId, accountName) {
+    // Lấy danh sách vai trò
+    fetch("/smartstation/src/mvc/controllers/VaiTroController.php", {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+    .then(response => response.json())
+    .then(roles => {
+        // Lấy thông tin tài khoản hiện tại để biết vai trò hiện tại
+        fetch(`/smartstation/src/mvc/controllers/TaiKhoanController.php?idNguoiDung=${userId}`)
+        .then(response => response.json())
+        .then(accountData => {
+            const roleSelect = document.getElementById("roleSelect");
+            roleSelect.innerHTML = "";
+            
+            // Thêm các option cho select
+            roles.forEach(role => {
+                const option = document.createElement("option");
+                option.value = role.IdVaiTro;
+                option.textContent = role.TenVaiTro;
+                
+                // Nếu là vai trò hiện tại thì chọn sẵn
+                if (accountData.IdVaiTro == role.IdVaiTro) {
+                    option.selected = true;
+                }
+                
+                roleSelect.appendChild(option);
+            });
+            
+            // Lưu userId vào nút lưu để sử dụng khi lưu
+            document.getElementById("saveRoleBtn").setAttribute("data-user-id", userId);
+            document.getElementById("saveRoleBtn").setAttribute("data-account", accountName);
+            
+            // Hiển thị modal
+            const modal = document.getElementById("editRoleModal");
+            modal.style.display = "flex";
+            
+            // Gắn lại sự kiện cho các nút
+            setupModalButtons();
+        });
+    })
+    .catch(error => {
+        console.error("Error loading roles:", error);
+        alert("Đã xảy ra lỗi khi tải danh sách vai trò.");
+    });
+}
+
+// Hàm đóng modal
+function closeEditRoleModal() {
+    const modal = document.getElementById("editRoleModal");
+    modal.style.display = "none";
+}
+
+// Hàm lưu vai trò mới
+function saveRole() {
+    const roleSelect = document.getElementById("roleSelect");
+    const newRoleId = roleSelect.value;
+    const userId = document.getElementById("saveRoleBtn").getAttribute("data-user-id");
+    const accountName = document.getElementById("saveRoleBtn").getAttribute("data-account");
+    console.log("Saving role:", newRoleId, "for account:", accountName);
+    
+    // Gọi API để cập nhật vai trò
+    fetch(`/smartstation/src/mvc/controllers/TaiKhoanController.php?taikhoan=${accountName}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            IdVaiTro: newRoleId
+        }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert("Cập nhật vai trò thành công!");
+            closeEditRoleModal();
+            // Tải lại danh sách người dùng để cập nhật giao diện
+            fetchAndRenderUsers();
+        } else {
+            alert("Cập nhật vai trò thất bại: " + data.message);
+        }
+    })
+    .catch(error => {
+        console.error("Error updating role:", error);
+        alert("Đã xảy ra lỗi khi cập nhật vai trò.");
+    });
+}
+
+// Gắn sự kiện cho các nút trong modal
+document.addEventListener("DOMContentLoaded", function() {
+    // Nút đóng modal
+    document.getElementById("closeModalBtn").addEventListener("click", closeEditRoleModal);
+    
+    // Nút lưu vai trò - gắn sự kiện trực tiếp
+    document.getElementById("saveRoleBtn").addEventListener("click", saveRole);
+    
+    // Gọi hàm để tải danh sách người dùng khi trang được tải
+    fetchAndRenderUsers();
+});
+
+// Thêm một cách gắn sự kiện khác để đảm bảo nút lưu hoạt động
+function setupModalButtons() {
+    // Gắn sự kiện cho nút lưu vai trò
+    const saveRoleBtn = document.getElementById("saveRoleBtn");
+    if (saveRoleBtn) {
+        // Xóa tất cả event listeners cũ
+        const newSaveBtn = saveRoleBtn.cloneNode(true);
+        saveRoleBtn.parentNode.replaceChild(newSaveBtn, saveRoleBtn);
+        
+        // Thêm event listener mới
+        newSaveBtn.addEventListener("click", function() {
+            console.log("Save button clicked");
+            saveRole();
+        });
+    }
+    
+    // Gắn sự kiện cho nút đóng modal
+    const closeModalBtn = document.getElementById("closeModalBtn");
+    if (closeModalBtn) {
+        // Xóa tất cả event listeners cũ
+        const newCloseBtn = closeModalBtn.cloneNode(true);
+        closeModalBtn.parentNode.replaceChild(newCloseBtn, closeModalBtn);
+        
+        // Thêm event listener mới
+        newCloseBtn.addEventListener("click", function() {
+            closeEditRoleModal();
+        });
+    }
+}
