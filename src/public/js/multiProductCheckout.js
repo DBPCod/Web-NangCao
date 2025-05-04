@@ -44,33 +44,87 @@ function updateTotalPrice() {
 }
 
 // Update quantity buttons state for a product
-function updateProductQuantityButtons(product, value) {
+function updateProductQuantityButtons(product, value, maxStock) {
     const btnDecrement = product.querySelector('.btn-decrement');
     const btnIncrement = product.querySelector('.btn-increment');
     btnDecrement.disabled = value <= 1;
-    btnIncrement.disabled = value >= 10;
+    btnIncrement.disabled = value >= maxStock;
 }
 
 // Setup quantity selectors for all products
-function setupQuantitySelectors() {
+async function setupQuantitySelectors() {
     if (isQuantitySelectorsSetup) return;
 
     const products = productList.querySelectorAll('.product-details');
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
+    // Lấy thông tin tồn kho cho tất cả sản phẩm
+    const stockPromises = [];
+    for (const product of products) {
+        const idCHSP = product.dataset.idchsp;
+        const idDSP = product.dataset.iddsp;
+        stockPromises.push(
+            fetch(`/smartstation/src/mvc/controllers/SanPhamController.php?idDSP=${idDSP}&idCHSP=${idCHSP}`)
+                .then(response => response.json())
+                .then(data => ({
+                    idCHSP,
+                    idDSP,
+                    stock: data.SoLuong || 0
+                }))
+                .catch(error => ({
+                    idCHSP,
+                    idDSP,
+                    stock: 0,
+                    error
+                }))
+        );
+    }
+
+    const stockResults = await Promise.all(stockPromises);
+    const stockMap = {};
+    stockResults.forEach(result => {
+        stockMap[`${result.idCHSP}-${result.idDSP}`] = result.stock;
+    });
+
     products.forEach(product => {
         const btnDecrement = product.querySelector('.btn-decrement');
         const btnIncrement = product.querySelector('.btn-increment');
         const quantityElement = product.querySelector('.quantity-value');
-        const idCHSP = product.dataset.idCHSP;
+        const idCHSP = product.dataset.idchsp;
+        const idDSP = product.dataset.iddsp;
+        const stockKey = `${idCHSP}-${idDSP}`;
+        const maxStock = stockMap[stockKey] || 0;
 
-        updateProductQuantityButtons(product, parseInt(quantityElement.textContent));
+        // Cập nhật số lượng ban đầu nếu vượt quá tồn kho
+        let currentQuantity = parseInt(quantityElement.textContent);
+        if (currentQuantity > maxStock) {
+            quantityElement.textContent = maxStock;
+            currentQuantity = maxStock;
+            
+            // Cập nhật giỏ hàng
+            const cartItem = cart.find(item => item.idCHSP === idCHSP);
+            if (cartItem) {
+                cartItem.quantity = maxStock;
+                localStorage.setItem('cart', JSON.stringify(cart));
+            }
+            
+            // Hiển thị thông báo
+            toast({
+                title: "Cảnh báo",
+                message: `Số lượng sản phẩm đã được điều chỉnh theo tồn kho (${maxStock})`,
+                type: "warning",
+                duration: 3000,
+            });
+        }
+
+        // Cập nhật trạng thái nút
+        updateProductQuantityButtons(product, currentQuantity, maxStock);
 
         btnIncrement.addEventListener('click', () => {
             let value = parseInt(quantityElement.textContent);
-            if (value < 10) {
+            if (value < maxStock) {
                 quantityElement.textContent = value + 1;
-                updateProductQuantityButtons(product, value + 1);
+                updateProductQuantityButtons(product, value + 1, maxStock);
                 // Update quantity in localStorage
                 const cartItem = cart.find(item => item.idCHSP === idCHSP);
                 if (cartItem) {
@@ -78,6 +132,13 @@ function setupQuantitySelectors() {
                     localStorage.setItem('cart', JSON.stringify(cart));
                 }
                 updateTotalPrice();
+            } else {
+                toast({
+                    title: "Cảnh báo",
+                    message: `Số lượng tồn kho chỉ còn ${maxStock} sản phẩm!`,
+                    type: "warning",
+                    duration: 3000,
+                });
             }
         });
 
@@ -85,7 +146,7 @@ function setupQuantitySelectors() {
             let value = parseInt(quantityElement.textContent);
             if (value > 1) {
                 quantityElement.textContent = value - 1;
-                updateProductQuantityButtons(product, value - 1);
+                updateProductQuantityButtons(product, value - 1, maxStock);
                 // Update quantity in localStorage
                 const cartItem = cart.find(item => item.idCHSP === idCHSP);
                 if (cartItem) {
