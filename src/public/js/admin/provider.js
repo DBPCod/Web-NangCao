@@ -97,8 +97,8 @@ async function loadProviders() {
           renderPagination(); // Render nút phân trang
 
           if (!hasPermission('Nhà cung cấp', 'them')) {
-            document.querySelector('.btn-success[data-bs-target="#providerModal]').style.display = 'none';
-        }
+            document.querySelector('.btn-success[data-bs-target="#providerModal"]').style.display = 'none';
+            }
       })
       .catch((error) => {
           console.error("Fetch error:", error);
