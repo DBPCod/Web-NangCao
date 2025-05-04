@@ -279,13 +279,56 @@ function loadProducts(page = 1, filters = null) {
 
         const totalPages = Math.ceil(data.total / data.limit);
         let paginationHTML = '';
-        for (let i = 1; i <= totalPages; i++) {
+
+        // Nút "Prev"
+        paginationHTML += `
+            <li class="page-item ${page === 1 ? 'disabled' : ''}">
+                <a class="page-link page-btn" href="#" data-page="${page - 1}">«</a>
+            </li>
+        `;
+
+        // Luôn hiển thị trang đầu tiên
+        paginationHTML += `
+            <li class="page-item ${page === 1 ? 'active' : ''}">
+                <a class="page-link page-btn" href="#" data-page="1">1</a>
+            </li>
+        `;
+
+        // Dấu ... nếu cần
+        if (page > 4) {
+            paginationHTML += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+        }
+
+        // Các trang gần currentPage
+        for (let i = Math.max(2, page - 2); i <= Math.min(totalPages - 1, page + 2); i++) {
             paginationHTML += `
                 <li class="page-item ${i === page ? 'active' : ''}">
                     <a class="page-link page-btn" href="#" data-page="${i}">${i}</a>
                 </li>
             `;
         }
+
+        // Dấu ... nếu cần
+        if (page < totalPages - 3) {
+            paginationHTML += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+        }
+
+        // Luôn hiển thị trang cuối cùng nếu có nhiều hơn 1 trang
+        if (totalPages > 1) {
+            paginationHTML += `
+                <li class="page-item ${page === totalPages ? 'active' : ''}">
+                    <a class="page-link page-btn" href="#" data-page="${totalPages}">${totalPages}</a>
+                </li>
+            `;
+        }
+
+        // Nút "Next"
+        paginationHTML += `
+            <li class="page-item ${page === totalPages ? 'disabled' : ''}">
+                <a class="page-link page-btn" href="#" data-page="${page + 1}">»</a>
+            </li>
+        `;
+
         document.querySelector('.pagination').innerHTML = paginationHTML;
 
         attachProductCardListeners();
@@ -376,13 +419,56 @@ function loadFilteredProducts(page, filters, limit, type) {
 
         const totalPages = Math.ceil(data.total / data.limit);
         let paginationHTML = '';
-        for (let i = 1; i <= totalPages; i++) {
+
+        // Nút "Prev"
+        paginationHTML += `
+            <li class="page-item ${page === 1 ? 'disabled' : ''}">
+                <a class="page-link page-btn" href="#" data-page="${page - 1}">« Prev</a>
+            </li>
+        `;
+
+        // Luôn hiển thị trang đầu tiên
+        paginationHTML += `
+            <li class="page-item ${page === 1 ? 'active' : ''}">
+                <a class="page-link page-btn" href="#" data-page="1">1</a>
+            </li>
+        `;
+
+        // Dấu ... nếu cần
+        if (page > 4) {
+            paginationHTML += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+        }
+
+        // Các trang gần currentPage
+        for (let i = Math.max(2, page - 2); i <= Math.min(totalPages - 1, page + 2); i++) {
             paginationHTML += `
                 <li class="page-item ${i === page ? 'active' : ''}">
                     <a class="page-link page-btn" href="#" data-page="${i}">${i}</a>
                 </li>
             `;
         }
+
+        // Dấu ... nếu cần
+        if (page < totalPages - 3) {
+            paginationHTML += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+        }
+
+        // Luôn hiển thị trang cuối cùng nếu có nhiều hơn 1 trang
+        if (totalPages > 1) {
+            paginationHTML += `
+                <li class="page-item ${page === totalPages ? 'active' : ''}">
+                    <a class="page-link page-btn" href="#" data-page="${totalPages}">${totalPages}</a>
+                </li>
+            `;
+        }
+
+        // Nút "Next"
+        paginationHTML += `
+            <li class="page-item ${page === totalPages ? 'disabled' : ''}">
+                <a class="page-link page-btn" href="#" data-page="${page + 1}">»</a>
+            </li>
+        `;
+
         const paginationContainer = document.querySelector('.pagination');
         if (paginationContainer) {
             paginationContainer.innerHTML = paginationHTML;

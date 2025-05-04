@@ -131,8 +131,8 @@ function renderPagination() {
         paginationContainer.appendChild(btn);
     };
 
-    // Nút "Prev"
-    addPage("« Prev", currentPage - 1, false, currentPage === 1);
+    // Nút "Prev" - chỉ giữ lại «
+    addPage("«", currentPage - 1, false, currentPage === 1);
 
     // Luôn hiển thị trang đầu tiên
     addPage("1", 1, currentPage === 1);
@@ -163,8 +163,8 @@ function renderPagination() {
         addPage(totalPages.toString(), totalPages, currentPage === totalPages);
     }
 
-    // Nút "Next"
-    addPage("Next »", currentPage + 1, false, currentPage === totalPages);
+    // Nút "Next" - chỉ giữ lại »
+    addPage("»", currentPage + 1, false, currentPage === totalPages);
 }
 
 // Mở modal để thêm nhà cung cấp

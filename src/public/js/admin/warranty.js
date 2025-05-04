@@ -65,10 +65,10 @@ function renderPagination() {
     const paginationContainer = document.querySelector("#pagination");
     paginationContainer.innerHTML = "";
 
-    // Nút Previous
+    // Nút Previous - thay thành «
     const prevButton = document.createElement("button");
     prevButton.className = "btn btn-secondary mx-1";
-    prevButton.textContent = "Previous";
+    prevButton.textContent = "«";
     prevButton.disabled = currentPage === 1;
     prevButton.addEventListener("click", () => {
         if (currentPage > 1) {
@@ -92,10 +92,10 @@ function renderPagination() {
         paginationContainer.appendChild(pageButton);
     }
 
-    // Nút Next
+    // Nút Next - thay thành »
     const nextButton = document.createElement("button");
     nextButton.className = "btn btn-secondary mx-1";
-    nextButton.textContent = "Next";
+    nextButton.textContent = "»";
     nextButton.disabled = currentPage === totalPages;
     nextButton.addEventListener("click", () => {
         if (currentPage < totalPages) {

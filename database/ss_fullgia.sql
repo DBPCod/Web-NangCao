@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: May 03, 2025 at 06:41 PM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Máy chủ: 127.0.0.1
+-- Thời gian đã tạo: Th5 04, 2025 lúc 07:31 PM
+-- Phiên bản máy phục vụ: 10.4.32-MariaDB
+-- Phiên bản PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,13 +18,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `ss`
+-- Cơ sở dữ liệu: `ss`
 --
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `anh`
+-- Cấu trúc bảng cho bảng `anh`
 --
 
 CREATE TABLE `anh` (
@@ -36,7 +36,7 @@ CREATE TABLE `anh` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `anh`
+-- Đang đổ dữ liệu cho bảng `anh`
 --
 
 INSERT INTO `anh` (`IdAnh`, `Anh`, `IdCHSP`, `IdDongSanPham`, `TrangThai`) VALUES
@@ -110,7 +110,7 @@ INSERT INTO `anh` (`IdAnh`, `Anh`, `IdCHSP`, `IdDongSanPham`, `TrangThai`) VALUE
 -- --------------------------------------------------------
 
 --
--- Table structure for table `baohanh`
+-- Cấu trúc bảng cho bảng `baohanh`
 --
 
 CREATE TABLE `baohanh` (
@@ -120,7 +120,7 @@ CREATE TABLE `baohanh` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `baohanh`
+-- Đang đổ dữ liệu cho bảng `baohanh`
 --
 
 INSERT INTO `baohanh` (`IdBaoHanh`, `ThoiGianBaoHanh`, `TrangThai`) VALUES
@@ -135,7 +135,7 @@ INSERT INTO `baohanh` (`IdBaoHanh`, `ThoiGianBaoHanh`, `TrangThai`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `cauhinhsanpham`
+-- Cấu trúc bảng cho bảng `cauhinhsanpham`
 --
 
 CREATE TABLE `cauhinhsanpham` (
@@ -150,35 +150,35 @@ CREATE TABLE `cauhinhsanpham` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `cauhinhsanpham`
+-- Đang đổ dữ liệu cho bảng `cauhinhsanpham`
 --
 
 INSERT INTO `cauhinhsanpham` (`IdCHSP`, `Ram`, `Rom`, `ManHinh`, `Pin`, `MauSac`, `Camera`, `TrangThai`) VALUES
-(1, '4GB', '32GB', '5.8 inch IPS LCD', '2800mAh', 'Đen', '8MP + 2MP', 1),
-(2, '4GB', '64GB', '6.0 inch IPS LCD', '3000mAh', 'Xanh Dương', '12MP + 2MP', 1),
-(3, '4GB', '64GB', '6.1 inch LCD', '3100mAh', 'Trắng', '10MP + 5MP', 1),
-(4, '4GB', '128GB', '6.2 inch IPS LCD', '3200mAh', 'Đỏ', '12MP + 8MP', 1),
-(5, '6GB', '64GB', '6.2 inch AMOLED', '3500mAh', 'Vàng', '16MP + 5MP', 1),
-(6, '6GB', '128GB', '6.3 inch Super AMOLED', '3600mAh', 'Xám', '20MP + 8MP', 1),
-(7, '6GB', '128GB', '6.4 inch IPS LCD', '3700mAh', 'Tím', '16MP + 12MP', 1),
-(8, '6GB', '256GB', '6.5 inch LCD', '3800mAh', 'Xanh Lá', '24MP + 5MP', 1),
-(9, '8GB', '128GB', '6.5 inch AMOLED', '4000mAh', 'Bạc', '32MP + 8MP', 1),
-(10, '8GB', '128GB', '6.6 inch Super AMOLED', '4100mAh', 'Hồng', '48MP + 12MP', 1),
-(11, '8GB', '256GB', '6.4 inch OLED', '4200mAh', 'Đen', '50MP + 10MP', 1),
-(12, '8GB', '256GB', '6.7 inch AMOLED', '4300mAh', 'Xanh Dương', '48MP + 16MP', 1),
-(13, '12GB', '256GB', '6.8 inch OLED', '4500mAh', 'Trắng', '64MP + 12MP', 1),
-(14, '12GB', '256GB', '6.7 inch Super AMOLED', '4600mAh', 'Đỏ', '50MP + 20MP', 1),
-(15, '12GB', '512GB', '6.9 inch AMOLED', '4700mAh', 'Vàng', '64MP + 16MP', 1),
-(16, '12GB', '512GB', '6.8 inch OLED', '4800mAh', 'Xám', '48MP + 12MP', 1),
-(17, '16GB', '256GB', '6.9 inch AMOLED', '5000mAh', 'Tím', '108MP + 20MP', 1),
-(18, '16GB', '512GB', '7.0 inch OLED', '5100mAh', 'Xanh Lá', '108MP + 16MP', 1),
-(19, '16GB', '512GB', '6.8 inch Super AMOLED', '5200mAh', 'Bạc', '64MP + 20MP', 1),
-(20, '16GB', '1TB', '7.1 inch AMOLED', '5500mAh', 'Hồng', '108MP + 24MP', 1);
+(1, '4GB', '32GB', '5.8 inch IPS LCD', '2800mAh', 'Đen', '8MP', 1),
+(2, '4GB', '64GB', '6.0 inch IPS LCD', '3000mAh', 'Xanh Dương', '12MP', 1),
+(3, '4GB', '64GB', '6.1 inch LCD', '3100mAh', 'Trắng', '10MP', 1),
+(4, '4GB', '128GB', '6.2 inch IPS LCD', '3200mAh', 'Đỏ', '12MP', 1),
+(5, '6GB', '64GB', '6.2 inch AMOLED', '3500mAh', 'Vàng', '16MP', 1),
+(6, '6GB', '128GB', '6.3 inch Super AMOLED', '3600mAh', 'Xám', '20MP', 1),
+(7, '6GB', '128GB', '6.4 inch IPS LCD', '3700mAh', 'Tím', '16MP', 1),
+(8, '6GB', '256GB', '6.5 inch LCD', '3800mAh', 'Xanh Lá', '24MP', 1),
+(9, '8GB', '128GB', '6.5 inch AMOLED', '4000mAh', 'Bạc', '32MP', 1),
+(10, '8GB', '128GB', '6.6 inch Super AMOLED', '4100mAh', 'Hồng', '48MP', 1),
+(11, '8GB', '256GB', '6.4 inch OLED', '4200mAh', 'Đen', '50MP', 1),
+(12, '8GB', '256GB', '6.7 inch AMOLED', '4300mAh', 'Xanh Dương', '48MP', 1),
+(13, '12GB', '256GB', '6.8 inch OLED', '4500mAh', 'Trắng', '64MP', 1),
+(14, '12GB', '256GB', '6.7 inch Super AMOLED', '4600mAh', 'Đỏ', '50MP', 1),
+(15, '12GB', '512GB', '6.9 inch AMOLED', '4700mAh', 'Vàng', '64MP', 1),
+(16, '12GB', '512GB', '6.8 inch OLED', '4800mAh', 'Xám', '48MP', 1),
+(17, '16GB', '256GB', '6.9 inch AMOLED', '5000mAh', 'Tím', '108MP', 1),
+(18, '16GB', '512GB', '7.0 inch OLED', '5100mAh', 'Xanh Lá', '108MP', 1),
+(19, '16GB', '512GB', '6.8 inch Super AMOLED', '5200mAh', 'Bạc', '64MP', 1),
+(20, '16GB', '1TB', '7.1 inch AMOLED', '5500mAh', 'Hồng', '108MP', 1);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `cthoadon`
+-- Cấu trúc bảng cho bảng `cthoadon`
 --
 
 CREATE TABLE `cthoadon` (
@@ -191,7 +191,7 @@ CREATE TABLE `cthoadon` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `ctkhuyenmai`
+-- Cấu trúc bảng cho bảng `ctkhuyenmai`
 --
 
 CREATE TABLE `ctkhuyenmai` (
@@ -202,7 +202,7 @@ CREATE TABLE `ctkhuyenmai` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `ctphieunhap`
+-- Cấu trúc bảng cho bảng `ctphieunhap`
 --
 
 CREATE TABLE `ctphieunhap` (
@@ -214,29 +214,65 @@ CREATE TABLE `ctphieunhap` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `ctphieunhap`
+-- Đang đổ dữ liệu cho bảng `ctphieunhap`
 --
 
 INSERT INTO `ctphieunhap` (`IdPhieuNhap`, `GiaNhap`, `SoLuong`, `IdCHSP`, `IdDongSanPham`) VALUES
 (1, 5600000.00, 10, 1, 1),
 (1, 5600000.00, 10, 2, 1),
-(1, 5600000.00, 15, 4, 1);
+(1, 5600000.00, 15, 4, 1),
+(2, 6200000.00, 20, 5, 2),
+(2, 6200000.00, 20, 9, 2),
+(2, 6200000.00, 20, 12, 2),
+(2, 5600000.00, 10, 13, 1),
+(2, 6000000.00, 10, 20, 1),
+(3, 12000000.00, 10, 5, 3),
+(3, 12000000.00, 10, 11, 3),
+(3, 12000000.00, 10, 12, 3),
+(4, 8000000.00, 10, 1, 5),
+(4, 8000000.00, 10, 5, 5),
+(4, 4800000.00, 10, 7, 4),
+(4, 4800000.00, 10, 8, 4),
+(4, 8000000.00, 10, 8, 5),
+(4, 8000000.00, 10, 9, 5),
+(4, 4800000.00, 10, 10, 4),
+(4, 4800000.00, 10, 11, 4),
+(4, 4800000.00, 10, 13, 4),
+(5, 5000000.00, 10, 1, 8),
+(5, 3000000.00, 10, 7, 6),
+(5, 5000000.00, 10, 7, 8),
+(5, 3000000.00, 10, 8, 6),
+(5, 3000000.00, 10, 9, 7),
+(5, 5000000.00, 10, 18, 8),
+(6, 3600000.00, 10, 2, 10),
+(6, 3600000.00, 10, 3, 10),
+(6, 2600000.00, 12, 11, 9),
+(6, 2600000.00, 12, 12, 9),
+(7, 2600000.00, 10, 5, 11),
+(7, 3600000.00, 15, 7, 11),
+(7, 3600000.00, 10, 8, 12),
+(7, 3600000.00, 10, 11, 11),
+(7, 3600000.00, 10, 12, 11);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `ctquyen`
+-- Cấu trúc bảng cho bảng `ctquyen`
 --
 
 CREATE TABLE `ctquyen` (
   `IdQuyen` int(11) NOT NULL,
-  `IdVaiTro` int(11) NOT NULL
+  `IdVaiTro` int(11) NOT NULL,
+  `xem` tinyint(1) DEFAULT 0,
+  `them` tinyint(1) DEFAULT 0,
+  `sua` tinyint(1) DEFAULT 0,
+  `xoa` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `dongsanpham`
+-- Cấu trúc bảng cho bảng `dongsanpham`
 --
 
 CREATE TABLE `dongsanpham` (
@@ -248,27 +284,27 @@ CREATE TABLE `dongsanpham` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `dongsanpham`
+-- Đang đổ dữ liệu cho bảng `dongsanpham`
 --
 
 INSERT INTO `dongsanpham` (`IdDongSanPham`, `TenDong`, `SoLuong`, `IdThuongHieu`, `TrangThai`) VALUES
-(1, 'iPhone 13', 10, 2, 1),
-(2, 'iPhone 13 Pro', 0, 2, 1),
-(3, 'iPhone 15', 0, 2, 1),
-(4, 'Samsung S22', 0, 1, 1),
-(5, 'Samsung S25', 0, 1, 1),
-(6, 'Honor X5B', 0, 4, 1),
-(7, 'Honor X8B', 0, 5, 1),
-(8, 'Honor X9C', 0, 4, 1),
-(9, 'Oppo A18', 0, 5, 1),
-(10, 'Oppo Reno13', 0, 5, 1),
-(11, 'Redmi Note 13', 0, 3, 1),
-(12, 'Redmi Note 14', 0, 3, 1);
+(1, 'iPhone 13', 55, 2, 1),
+(2, 'iPhone 13 Pro', 60, 2, 1),
+(3, 'iPhone 15', 20, 2, 1),
+(4, 'Samsung S22', 50, 1, 1),
+(5, 'Samsung S25', 40, 1, 1),
+(6, 'Honor X5B', 20, 4, 1),
+(7, 'Honor X8B', 10, 5, 1),
+(8, 'Honor X9C', 10, 4, 1),
+(9, 'Oppo A18', 24, 5, 1),
+(10, 'Oppo Reno13', 20, 5, 1),
+(11, 'Redmi Note 13', 45, 3, 1),
+(12, 'Redmi Note 14', 10, 3, 1);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `hoadon`
+-- Cấu trúc bảng cho bảng `hoadon`
 --
 
 CREATE TABLE `hoadon` (
@@ -283,7 +319,7 @@ CREATE TABLE `hoadon` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `khuyenmai`
+-- Cấu trúc bảng cho bảng `khuyenmai`
 --
 
 CREATE TABLE `khuyenmai` (
@@ -297,7 +333,7 @@ CREATE TABLE `khuyenmai` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `nguoidung`
+-- Cấu trúc bảng cho bảng `nguoidung`
 --
 
 CREATE TABLE `nguoidung` (
@@ -310,17 +346,17 @@ CREATE TABLE `nguoidung` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `nguoidung`
+-- Đang đổ dữ liệu cho bảng `nguoidung`
 --
 
 INSERT INTO `nguoidung` (`IdNguoiDung`, `HoVaTen`, `Email`, `DiaChi`, `SoDienThoai`, `TrangThai`) VALUES
-(1, 'Nguyễn Văn A', 'nguyenvana@gmail.com', '53 Trần Bình Trọng, p3, q5, TpHCM', '0797923412', 0),
+(1, 'Nguyễn Văn A', 'nguyenvana@gmail.com', '53 Trần Bình Trọng, p3, q5, TpHCM', '0797923412', 1),
 (2, 'Admin', 'admin@gmail.com', 'admin', '0123456789', 1);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `nhacungcap`
+-- Cấu trúc bảng cho bảng `nhacungcap`
 --
 
 CREATE TABLE `nhacungcap` (
@@ -333,7 +369,7 @@ CREATE TABLE `nhacungcap` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `nhacungcap`
+-- Đang đổ dữ liệu cho bảng `nhacungcap`
 --
 
 INSERT INTO `nhacungcap` (`IdNCC`, `TenNCC`, `DiaChi`, `SoDienThoai`, `Email`, `TrangThai`) VALUES
@@ -346,7 +382,7 @@ INSERT INTO `nhacungcap` (`IdNCC`, `TenNCC`, `DiaChi`, `SoDienThoai`, `Email`, `
 -- --------------------------------------------------------
 
 --
--- Table structure for table `phieunhap`
+-- Cấu trúc bảng cho bảng `phieunhap`
 --
 
 CREATE TABLE `phieunhap` (
@@ -359,16 +395,22 @@ CREATE TABLE `phieunhap` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `phieunhap`
+-- Đang đổ dữ liệu cho bảng `phieunhap`
 --
 
 INSERT INTO `phieunhap` (`IdPhieuNhap`, `IdTaiKhoan`, `NgayNhap`, `TongTien`, `TrangThai`, `IdNCC`) VALUES
-(1, 2, '2025-05-03', 196000000, 1, 1);
+(1, 2, '2025-05-03', 196000000, 1, 1),
+(2, 2, '2025-05-04', 488000000, 1, 2),
+(3, 2, '2025-05-04', 360000000, 1, 5),
+(4, 2, '2025-05-04', 560000000, 1, 5),
+(5, 2, '2025-05-04', 240000000, 1, 3),
+(6, 2, '2025-05-04', 134400000, 1, 4),
+(7, 2, '2025-05-04', 188000000, 1, 1);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `quyen`
+-- Cấu trúc bảng cho bảng `quyen`
 --
 
 CREATE TABLE `quyen` (
@@ -381,22 +423,22 @@ CREATE TABLE `quyen` (
 --
 
 INSERT INTO `quyen` (`IdQuyen`, `TenQuyen`) VALUES
-(1, 'Khách hàng'),
-(2, 'Danh sách sản phẩm'),
-(3, 'Dòng sản phẩm'),
-(4, 'Cấu hình sản phẩm'),
-(5, 'Thương hiệu'),
-(6, 'Khuyến mãi'),
-(7, 'Bảo hành'),
-(8, 'Danh sách phiếu nhập'),
-(9, 'Nhà cung cấp'),
-(10, 'Đơn hàng'),
-(11, 'Thống kê');
+(1,	'Khách hàng'),
+(2,	'Danh sách sản phẩm'),
+(3,	'Dòng sản phẩm'),
+(4,	'Cấu hình sản phẩm'),
+(5,	'Thương hiệu'),
+(6,	'Khuyến mãi'),
+(7,	'Bảo hành'),
+(8,	'Danh sách phiếu nhập'),
+(9,	'Nhà cung cấp'),
+(10,	'Đơn hàng'),
+(11,	'Thống kê');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `sanpham`
+-- Cấu trúc bảng cho bảng `sanpham`
 --
 
 CREATE TABLE `sanpham` (
@@ -410,50 +452,50 @@ CREATE TABLE `sanpham` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `sanpham`
+-- Đang đổ dữ liệu cho bảng `sanpham`
 --
 
 INSERT INTO `sanpham` (`IdCHSP`, `IdDongSanPham`, `SoLuong`, `Gia`, `NgayNhap`, `DaBan`, `TrangThai`) VALUES
 (1, 1, 10, 8500000, '2025-05-03', 0, 1),
-(1, 5, 0, 0, '2025-05-03', 0, 1),
-(1, 8, 0, 0, '2025-05-03', 0, 1),
+(1, 5, 10, 14000000, '2025-05-04', 0, 1),
+(1, 8, 10, 7000000, '2025-05-04', 0, 1),
 (2, 1, 10, 9000000, '2025-05-03', 0, 1),
-(2, 10, 0, 0, '2025-05-03', 0, 1),
-(3, 10, 0, 0, '2025-05-03', 0, 1),
+(2, 10, 10, 5000000, '2025-05-04', 0, 1),
+(3, 10, 10, 5000000, '2025-05-04', 0, 1),
 (4, 1, 15, 9500000, '2025-05-03', 0, 1),
-(5, 2, 0, 0, '2025-05-03', 0, 1),
-(5, 3, 0, 0, '2025-05-03', 0, 1),
-(5, 5, 0, 0, '2025-05-03', 0, 1),
-(5, 11, 0, 0, '2025-05-03', 0, 1),
-(7, 4, 0, 0, '2025-05-03', 0, 1),
-(7, 6, 0, 0, '2025-05-03', 0, 1),
-(7, 8, 0, 0, '2025-05-03', 0, 1),
-(7, 11, 0, 0, '2025-05-03', 0, 1),
-(8, 4, 0, 0, '2025-05-03', 0, 1),
-(8, 5, 0, 0, '2025-05-03', 0, 1),
-(8, 6, 0, 0, '2025-05-03', 0, 1),
-(8, 12, 0, 0, '2025-05-03', 0, 1),
-(9, 2, 0, 0, '2025-05-03', 0, 1),
-(9, 5, 0, 0, '2025-05-03', 0, 1),
-(9, 7, 0, 0, '2025-05-03', 0, 1),
-(10, 4, 0, 0, '2025-05-03', 0, 1),
-(11, 3, 0, 0, '2025-05-03', 0, 1),
-(11, 4, 0, 0, '2025-05-03', 0, 1),
-(11, 9, 0, 0, '2025-05-03', 0, 1),
-(11, 11, 0, 0, '2025-05-03', 0, 1),
-(12, 2, 0, 0, '2025-05-03', 0, 1),
-(12, 3, 0, 0, '2025-05-03', 0, 1),
-(12, 9, 0, 0, '2025-05-03', 0, 1),
-(12, 11, 0, 0, '2025-05-03', 0, 1),
-(13, 1, 0, 0, '2025-05-03', 0, 1),
-(13, 4, 0, 0, '2025-05-03', 0, 1),
-(18, 8, 0, 0, '2025-05-03', 0, 1),
-(20, 1, 0, 0, '2025-05-03', 0, 1);
+(5, 2, 20, 9600000, '2025-05-04', 0, 1),
+(5, 3, 10, 16000000, '2025-05-04', 0, 1),
+(5, 5, 10, 14000000, '2025-05-04', 0, 1),
+(5, 11, 10, 5600000, '2025-05-04', 0, 1),
+(7, 4, 10, 6000000, '2025-05-04', 0, 1),
+(7, 6, 10, 5000000, '2025-05-04', 0, 1),
+(7, 8, 10, 7000000, '2025-05-04', 0, 1),
+(7, 11, 15, 6200000, '2025-05-04', 0, 1),
+(8, 4, 10, 6000000, '2025-05-04', 0, 1),
+(8, 5, 10, 15000000, '2025-05-04', 0, 1),
+(8, 6, 10, 5000000, '2025-05-04', 0, 1),
+(8, 12, 10, 6200000, '2025-05-04', 0, 1),
+(9, 2, 20, 9800000, '2025-05-04', 0, 1),
+(9, 5, 10, 14000000, '2025-05-04', 0, 1),
+(9, 7, 10, 5000000, '2025-05-04', 0, 1),
+(10, 4, 10, 6000000, '2025-05-04', 0, 1),
+(11, 3, 10, 18000000, '2025-05-04', 0, 1),
+(11, 4, 10, 6000000, '2025-05-04', 0, 1),
+(11, 9, 12, 4800000, '2025-05-04', 0, 1),
+(11, 11, 10, 6200000, '2025-05-04', 0, 1),
+(12, 2, 20, 10000000, '2025-05-04', 0, 1),
+(12, 3, 10, 18000000, '2025-05-04', 0, 1),
+(12, 9, 12, 4800000, '2025-05-04', 0, 1),
+(12, 11, 10, 6200000, '2025-05-04', 0, 1),
+(13, 1, 10, 8600000, '2025-05-04', 0, 1),
+(13, 4, 10, 6000000, '2025-05-04', 0, 1),
+(18, 8, 10, 8000000, '2025-05-04', 0, 1),
+(20, 1, 10, 10000000, '2025-05-04', 0, 1);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `sanphamchitiet`
+-- Cấu trúc bảng cho bảng `sanphamchitiet`
 --
 
 CREATE TABLE `sanphamchitiet` (
@@ -466,50 +508,409 @@ CREATE TABLE `sanphamchitiet` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `sanphamchitiet`
+-- Đang đổ dữ liệu cho bảng `sanphamchitiet`
 --
 
 INSERT INTO `sanphamchitiet` (`Imei`, `TrangThai`, `IdCHSP`, `IdDongSanPham`, `IdBaoHanh`, `IdPhieuNhap`) VALUES
+('001197692307641', 1, 9, 5, 5, 4),
+('004791149820581', 1, 18, 8, 5, 5),
+('005652661661218', 1, 11, 3, 5, 3),
+('005967129679713', 1, 8, 4, 5, 4),
+('009561932365572', 1, 3, 10, 5, 6),
+('023071484639434', 1, 2, 10, 5, 6),
+('026223666405665', 1, 11, 9, 5, 6),
+('028389146901546', 1, 10, 4, 5, 4),
+('028875849100360', 1, 5, 5, 5, 4),
+('030176349696031', 1, 2, 10, 5, 6),
+('031931230294844', 1, 1, 8, 5, 5),
 ('033047294269834', 1, 4, 1, 3, 1),
+('034133588794569', 1, 11, 9, 5, 6),
+('037887381447868', 1, 5, 2, 4, 2),
+('038816826020542', 1, 11, 3, 5, 3),
+('039189233283189', 1, 1, 8, 5, 5),
+('040137361561923', 1, 8, 6, 4, 5),
 ('043994251965326', 1, 4, 1, 3, 1),
+('044133034396090', 1, 7, 11, 4, 7),
+('044147830161003', 1, 1, 8, 5, 5),
+('044333184822826', 1, 1, 8, 5, 5),
+('047394952920942', 1, 7, 6, 4, 5),
 ('049157523884022', 1, 1, 1, 2, 1),
+('051349331907104', 1, 5, 11, 6, 7),
+('059496275332435', 1, 5, 2, 4, 2),
+('061873948656331', 1, 2, 10, 5, 6),
+('062537172753937', 1, 9, 2, 4, 2),
+('062969333053347', 1, 11, 3, 5, 3),
+('063326717197399', 1, 7, 11, 4, 7),
+('073172624671151', 1, 9, 7, 4, 5),
+('074685144522504', 1, 5, 5, 5, 4),
 ('074718476389273', 1, 4, 1, 3, 1),
+('074986526716734', 1, 8, 12, 5, 7),
+('076103003061125', 1, 12, 2, 4, 2),
+('076569098150389', 1, 1, 5, 5, 4),
+('077112002420108', 1, 18, 8, 5, 5),
+('088209084191289', 1, 18, 8, 5, 5),
+('091383173293275', 1, 11, 11, 5, 7),
+('092477839910964', 1, 5, 2, 4, 2),
+('093028785309963', 1, 13, 1, 3, 2),
+('093583271386628', 1, 13, 4, 5, 4),
+('094958760116471', 1, 5, 5, 5, 4),
+('100309327618470', 1, 8, 12, 5, 7),
 ('100493336960998', 1, 4, 1, 3, 1),
+('102464526263251', 1, 3, 10, 5, 6),
 ('102547064545624', 1, 1, 1, 2, 1),
+('104255699953563', 1, 12, 9, 5, 6),
+('105285279180294', 1, 12, 2, 4, 2),
+('111277627793334', 1, 8, 12, 5, 7),
+('111755624955451', 1, 2, 10, 5, 6),
+('113612225143755', 1, 5, 3, 5, 3),
+('116004740876811', 1, 9, 5, 5, 4),
+('116916527048605', 1, 11, 4, 5, 4),
+('116974020762024', 1, 11, 11, 5, 7),
+('120310390585907', 1, 8, 5, 5, 4),
 ('135058961960107', 1, 1, 1, 2, 1),
+('135644286051605', 1, 7, 6, 4, 5),
+('140784143150563', 1, 11, 4, 5, 4),
+('143166640802713', 1, 7, 11, 4, 7),
+('144521902921750', 1, 9, 2, 4, 2),
+('146291175071711', 1, 7, 8, 5, 5),
+('147969386643571', 1, 12, 11, 5, 7),
+('150759224263821', 1, 7, 6, 4, 5),
+('151184040064478', 1, 5, 11, 6, 7),
+('152711294100274', 1, 7, 8, 5, 5),
 ('154539600035712', 1, 1, 1, 2, 1),
+('155099353439289', 1, 8, 4, 5, 4),
+('159840702436864', 1, 8, 12, 5, 7),
+('163185450515202', 1, 8, 4, 5, 4),
+('163550148543926', 1, 12, 9, 5, 6),
+('165910239779672', 1, 7, 8, 5, 5),
+('168278607122983', 1, 5, 2, 4, 2),
+('168527973634314', 1, 7, 4, 5, 4),
+('169599747340733', 1, 12, 3, 5, 3),
+('173434038872117', 1, 5, 5, 5, 4),
+('174427344068049', 1, 7, 11, 4, 7),
+('175925010463567', 1, 11, 11, 5, 7),
+('176898127591951', 1, 12, 2, 4, 2),
+('177173939457414', 1, 3, 10, 5, 6),
+('179396289846435', 1, 8, 4, 5, 4),
+('179399119818897', 1, 8, 4, 5, 4),
+('180862530518120', 1, 10, 4, 5, 4),
+('180874127960227', 1, 5, 5, 5, 4),
 ('181860583274244', 1, 4, 1, 3, 1),
+('185311326207758', 1, 7, 11, 4, 7),
+('187782332410479', 1, 9, 2, 4, 2),
+('195520671381707', 1, 11, 11, 5, 7),
+('199741409427382', 1, 7, 4, 5, 4),
+('201906818277068', 1, 11, 4, 5, 4),
+('203526379134769', 1, 7, 4, 5, 4),
+('203994249194209', 1, 9, 5, 5, 4),
+('205533485447711', 1, 8, 5, 5, 4),
+('209572096133357', 1, 11, 9, 5, 6),
+('209893628609569', 1, 7, 11, 4, 7),
+('213138494665632', 1, 9, 2, 4, 2),
+('216358082155146', 1, 7, 6, 4, 5),
+('216415375742848', 1, 12, 2, 4, 2),
 ('217840595187707', 1, 4, 1, 3, 1),
 ('219861710831662', 1, 2, 1, 2, 1),
+('223397826055999', 1, 13, 4, 5, 4),
+('224449401813307', 1, 11, 9, 5, 6),
 ('225150930644390', 1, 1, 1, 2, 1),
+('234336110822653', 1, 9, 2, 4, 2),
+('237015998065943', 1, 5, 5, 5, 4),
 ('239343926484830', 1, 2, 1, 2, 1),
+('253080032716090', 1, 10, 4, 5, 4),
+('253943825919033', 1, 9, 7, 4, 5),
+('254272460855479', 1, 12, 11, 5, 7),
+('261774388464467', 1, 18, 8, 5, 5),
+('262238249401729', 1, 7, 11, 4, 7),
+('272004759445730', 1, 1, 5, 5, 4),
+('273673407930282', 1, 9, 7, 4, 5),
+('276196642477114', 1, 5, 3, 5, 3),
+('277348248278383', 1, 12, 11, 5, 7),
+('277867678606268', 1, 9, 2, 4, 2),
+('278687038339726', 1, 8, 4, 5, 4),
+('281212006533039', 1, 8, 5, 5, 4),
+('285672349455958', 1, 13, 4, 5, 4),
+('287273884452043', 1, 5, 11, 6, 7),
+('287838308455804', 1, 1, 5, 5, 4),
+('288921721317295', 1, 10, 4, 5, 4),
+('292202124439836', 1, 12, 11, 5, 7),
+('296862628005718', 1, 7, 6, 4, 5),
+('297478635385511', 1, 12, 3, 5, 3),
+('297727954531596', 1, 1, 8, 5, 5),
+('299763308107559', 1, 12, 3, 5, 3),
+('304069550490575', 1, 9, 2, 4, 2),
+('304310252359209', 1, 1, 8, 5, 5),
+('311661586352166', 1, 13, 4, 5, 4),
+('313166116332199', 1, 9, 2, 4, 2),
+('313464647907120', 1, 8, 5, 5, 4),
+('315725480937582', 1, 9, 2, 4, 2),
+('316499987384628', 1, 13, 1, 3, 2),
+('321217350349157', 1, 7, 11, 4, 7),
+('329808909261463', 1, 9, 2, 4, 2),
+('334984584220380', 1, 9, 5, 5, 4),
+('338947048139294', 1, 5, 2, 4, 2),
+('339384718051659', 1, 8, 6, 4, 5),
+('344556568902908', 1, 8, 12, 5, 7),
+('345899620737188', 1, 3, 10, 5, 6),
+('346198090083119', 1, 12, 9, 5, 6),
+('346856966831131', 1, 9, 5, 5, 4),
+('346910435139897', 1, 18, 8, 5, 5),
+('349122677149462', 1, 8, 4, 5, 4),
+('354346782319148', 1, 11, 3, 5, 3),
+('355964807717549', 1, 5, 2, 4, 2),
+('357777053380343', 1, 11, 4, 5, 4),
+('359992402701788', 1, 9, 2, 4, 2),
+('361341818944291', 1, 11, 9, 5, 6),
+('361468152862704', 1, 5, 3, 5, 3),
+('363463088001293', 1, 5, 2, 4, 2),
+('364340328085543', 1, 1, 5, 5, 4),
+('364664590872340', 1, 7, 8, 5, 5),
+('371226966126486', 1, 11, 11, 5, 7),
+('373373216396424', 1, 5, 2, 4, 2),
+('374336892844784', 1, 11, 9, 5, 6),
+('377322893578396', 1, 2, 10, 5, 6),
+('379848106237634', 1, 3, 10, 5, 6),
+('385179824326943', 1, 8, 5, 5, 4),
+('390660416008976', 1, 5, 3, 5, 3),
+('391918149358350', 1, 9, 2, 4, 2),
+('394391222634203', 1, 12, 9, 5, 6),
+('404314192809355', 1, 5, 11, 6, 7),
+('404460020944177', 1, 7, 4, 5, 4),
+('409451750170468', 1, 7, 8, 5, 5),
+('409549393126878', 1, 20, 1, 4, 2),
 ('418668239077431', 1, 2, 1, 2, 1),
+('419519400159749', 1, 5, 2, 4, 2),
+('420539283402849', 1, 11, 9, 5, 6),
+('422338106430063', 1, 11, 4, 5, 4),
+('425405366305215', 1, 3, 10, 5, 6),
 ('426386996164561', 1, 4, 1, 3, 1),
+('428715164185933', 1, 8, 6, 4, 5),
+('431919751432295', 1, 7, 11, 4, 7),
+('433655623637665', 1, 8, 12, 5, 7),
+('435421780403021', 1, 13, 4, 5, 4),
+('437834148472090', 1, 9, 5, 5, 4),
+('443349453599215', 1, 12, 11, 5, 7),
+('452271935278853', 1, 9, 7, 4, 5),
+('455608545981763', 1, 12, 11, 5, 7),
+('456247030035733', 1, 20, 1, 4, 2),
+('459204651225686', 1, 9, 2, 4, 2),
+('462112247108974', 1, 3, 10, 5, 6),
+('462275145768312', 1, 2, 10, 5, 6),
+('463858655744952', 1, 11, 4, 5, 4),
+('464633380174380', 1, 20, 1, 4, 2),
+('467051516719175', 1, 13, 1, 3, 2),
+('469623998974797', 1, 12, 9, 5, 6),
+('469946996697957', 1, 13, 1, 3, 2),
+('470901805223922', 1, 12, 9, 5, 6),
+('473084929682195', 1, 3, 10, 5, 6),
+('481979477225521', 1, 10, 4, 5, 4),
+('482307398839023', 1, 12, 3, 5, 3),
+('483531831960786', 1, 5, 3, 5, 3),
 ('483765059521413', 1, 4, 1, 3, 1),
+('485707950714604', 1, 13, 4, 5, 4),
+('486242581878486', 1, 9, 5, 5, 4),
+('488447996210476', 1, 11, 3, 5, 3),
+('488452692812047', 1, 12, 9, 5, 6),
+('494394602821597', 1, 2, 10, 5, 6),
+('495445427437651', 1, 11, 3, 5, 3),
 ('497875720121693', 1, 4, 1, 3, 1),
+('507617197213621', 1, 12, 9, 5, 6),
+('509837739911379', 1, 5, 2, 4, 2),
+('510302354660113', 1, 12, 3, 5, 3),
+('510358066466041', 1, 8, 5, 5, 4),
 ('512040133727765', 1, 1, 1, 2, 1),
+('512957417934058', 1, 11, 9, 5, 6),
+('529468026346453', 1, 8, 12, 5, 7),
+('529996140946964', 1, 8, 5, 5, 4),
+('532384536282168', 1, 12, 2, 4, 2),
+('533164175494582', 1, 12, 2, 4, 2),
 ('533258163246994', 1, 2, 1, 2, 1),
+('534449831503135', 1, 12, 3, 5, 3),
+('534639738608546', 1, 5, 2, 4, 2),
+('538998770922041', 1, 12, 2, 4, 2),
+('539395990506234', 1, 7, 4, 5, 4),
+('543353299497583', 1, 5, 2, 4, 2),
+('543956009280204', 1, 1, 5, 5, 4),
+('544740635646320', 1, 8, 6, 4, 5),
+('546411097696249', 1, 20, 1, 4, 2),
+('549949175752159', 1, 2, 10, 5, 6),
+('550495010645030', 1, 18, 8, 5, 5),
+('552115512400274', 1, 7, 8, 5, 5),
+('556221490231826', 1, 9, 2, 4, 2),
+('558989840293575', 1, 11, 9, 5, 6),
+('561080084591067', 1, 7, 4, 5, 4),
+('563938729039776', 1, 12, 3, 5, 3),
+('569231759430139', 1, 7, 11, 4, 7),
+('574329680187753', 1, 12, 9, 5, 6),
+('576362927137263', 1, 3, 10, 5, 6),
+('581788739468426', 1, 9, 2, 4, 2),
+('583977944654346', 1, 5, 2, 4, 2),
+('585226268616228', 1, 5, 11, 6, 7),
+('593743415846433', 1, 8, 6, 4, 5),
+('595597287922369', 1, 7, 8, 5, 5),
+('602949263247116', 1, 20, 1, 4, 2),
+('605532142959601', 1, 7, 11, 4, 7),
+('605630828046311', 1, 5, 3, 5, 3),
+('605760403093105', 1, 13, 4, 5, 4),
+('608963255592052', 1, 18, 8, 5, 5),
+('610389322703447', 1, 11, 4, 5, 4),
+('613995574271052', 1, 5, 2, 4, 2),
+('617714335827110', 1, 5, 5, 5, 4),
+('619574109005352', 1, 11, 3, 5, 3),
+('619748893556883', 1, 8, 4, 5, 4),
 ('624309914376836', 1, 4, 1, 3, 1),
+('624545013867486', 1, 12, 2, 4, 2),
+('636016845843679', 1, 7, 6, 4, 5),
+('639779182455053', 1, 8, 5, 5, 4),
+('640391430320407', 1, 5, 11, 6, 7),
+('640611070547831', 1, 8, 5, 5, 4),
+('644555873959923', 1, 7, 4, 5, 4),
+('645842910053079', 1, 9, 7, 4, 5),
+('648050883747050', 1, 18, 8, 5, 5),
+('649419087617279', 1, 13, 1, 3, 2),
+('649702959984533', 1, 5, 2, 4, 2),
+('650006656083698', 1, 5, 11, 6, 7),
+('657482069553275', 1, 2, 10, 5, 6),
+('659951415789187', 1, 11, 4, 5, 4),
 ('662103333201995', 1, 2, 1, 2, 1),
+('671298673397764', 1, 5, 3, 5, 3),
 ('672124186921271', 1, 4, 1, 3, 1),
+('673436270627419', 1, 7, 11, 4, 7),
+('676314221695776', 1, 10, 4, 5, 4),
+('677256919046714', 1, 13, 1, 3, 2),
+('680187621787532', 1, 5, 11, 6, 7),
+('681060774092290', 1, 1, 8, 5, 5),
+('681752020750859', 1, 7, 6, 4, 5),
+('685959212731516', 1, 5, 2, 4, 2),
+('689708840483636', 1, 8, 4, 5, 4),
+('690111530748250', 1, 20, 1, 4, 2),
+('690385038529129', 1, 8, 6, 4, 5),
+('692312046349645', 1, 5, 2, 4, 2),
+('693581525783743', 1, 13, 1, 3, 2),
+('693752134211380', 1, 20, 1, 4, 2),
 ('694290655032264', 1, 2, 1, 2, 1),
+('698107853319465', 1, 9, 5, 5, 4),
+('700660865871549', 1, 1, 8, 5, 5),
+('702663627057413', 1, 20, 1, 4, 2),
+('702969244530868', 1, 11, 3, 5, 3),
+('704526155131991', 1, 1, 5, 5, 4),
+('704782922415494', 1, 11, 11, 5, 7),
+('707827751060981', 1, 9, 2, 4, 2),
+('709687814220396', 1, 9, 7, 4, 5),
+('710269842249775', 1, 11, 11, 5, 7),
+('710752435692535', 1, 12, 9, 5, 6),
+('715433117945260', 1, 1, 5, 5, 4),
+('718253385653157', 1, 12, 3, 5, 3),
+('719656582516473', 1, 12, 2, 4, 2),
+('726783415793714', 1, 7, 4, 5, 4),
+('726987668561906', 1, 12, 2, 4, 2),
 ('728937041726385', 1, 2, 1, 2, 1),
+('730632064267286', 1, 10, 4, 5, 4),
+('732426627113394', 1, 12, 2, 4, 2),
+('738737593847904', 1, 20, 1, 4, 2),
+('739567336065962', 1, 9, 5, 5, 4),
+('741176640246882', 1, 12, 2, 4, 2),
+('744156600217005', 1, 10, 4, 5, 4),
 ('747375141992655', 1, 4, 1, 3, 1),
+('749157155154655', 1, 11, 4, 5, 4),
+('754815068059426', 1, 9, 2, 4, 2),
+('754999396259377', 1, 10, 4, 5, 4),
+('755675371453701', 1, 12, 11, 5, 7),
+('759336878800094', 1, 12, 2, 4, 2),
 ('759349209240203', 1, 1, 1, 2, 1),
+('762034617495251', 1, 13, 4, 5, 4),
 ('764900291522198', 1, 2, 1, 2, 1),
+('770543821005656', 1, 11, 9, 5, 6),
+('774625071924185', 1, 12, 2, 4, 2),
+('774875068667319', 1, 12, 9, 5, 6),
+('781605712728790', 1, 2, 10, 5, 6),
+('782954604664245', 1, 12, 9, 5, 6),
+('786207724950465', 1, 11, 9, 5, 6),
+('788978872896704', 1, 7, 8, 5, 5),
+('791889162167448', 1, 12, 11, 5, 7),
+('794108947385184', 1, 1, 5, 5, 4),
 ('800569917053213', 1, 1, 1, 2, 1),
+('805217387844456', 1, 7, 8, 5, 5),
+('805567765742155', 1, 7, 4, 5, 4),
+('806489444069802', 1, 12, 11, 5, 7),
+('807270826599478', 1, 8, 6, 4, 5),
+('807324308861151', 1, 7, 11, 4, 7),
+('808769914878586', 1, 5, 5, 5, 4),
+('808940494533400', 1, 5, 5, 5, 4),
 ('811716245706056', 1, 1, 1, 2, 1),
+('814407192093709', 1, 18, 8, 5, 5),
+('815453740705336', 1, 7, 8, 5, 5),
+('816496956822104', 1, 13, 4, 5, 4),
+('818852681218364', 1, 9, 7, 4, 5),
+('819863509501336', 1, 8, 5, 5, 4),
+('822429978394697', 1, 12, 2, 4, 2),
 ('828078571042791', 1, 2, 1, 2, 1),
+('831560264571769', 1, 13, 1, 3, 2),
+('835502064473933', 1, 12, 3, 5, 3),
+('837652478468926', 1, 9, 7, 4, 5),
 ('837989155472403', 1, 4, 1, 3, 1),
+('840279191949027', 1, 12, 3, 5, 3),
+('841371520884444', 1, 9, 2, 4, 2),
+('843511448713781', 1, 12, 2, 4, 2),
+('843514243978526', 1, 11, 11, 5, 7),
+('845806426428602', 1, 12, 2, 4, 2),
+('857144350663803', 1, 9, 5, 5, 4),
 ('858820218484016', 1, 2, 1, 2, 1),
+('863470262024426', 1, 13, 1, 3, 2),
+('865515764794856', 1, 1, 5, 5, 4),
+('871724796076140', 1, 12, 11, 5, 7),
+('874102449721924', 1, 12, 2, 4, 2),
+('876381922654939', 1, 8, 12, 5, 7),
+('878280179263592', 1, 11, 4, 5, 4),
+('878457463564329', 1, 5, 3, 5, 3),
+('881254814712953', 1, 5, 5, 5, 4),
+('881679719286507', 1, 5, 11, 6, 7),
+('884302420605751', 1, 5, 3, 5, 3),
+('893399654652888', 1, 1, 8, 5, 5),
 ('893568754282081', 1, 4, 1, 3, 1),
+('901973842948372', 1, 11, 3, 5, 3),
+('904751284259673', 1, 8, 12, 5, 7),
+('906816231869730', 1, 7, 11, 4, 7),
+('907378128086281', 1, 8, 4, 5, 4),
+('911667277476911', 1, 13, 4, 5, 4),
+('913756818922844', 1, 5, 2, 4, 2),
 ('920597104330578', 1, 1, 1, 2, 1),
-('985641456131051', 1, 4, 1, 3, 1);
+('923565965798180', 1, 20, 1, 4, 2),
+('926897066041542', 1, 13, 1, 3, 2),
+('929891228509444', 1, 8, 12, 5, 7),
+('932599130303435', 1, 7, 4, 5, 4),
+('933301210448050', 1, 7, 11, 4, 7),
+('935267630656218', 1, 7, 6, 4, 5),
+('940096249369738', 1, 9, 2, 4, 2),
+('945260911613360', 1, 5, 2, 4, 2),
+('945791423967589', 1, 5, 3, 5, 3),
+('949887016166690', 1, 10, 4, 5, 4),
+('950093064644375', 1, 1, 5, 5, 4),
+('953467008159525', 1, 11, 11, 5, 7),
+('955995225017462', 1, 7, 6, 4, 5),
+('956754126023585', 1, 11, 3, 5, 3),
+('959272192815427', 1, 8, 6, 4, 5),
+('959568353059741', 1, 3, 10, 5, 6),
+('959579444978096', 1, 5, 11, 6, 7),
+('960330667499155', 1, 12, 2, 4, 2),
+('964286988579511', 1, 9, 7, 4, 5),
+('979722828957346', 1, 8, 6, 4, 5),
+('985641456131051', 1, 4, 1, 3, 1),
+('986673986844860', 1, 11, 9, 5, 6),
+('987806089871476', 1, 18, 8, 5, 5),
+('988457538147537', 1, 7, 6, 4, 5),
+('989047566043432', 1, 1, 8, 5, 5),
+('990214559681548', 1, 8, 6, 4, 5),
+('991269582522829', 1, 12, 2, 4, 2),
+('991352562201471', 1, 11, 11, 5, 7),
+('998044490608777', 1, 9, 7, 4, 5),
+('999696848392617', 1, 5, 2, 4, 2),
+('999889206774480', 1, 9, 2, 4, 2);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `taikhoan`
+-- Cấu trúc bảng cho bảng `taikhoan`
 --
 
 CREATE TABLE `taikhoan` (
@@ -522,7 +923,7 @@ CREATE TABLE `taikhoan` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `taikhoan`
+-- Đang đổ dữ liệu cho bảng `taikhoan`
 --
 
 INSERT INTO `taikhoan` (`IdTaiKhoan`, `TaiKhoan`, `MatKhau`, `TrangThai`, `IdVaiTro`, `IdNguoiDung`) VALUES
@@ -532,7 +933,7 @@ INSERT INTO `taikhoan` (`IdTaiKhoan`, `TaiKhoan`, `MatKhau`, `TrangThai`, `IdVai
 -- --------------------------------------------------------
 
 --
--- Table structure for table `thuonghieu`
+-- Cấu trúc bảng cho bảng `thuonghieu`
 --
 
 CREATE TABLE `thuonghieu` (
@@ -542,7 +943,7 @@ CREATE TABLE `thuonghieu` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `thuonghieu`
+-- Đang đổ dữ liệu cho bảng `thuonghieu`
 --
 
 INSERT INTO `thuonghieu` (`IdThuongHieu`, `TenThuongHieu`, `TrangThai`) VALUES
@@ -555,7 +956,7 @@ INSERT INTO `thuonghieu` (`IdThuongHieu`, `TenThuongHieu`, `TrangThai`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tinhtrangvanchuyen`
+-- Cấu trúc bảng cho bảng `tinhtrangvanchuyen`
 --
 
 CREATE TABLE `tinhtrangvanchuyen` (
@@ -563,14 +964,20 @@ CREATE TABLE `tinhtrangvanchuyen` (
   `TenTinhTrang` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
-INSERT INTO tinhtrangvanchuyen (IdTinhTrang, TenTinhTrang) VALUES
+--
+-- Đang đổ dữ liệu cho bảng `tinhtrangvanchuyen`
+--
+
+INSERT INTO `tinhtrangvanchuyen` (`IdTinhTrang`, `TenTinhTrang`) VALUES
 (1, 'Chờ xử lý'),
 (2, 'Đang giao'),
 (3, 'Đã giao'),
 (4, 'Hủy');
+
+-- --------------------------------------------------------
+
 --
--- Table structure for table `vaitro`
+-- Cấu trúc bảng cho bảng `vaitro`
 --
 
 CREATE TABLE `vaitro` (
@@ -580,7 +987,7 @@ CREATE TABLE `vaitro` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `vaitro`
+-- Đang đổ dữ liệu cho bảng `vaitro`
 --
 
 INSERT INTO `vaitro` (`IdVaiTro`, `TenVaiTro`, `TrangThai`) VALUES
@@ -589,11 +996,11 @@ INSERT INTO `vaitro` (`IdVaiTro`, `TenVaiTro`, `TrangThai`) VALUES
 (3, 'Người dùng', 1);
 
 --
--- Indexes for dumped tables
+-- Chỉ mục cho các bảng đã đổ
 --
 
 --
--- Indexes for table `anh`
+-- Chỉ mục cho bảng `anh`
 --
 ALTER TABLE `anh`
   ADD PRIMARY KEY (`IdAnh`),
@@ -601,33 +1008,33 @@ ALTER TABLE `anh`
   ADD KEY `IdDongSanPham` (`IdDongSanPham`);
 
 --
--- Indexes for table `baohanh`
+-- Chỉ mục cho bảng `baohanh`
 --
 ALTER TABLE `baohanh`
   ADD PRIMARY KEY (`IdBaoHanh`);
 
 --
--- Indexes for table `cauhinhsanpham`
+-- Chỉ mục cho bảng `cauhinhsanpham`
 --
 ALTER TABLE `cauhinhsanpham`
   ADD PRIMARY KEY (`IdCHSP`);
 
 --
--- Indexes for table `cthoadon`
+-- Chỉ mục cho bảng `cthoadon`
 --
 ALTER TABLE `cthoadon`
   ADD PRIMARY KEY (`IdHoaDon`,`Imei`),
   ADD KEY `Imei` (`Imei`);
 
 --
--- Indexes for table `ctkhuyenmai`
+-- Chỉ mục cho bảng `ctkhuyenmai`
 --
 ALTER TABLE `ctkhuyenmai`
   ADD PRIMARY KEY (`IdKhuyenMai`,`IdDongSanPham`),
   ADD KEY `IdDongSanPham` (`IdDongSanPham`);
 
 --
--- Indexes for table `ctphieunhap`
+-- Chỉ mục cho bảng `ctphieunhap`
 --
 ALTER TABLE `ctphieunhap`
   ADD PRIMARY KEY (`IdPhieuNhap`,`IdCHSP`,`IdDongSanPham`),
@@ -635,21 +1042,21 @@ ALTER TABLE `ctphieunhap`
   ADD KEY `IdDongSanPham` (`IdDongSanPham`);
 
 --
--- Indexes for table `ctquyen`
+-- Chỉ mục cho bảng `ctquyen`
 --
 ALTER TABLE `ctquyen`
   ADD PRIMARY KEY (`IdQuyen`,`IdVaiTro`),
   ADD KEY `IdVaiTro` (`IdVaiTro`);
 
 --
--- Indexes for table `dongsanpham`
+-- Chỉ mục cho bảng `dongsanpham`
 --
 ALTER TABLE `dongsanpham`
   ADD PRIMARY KEY (`IdDongSanPham`),
   ADD KEY `dongsanpham_ibfk_1` (`IdThuongHieu`);
 
 --
--- Indexes for table `hoadon`
+-- Chỉ mục cho bảng `hoadon`
 --
 ALTER TABLE `hoadon`
   ADD PRIMARY KEY (`IdHoaDon`),
@@ -657,25 +1064,25 @@ ALTER TABLE `hoadon`
   ADD KEY `IdTinhTrang` (`IdTinhTrang`);
 
 --
--- Indexes for table `khuyenmai`
+-- Chỉ mục cho bảng `khuyenmai`
 --
 ALTER TABLE `khuyenmai`
   ADD PRIMARY KEY (`IdKhuyenMai`);
 
 --
--- Indexes for table `nguoidung`
+-- Chỉ mục cho bảng `nguoidung`
 --
 ALTER TABLE `nguoidung`
   ADD PRIMARY KEY (`IdNguoiDung`);
 
 --
--- Indexes for table `nhacungcap`
+-- Chỉ mục cho bảng `nhacungcap`
 --
 ALTER TABLE `nhacungcap`
   ADD PRIMARY KEY (`IdNCC`);
 
 --
--- Indexes for table `phieunhap`
+-- Chỉ mục cho bảng `phieunhap`
 --
 ALTER TABLE `phieunhap`
   ADD PRIMARY KEY (`IdPhieuNhap`),
@@ -683,20 +1090,20 @@ ALTER TABLE `phieunhap`
   ADD KEY `IdNCC` (`IdNCC`);
 
 --
--- Indexes for table `quyen`
+-- Chỉ mục cho bảng `quyen`
 --
 ALTER TABLE `quyen`
   ADD PRIMARY KEY (`IdQuyen`);
 
 --
--- Indexes for table `sanpham`
+-- Chỉ mục cho bảng `sanpham`
 --
 ALTER TABLE `sanpham`
   ADD PRIMARY KEY (`IdCHSP`,`IdDongSanPham`),
   ADD KEY `IdDongSanPham` (`IdDongSanPham`);
 
 --
--- Indexes for table `sanphamchitiet`
+-- Chỉ mục cho bảng `sanphamchitiet`
 --
 ALTER TABLE `sanphamchitiet`
   ADD PRIMARY KEY (`Imei`),
@@ -706,7 +1113,7 @@ ALTER TABLE `sanphamchitiet`
   ADD KEY `phieunhap_ibfk1` (`IdPhieuNhap`);
 
 --
--- Indexes for table `taikhoan`
+-- Chỉ mục cho bảng `taikhoan`
 --
 ALTER TABLE `taikhoan`
   ADD PRIMARY KEY (`IdTaiKhoan`),
@@ -714,132 +1121,132 @@ ALTER TABLE `taikhoan`
   ADD KEY `IdNguoiDung` (`IdNguoiDung`);
 
 --
--- Indexes for table `thuonghieu`
+-- Chỉ mục cho bảng `thuonghieu`
 --
 ALTER TABLE `thuonghieu`
   ADD PRIMARY KEY (`IdThuongHieu`);
 
 --
--- Indexes for table `tinhtrangvanchuyen`
+-- Chỉ mục cho bảng `tinhtrangvanchuyen`
 --
 ALTER TABLE `tinhtrangvanchuyen`
   ADD PRIMARY KEY (`IdTinhTrang`);
 
 --
--- Indexes for table `vaitro`
+-- Chỉ mục cho bảng `vaitro`
 --
 ALTER TABLE `vaitro`
   ADD PRIMARY KEY (`IdVaiTro`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT cho các bảng đã đổ
 --
 
 --
--- AUTO_INCREMENT for table `anh`
+-- AUTO_INCREMENT cho bảng `anh`
 --
 ALTER TABLE `anh`
   MODIFY `IdAnh` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
--- AUTO_INCREMENT for table `baohanh`
+-- AUTO_INCREMENT cho bảng `baohanh`
 --
 ALTER TABLE `baohanh`
   MODIFY `IdBaoHanh` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
--- AUTO_INCREMENT for table `cauhinhsanpham`
+-- AUTO_INCREMENT cho bảng `cauhinhsanpham`
 --
 ALTER TABLE `cauhinhsanpham`
   MODIFY `IdCHSP` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
--- AUTO_INCREMENT for table `cthoadon`
+-- AUTO_INCREMENT cho bảng `cthoadon`
 --
 ALTER TABLE `cthoadon`
   MODIFY `IdHoaDon` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `dongsanpham`
+-- AUTO_INCREMENT cho bảng `dongsanpham`
 --
 ALTER TABLE `dongsanpham`
   MODIFY `IdDongSanPham` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
--- AUTO_INCREMENT for table `hoadon`
+-- AUTO_INCREMENT cho bảng `hoadon`
 --
 ALTER TABLE `hoadon`
   MODIFY `IdHoaDon` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `khuyenmai`
+-- AUTO_INCREMENT cho bảng `khuyenmai`
 --
 ALTER TABLE `khuyenmai`
   MODIFY `IdKhuyenMai` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `nguoidung`
+-- AUTO_INCREMENT cho bảng `nguoidung`
 --
 ALTER TABLE `nguoidung`
   MODIFY `IdNguoiDung` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT for table `nhacungcap`
+-- AUTO_INCREMENT cho bảng `nhacungcap`
 --
 ALTER TABLE `nhacungcap`
   MODIFY `IdNCC` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT for table `phieunhap`
+-- AUTO_INCREMENT cho bảng `phieunhap`
 --
 ALTER TABLE `phieunhap`
-  MODIFY `IdPhieuNhap` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `IdPhieuNhap` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
--- AUTO_INCREMENT for table `quyen`
+-- AUTO_INCREMENT cho bảng `quyen`
 --
 ALTER TABLE `quyen`
   MODIFY `IdQuyen` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
--- AUTO_INCREMENT for table `taikhoan`
+-- AUTO_INCREMENT cho bảng `taikhoan`
 --
 ALTER TABLE `taikhoan`
   MODIFY `IdTaiKhoan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT for table `thuonghieu`
+-- AUTO_INCREMENT cho bảng `thuonghieu`
 --
 ALTER TABLE `thuonghieu`
   MODIFY `IdThuongHieu` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- Constraints for dumped tables
+-- Các ràng buộc cho các bảng đã đổ
 --
 
 --
--- Constraints for table `anh`
+-- Các ràng buộc cho bảng `anh`
 --
 ALTER TABLE `anh`
   ADD CONSTRAINT `anh_ibfk_1` FOREIGN KEY (`IdCHSP`) REFERENCES `sanpham` (`IdCHSP`),
   ADD CONSTRAINT `anh_ibfk_2` FOREIGN KEY (`IdDongSanPham`) REFERENCES `dongsanpham` (`IdDongSanPham`);
 
 --
--- Constraints for table `cthoadon`
+-- Các ràng buộc cho bảng `cthoadon`
 --
 ALTER TABLE `cthoadon`
   ADD CONSTRAINT `cthoadon_ibfk_1` FOREIGN KEY (`IdHoaDon`) REFERENCES `hoadon` (`IdHoaDon`),
   ADD CONSTRAINT `cthoadon_ibfk_2` FOREIGN KEY (`Imei`) REFERENCES `sanphamchitiet` (`Imei`);
 
 --
--- Constraints for table `ctkhuyenmai`
+-- Các ràng buộc cho bảng `ctkhuyenmai`
 --
 ALTER TABLE `ctkhuyenmai`
   ADD CONSTRAINT `ctkhuyenmai_ibfk_1` FOREIGN KEY (`IdKhuyenMai`) REFERENCES `khuyenmai` (`IdKhuyenMai`),
   ADD CONSTRAINT `ctkhuyenmai_ibfk_2` FOREIGN KEY (`IdDongSanPham`) REFERENCES `dongsanpham` (`IdDongSanPham`);
 
 --
--- Constraints for table `ctphieunhap`
+-- Các ràng buộc cho bảng `ctphieunhap`
 --
 ALTER TABLE `ctphieunhap`
   ADD CONSTRAINT `ctphieunhap_ibfk_1` FOREIGN KEY (`IdPhieuNhap`) REFERENCES `phieunhap` (`IdPhieuNhap`),
@@ -847,41 +1254,41 @@ ALTER TABLE `ctphieunhap`
   ADD CONSTRAINT `ctphieunhap_ibfk_3` FOREIGN KEY (`IdDongSanPham`) REFERENCES `dongsanpham` (`IdDongSanPham`);
 
 --
--- Constraints for table `ctquyen`
+-- Các ràng buộc cho bảng `ctquyen`
 --
 ALTER TABLE `ctquyen`
   ADD CONSTRAINT `ctquyen_ibfk_1` FOREIGN KEY (`IdQuyen`) REFERENCES `quyen` (`IdQuyen`),
   ADD CONSTRAINT `ctquyen_ibfk_2` FOREIGN KEY (`IdVaiTro`) REFERENCES `vaitro` (`IdVaiTro`);
 
 --
--- Constraints for table `dongsanpham`
+-- Các ràng buộc cho bảng `dongsanpham`
 --
 ALTER TABLE `dongsanpham`
   ADD CONSTRAINT `dongsanpham_ibfk_1` FOREIGN KEY (`IdThuongHieu`) REFERENCES `thuonghieu` (`IdThuongHieu`);
 
 --
--- Constraints for table `hoadon`
+-- Các ràng buộc cho bảng `hoadon`
 --
 ALTER TABLE `hoadon`
   ADD CONSTRAINT `hoadon_ibfk_1` FOREIGN KEY (`IdTaiKhoan`) REFERENCES `taikhoan` (`IdTaiKhoan`),
   ADD CONSTRAINT `hoadon_ibfk_2` FOREIGN KEY (`IdTinhTrang`) REFERENCES `tinhtrangvanchuyen` (`IdTinhTrang`);
 
 --
--- Constraints for table `phieunhap`
+-- Các ràng buộc cho bảng `phieunhap`
 --
 ALTER TABLE `phieunhap`
   ADD CONSTRAINT `phieunhap_ibfk_1` FOREIGN KEY (`IdTaiKhoan`) REFERENCES `taikhoan` (`IdTaiKhoan`),
   ADD CONSTRAINT `phieunhap_ibfk_2` FOREIGN KEY (`IdNCC`) REFERENCES `nhacungcap` (`IdNCC`);
 
 --
--- Constraints for table `sanpham`
+-- Các ràng buộc cho bảng `sanpham`
 --
 ALTER TABLE `sanpham`
   ADD CONSTRAINT `sanpham_ibfk_1` FOREIGN KEY (`IdCHSP`) REFERENCES `cauhinhsanpham` (`IdCHSP`),
   ADD CONSTRAINT `sanpham_ibfk_2` FOREIGN KEY (`IdDongSanPham`) REFERENCES `dongsanpham` (`IdDongSanPham`);
 
 --
--- Constraints for table `sanphamchitiet`
+-- Các ràng buộc cho bảng `sanphamchitiet`
 --
 ALTER TABLE `sanphamchitiet`
   ADD CONSTRAINT `phieunhap_ibfk1` FOREIGN KEY (`IdPhieuNhap`) REFERENCES `phieunhap` (`IdPhieuNhap`),
@@ -890,7 +1297,7 @@ ALTER TABLE `sanphamchitiet`
   ADD CONSTRAINT `sanphamchitiet_ibfk_3` FOREIGN KEY (`IdBaoHanh`) REFERENCES `baohanh` (`IdBaoHanh`);
 
 --
--- Constraints for table `taikhoan`
+-- Các ràng buộc cho bảng `taikhoan`
 --
 ALTER TABLE `taikhoan`
   ADD CONSTRAINT `taikhoan_ibfk_1` FOREIGN KEY (`IdVaiTro`) REFERENCES `vaitro` (`IdVaiTro`),

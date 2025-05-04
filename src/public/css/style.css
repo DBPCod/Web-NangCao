@@ -608,7 +608,7 @@ footer ul li a:hover {
 /* Đảm bảo carousel có chiều cao cố định */
 .carousel-inner {
     background-color: #f8f9fa;
-    min-height: 300px;
+    /* min-height: 300px; */
     display: flex;
     align-items: center;
 }
@@ -715,7 +715,7 @@ footer ul li a:hover {
     color: #dc3545;
 }
 .form-control {
-    margin-bottom: 15px;
+    /* margin-bottom: 15px; */
 }
 .btn-success {
     background-color: #28a745;
