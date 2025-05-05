@@ -268,7 +268,7 @@ async function handleCheckout() {
     }
     
     // Lấy nút thanh toán
-    const checkoutBtn = document.querySelector('#buyNowModal .btn-secondary');
+    const checkoutBtn = buyNowModal.querySelector('.checkout-btn');
     const originalBtnText = checkoutBtn.innerHTML;
     
     try {
