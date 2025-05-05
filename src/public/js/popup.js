@@ -30,35 +30,48 @@ document.addEventListener('DOMContentLoaded', function () {
         var cartItemsContainer = document.querySelector(".cart-items");
         var html = '';
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
-    
-        // Kiểm tra nếu giỏ hàng trống
 
+        // Kiểm tra nếu giỏ hàng trống
         if (cart.length == 0) {
             document.querySelector(".cart-empty").style.display = "block";
             cartItemsContainer.style.display = "none";
-  
-            document.getElementById("totalPrice").innerText=formatVND(0);
-
+            document.getElementById("totalPrice").innerText = formatVND(0);
         } else {
-
             document.querySelector(".cart-empty").style.display = "none";
             cartItemsContainer.style.display = "block";
-            // Tính tổng giá trị
+            
+            // Tính tổng giá trị dựa trên giá thực tế (giá khuyến mãi nếu có)
             const totalPrice = cart.reduce((sum, item) => {
-                // Chuyển price thành số (nếu chưa chuẩn hóa)
-                const price = parseFloat(item.price.replace(/[^\d]/g, ""));
+                // Sử dụng giá khuyến mãi nếu có, nếu không thì dùng giá gốc
+                let price;
+                if (item.discountPrice && item.discountPrice.trim() !== '') {
+                    price = parseFloat(item.discountPrice.replace(/[^\d]/g, ""));
+                } else {
+                    price = parseFloat(item.price.replace(/[^\d]/g, ""));
+                }
                 return sum + price * item.quantity;
             }, 0);
-            document.getElementById("totalPrice").innerText=formatVND(totalPrice);
+            
+            document.getElementById("totalPrice").innerText = formatVND(totalPrice);
+            
             cart.forEach((product, index) => {
-                console.log(product);
+                // Xử lý hiển thị giá
+                let priceHTML = '';
+                if (product.discountPrice && product.discountPrice.trim() !== '') {
+                    // Có giá khuyến mãi - hiển thị cả hai giá
+                    priceHTML = `<span class="text-decoration-line-through text-muted me-2">${product.price}</span><span class="text-success">${product.discountPrice}</span>`;
+                } else {
+                    // Không có giá khuyến mãi - chỉ hiển thị giá gốc
+                    priceHTML = `<span>${product.price}</span>`;
+                }
+                
                 html += `
                     <div class="cart-item d-flex align-items-center mb-3" data-index="${index}">
                         <div class="cart-item-info d-flex align-items-center">
                             <img src="${product.img}" alt="${product.name}" class="img-thumbnail me-3" style="width: 70px;">
                             <div class="flex-grow-1">
-                                <h6 class="mb-1">${product.name} - ${product.ram} - Màu ${product.color} </h6>
-                                <span>${product.price}</span>
+                                <h6 class="mb-1">${product.name} - ${product.ram} - Màu ${product.color}</h6>
+                                <div class="product-price">${priceHTML}</div>
                             </div>
                         </div>
                         <div class="cart-item-controls d-flex align-items-center ms-auto">
@@ -71,9 +84,10 @@ document.addEventListener('DOMContentLoaded', function () {
                         </div>
                     </div>`;
             });
-    
+
             // Gán HTML vào container
-            cartItemsContainer.innerHTML = html;            // Gắn sự kiện cho các nút
+            cartItemsContainer.innerHTML = html;
+            // Gắn sự kiện cho các nút
             attachEventListeners();
         }
     }
@@ -130,6 +144,10 @@ document.addEventListener('DOMContentLoaded', function () {
     //Xử lý sự kiện click thêm vào giỏ hàng
     var btnAddCart = document.querySelector(".btn-add-to-cart");
     btnAddCart.addEventListener("click", () => {
+        // Log cấu trúc HTML của phần tử giá
+        const priceElement = document.querySelector("#modalProductPrice");
+        console.log("Price element HTML:", priceElement ? priceElement.innerHTML : "null");
+        
         var rom = document.querySelector("#modalProductRom").innerText;
         var screenSize= document.querySelector("#modalProductManHinh").innerText;
         var camera= document.querySelector("#modalProductCamera").innerText;
@@ -141,7 +159,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var statusProduct = document.querySelector("#modalProductTrangThai").innerText;
         var idDSP = document.querySelector('#modalProductRam .selected').getAttribute('iddsp');
         var idCHSP = document.querySelector('#modalProductMauSac .selected').getAttribute('idchsp');
-    
+
         if (statusProduct == "Hết hàng") {
             toast({
                 title: "Cảnh báo",
@@ -151,7 +169,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
             return;
         }
-    
+
         // Lấy ảnh của sản phẩm
         fetch(`/smartstation/src/mvc/controllers/AnhController.php?idCHSP=${idCHSP}&idDSP=${idDSP}`, {
             method: 'GET',
@@ -189,7 +207,57 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            // Tạo đối tượng sản phẩm mới nếu chưa có trong giỏ hàng
+            // Xử lý giá gốc và giá khuyến mãi
+            let originalPrice = '';
+            let discountPrice = '';
+
+            // Kiểm tra nếu có giá khuyến mãi
+            const priceElement = document.querySelector("#modalProductPrice");
+
+            // Log để debug
+            console.log("Price element:", priceElement);
+            console.log("Price element HTML:", priceElement ? priceElement.innerHTML : "null");
+
+            if (priceElement && priceElement.querySelector('.text-decoration-line-through')) {
+                // Có giá khuyến mãi - lấy cả hai giá
+                originalPrice = priceElement.querySelector('.text-decoration-line-through').innerText;
+                
+                // Kiểm tra xem phần tử .text-success có tồn tại không
+                const discountElement = priceElement.querySelector('.text-success');
+                if (discountElement) {
+                    discountPrice = discountElement.innerText;
+                } else {
+                    // Nếu không tìm thấy phần tử .text-success, thử tìm phần tử khác
+                    // Ví dụ: phần tử thứ hai sau phần tử gạch ngang
+                    const priceNodes = priceElement.childNodes;
+                    for (let i = 0; i < priceNodes.length; i++) {
+                        if (priceNodes[i].contains && priceNodes[i].contains(priceElement.querySelector('.text-decoration-line-through'))) {
+                            if (i + 1 < priceNodes.length && priceNodes[i + 1].textContent) {
+                                discountPrice = priceNodes[i + 1].textContent.trim();
+                                break;
+                            }
+                        }
+                    }
+                    
+                    // Nếu vẫn không tìm thấy, sử dụng giá gốc
+                    if (!discountPrice) {
+                        discountPrice = originalPrice;
+                    }
+                }
+                
+                // Log để debug
+                console.log("Giá gốc:", originalPrice);
+                console.log("Giá khuyến mãi:", discountPrice);
+            } else {
+                // Không có giá khuyến mãi - chỉ lấy giá gốc
+                originalPrice = priceSP;
+                discountPrice = '';
+                
+                // Log để debug
+                console.log("Chỉ có giá gốc:", originalPrice);
+            }
+
+            // Tạo đối tượng sản phẩm mới
             const product = {
                 rom: rom,
                 screenSize: screenSize,
@@ -199,11 +267,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 name: nameSP,
                 ram: ramSP,
                 color: colorSP,
-                price: priceSP.replace(" VND", ""),
+                price: originalPrice,
+                discountPrice: discountPrice,
                 quantity: 1,
                 idDSP: idDSP,
                 idCHSP: idCHSP
             };
+
+            // Log sản phẩm để debug
+            console.log("Sản phẩm thêm vào giỏ hàng:", product);
 
             // Thêm sản phẩm mới vào giỏ hàng
             cart.push(product);

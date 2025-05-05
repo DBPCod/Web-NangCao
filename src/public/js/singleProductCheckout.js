@@ -361,7 +361,6 @@ async function handleCheckout() {
                 SoLuong: 1,
                 Imei: imei
             };
-
             const ctHoaDonResponse = await fetch('/smartstation/src/mvc/controllers/CTHoaDonController.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
