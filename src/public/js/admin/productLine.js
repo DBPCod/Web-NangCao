@@ -2,6 +2,36 @@
 var PRODUCT_LINES_PER_PAGE = 8;
 var currentPage = 1;
 var allProductLines = []; // Lưu trữ toàn bộ dữ liệu dòng sản phẩm
+var permissions = [];
+// Hàm lấy dữ liệu quyền từ API
+async function loadPermissions() {
+    try {
+        const response = await fetch('/smartstation/src/mvc/controllers/get_permissions.php', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+        if (!response.ok) throw new Error('Lỗi khi lấy quyền: ' + response.status);
+        permissions = await response.json();
+        console.log('Permissions loaded:', permissions);
+    } catch (error) {
+        console.error('Lỗi khi lấy quyền:', error);
+        toast({
+            title: "Lỗi",
+            message: "Không thể tải dữ liệu quyền!",
+            type: "error",
+            duration: 3000,
+        });
+    }
+}
+
+// Hàm kiểm tra quyền
+function hasPermission(permissionName, action) {
+    return permissions.some(permission => 
+        permission.TenQuyen === permissionName && permission[action]
+    );
+}
 
 // Hàm lấy danh sách thương hiệu và trả về ánh xạ Id -> Tên
 async function fetchBrandsMap() {
@@ -30,6 +60,8 @@ async function fetchBrandsMap() {
 
 // Hàm lấy danh sách thương hiệu và điền vào dropdown
 function loadBrands() {
+
+
     fetch("/smartstation/src/mvc/controllers/ThuongHieuController.php", {
         method: "GET",
     })
@@ -57,6 +89,9 @@ function loadBrands() {
 
 // Hàm tải danh sách dòng sản phẩm và hiển thị tên thương hiệu
 async function loadProductLines() {
+
+    await loadPermissions();
+
     try {
         const brandMap = await fetchBrandsMap();
         const response = await fetch("/smartstation/src/mvc/controllers/DongSanPhamController.php", {
@@ -68,6 +103,10 @@ async function loadProductLines() {
         allProductLines = productLines; // Lưu dữ liệu vào biến toàn cục
         renderProductLinesByPage(currentPage); // Render trang đầu tiên
         renderPagination(); // Render nút phân trang
+
+        if (!hasPermission('Dòng sản phẩm', 'them')) {
+            document.querySelector('.btn-success[data-bs-target="#productLineModal"]').style.display = 'none';
+        }
     } catch (error) {
         console.error("Fetch error:", error);
         document.getElementById("productLineTableBody").innerHTML =
@@ -78,7 +117,7 @@ async function loadProductLines() {
 // Render danh sách dòng sản phẩm theo trang
 async function renderProductLinesByPage(page) {
     const tbody = document.getElementById("productLineTableBody");
-    tbody.innerHTML = "";
+    let rows = '';
 
     if (!allProductLines || allProductLines.length === 0) {
         tbody.innerHTML = '<tr><td colspan="5">Không có dòng sản phẩm nào</td></tr>';
@@ -90,21 +129,35 @@ async function renderProductLinesByPage(page) {
     const endIndex = startIndex + PRODUCT_LINES_PER_PAGE;
     const productLinesToDisplay = allProductLines.slice(startIndex, endIndex);
 
+    const hasEditPermission = hasPermission('Dòng sản phẩm', 'sua');
+    const hasDeletePermission = hasPermission('Dòng sản phẩm', 'xoa');
+
     const brandMap = await fetchBrandsMap();
     productLinesToDisplay.forEach((productLine) => {
         const brandName = productLine.IdThuongHieu ? brandMap[productLine.IdThuongHieu] || "Không xác định" : "Không có";
-        tbody.innerHTML += `
+        let actionButtons = '';
+        if (hasEditPermission) {
+            actionButtons += `
+                 <button class="btn btn-primary" onclick="openEditModal(${productLine.IdDongSanPham})">Sửa</button>
+            `;
+        }
+        if (hasDeletePermission) {
+            actionButtons += `
+                <button class="btn btn-danger" onclick="deleteProductLine(${productLine.IdDongSanPham})">Xóa</button>
+            `;
+        }
+        rows += `
             <tr>
                 <td>${productLine.IdDongSanPham}</td>
                 <td>${productLine.TenDong}</td>
                 <td>${productLine.SoLuong}</td>
                 <td>${brandName}</td>
                 <td class="text-center">
-                    <button class="btn btn-primary" onclick="openEditModal(${productLine.IdDongSanPham})">Sửa</button>
-                    <button class="btn btn-danger" onclick="deleteProductLine(${productLine.IdDongSanPham})">Xóa</button>
+                    ${actionButtons || 'Không có quyền'}
                 </td>
             </tr>`;
     });
+    tbody.innerHTML = rows;
 }
 
 // Render nút phân trang
@@ -131,8 +184,8 @@ function renderPagination() {
         paginationContainer.appendChild(btn);
     };
 
-    // Nút "Prev"
-    addPage("« Prev", currentPage - 1, false, currentPage === 1);
+    // Nút "Prev" - chỉ giữ lại «
+    addPage("«", currentPage - 1, false, currentPage === 1);
 
     // Luôn hiển thị trang đầu tiên
     addPage("1", 1, currentPage === 1);
@@ -163,8 +216,8 @@ function renderPagination() {
         addPage(totalPages.toString(), totalPages, currentPage === totalPages);
     }
 
-    // Nút "Next"
-    addPage("Next »", currentPage + 1, false, currentPage === totalPages);
+    // Nút "Next" - chỉ giữ lại »
+    addPage("»", currentPage + 1, false, currentPage === totalPages);
 }
 
 function openAddModal() {

@@ -31,24 +31,38 @@ class TaiKhoanController {
                 break;
 
             case 'POST':
-                if (isset($input['taikhoan'])) {
-                    $result = $this->model->GetPass($input);
-                    if (password_verify($input["matkhau"], $result["MatKhau"])) {
-                        echo json_encode([
-                            "success" => true,
-                            "message" => "Đúng mật khẩu!"
-                        ]);
+                if (isset($input['taikhoan']) && isset($input['matkhau'])) {
+                    // Kiểm tra xem tài khoản có tồn tại không
+                    $result = $this->model->GetPass($input['taikhoan']);
+                    
+                    if ($result && isset($result["MatKhau"])) {
+                        if (password_verify($input["matkhau"], $result["MatKhau"])) {
+                            echo json_encode([
+                                "success" => true,
+                                "message" => "Đúng mật khẩu!"
+                            ]);
+                        } else {
+                            echo json_encode([
+                                "success" => false,
+                                "message" => "Sai mật khẩu!"
+                            ]);
+                        }
                     } else {
                         echo json_encode([
                             "success" => false,
-                            "message" => "Sai mật khẩu!"
+                            "message" => "Tài khoản không tồn tại!"
                         ]);
                     }
-                } elseif (isset($input['taikhoan']) && isset($input['matkhau'])) {
-                    $newTaiKhoan = $this->model->addTaiKhoan($input);
+                } elseif (isset($input['taikhoan'])) {
+                    // Xử lý trường hợp chỉ có tài khoản
                     echo json_encode([
-                        "message" => "Thêm tài khoản thành công",
-                        "taiKhoan" => $newTaiKhoan
+                        "success" => false,
+                        "message" => "Thiếu thông tin mật khẩu!"
+                    ]);
+                } else {
+                    echo json_encode([
+                        "success" => false,
+                        "message" => "Thiếu thông tin tài khoản!"
                     ]);
                 }
                 break;

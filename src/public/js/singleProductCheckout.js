@@ -7,6 +7,9 @@ const idNguoiDung = getCookieValue('user');
 let isBuyNowQuantitySelectorsSetup = false;
 let price; // Biến toàn cục để lưu giá sản phẩm đơn vị
 
+// Thêm biến để theo dõi trạng thái thanh toán
+let isProcessingPayment = false;
+
 // Format price with commas (e.g., 30190000 -> 30,190,000 đ)
 function formatPrice(price) {
     return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " đ";
@@ -259,7 +262,22 @@ async function getIdTaiKhoan(idNguoiDung) {
 
 // Handle checkout process
 async function handleCheckout() {
+    // Ngăn chặn nhiều lần nhấn
+    if (isProcessingPayment) {
+        return;
+    }
+    
+
+    // Lấy nút thanh toán
+    const checkoutBtn = document.querySelector('#buyNowModal .btn-secondary');
+    const originalBtnText = checkoutBtn.innerHTML;
+    
     try {
+        // Đánh dấu đang xử lý và vô hiệu hóa nút
+        isProcessingPayment = true;
+        checkoutBtn.disabled = true;
+        checkoutBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Đang xử lý...';
+        
         // Get form data
         const radioBtn = document.getElementById('edit-address');
         const newAddress = document.getElementById('address-input').value;
@@ -368,6 +386,11 @@ async function handleCheckout() {
             type: "error",
             duration: 5000,
         });
+    } finally {
+        // Luôn đặt lại trạng thái và nút khi hoàn thành hoặc có lỗi
+        isProcessingPayment = false;
+        checkoutBtn.disabled = false;
+        checkoutBtn.innerHTML = originalBtnText;
     }
 }
 
@@ -377,6 +400,7 @@ handleAddressInput('buyNowModal');
 // Reset state when modal closes
 buyNowModal.addEventListener('hidden.bs.modal', () => {
     isBuyNowQuantitySelectorsSetup = false;
+    isProcessingPayment = false; // Reset trạng thái xử lý thanh toán
 });
 
 // --- New Additions Below (No Changes to Above Code) ---
@@ -525,3 +549,12 @@ async function addToCart(product) {
     });
     return true;
 }
+
+// Khởi tạo sự kiện cho nút thanh toán
+document.addEventListener('DOMContentLoaded', function() {
+    // Nút thanh toán trong modal
+    const checkoutBtn = buyNowModal.querySelector('.checkout-btn');
+    if (checkoutBtn) {
+        checkoutBtn.addEventListener('click', handleCheckout);
+    }
+});

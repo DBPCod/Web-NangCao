@@ -55,9 +55,9 @@
 <div class="modal fade" id="viewOrderModal" tabindex="-1" aria-labelledby="viewOrderModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
-            <div class="modal-header bg-info text-white">
+            <div class="modal-header bg-green text-white">
                 <h5 class="modal-title" id="viewOrderModalLabel">Chi tiết hóa đơn</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close bg-light" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="mb-3">
@@ -149,6 +149,10 @@
         margin-right: 5px;
         font-size: 12px;
         padding: 4px 8px;
+    }
+    .modal-header {
+        border-bottom: none;
+        background-color: #218838;
     }
 </style>
 

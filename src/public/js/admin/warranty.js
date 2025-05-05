@@ -2,9 +2,43 @@
 var WARRANTIES_PER_PAGE = 8;
 var currentPage = 1;
 var allWarranties = []; // Lưu trữ toàn bộ dữ liệu bảo hành
+var permissions = [];
+
+// Hàm lấy dữ liệu quyền từ API
+async function loadPermissions() {
+    try {
+        const response = await fetch('/smartstation/src/mvc/controllers/get_permissions.php', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+        if (!response.ok) throw new Error('Lỗi khi lấy quyền: ' + response.status);
+        permissions = await response.json();
+        console.log('Permissions loaded:', permissions);
+    } catch (error) {
+        console.error('Lỗi khi lấy quyền:', error);
+        toast({
+            title: "Lỗi",
+            message: "Không thể tải dữ liệu quyền!",
+            type: "error",
+            duration: 3000,
+        });
+    }
+}
+
+// Hàm kiểm tra quyền
+function hasPermission(permissionName, action) {
+    return permissions.some(permission => 
+        permission.TenQuyen === permissionName && permission[action]
+    );
+}
 
 // Hàm tải danh sách bảo hành
-function loadWarranties() {
+async function loadWarranties() {
+
+    await loadPermissions();
+
     fetch("/smartstation/src/mvc/controllers/BaohanhController.php", {
         method: "GET",
     })
@@ -16,6 +50,9 @@ function loadWarranties() {
             allWarranties = warranties; // Lưu dữ liệu vào biến toàn cục
             renderWarrantiesByPage(currentPage); // Render trang đầu tiên
             renderPagination(); // Render nút phân trang
+            if (!hasPermission('Bảo hành', 'them')) {
+                document.querySelector('.btn-success[data-bs-target="#addWarrantyModal"]').style.display = 'none';
+            }
         })
         .catch((error) => {
             console.error("Fetch error:", error);
@@ -33,7 +70,7 @@ function loadWarranties() {
 // Render danh sách bảo hành theo trang
 function renderWarrantiesByPage(page) {
     const tbody = document.getElementById("warrantyTableBody");
-    tbody.innerHTML = "";
+    rows = "";
 
     if (!allWarranties || allWarranties.length === 0) {
         tbody.innerHTML = '<tr><td colspan="4">Không có bảo hành nào</td></tr>';
@@ -45,18 +82,33 @@ function renderWarrantiesByPage(page) {
     const endIndex = startIndex + WARRANTIES_PER_PAGE;
     const warrantiesToDisplay = allWarranties.slice(startIndex, endIndex);
 
+    const hasEditPermission = hasPermission('Bảo hành', 'sua');
+    const hasDeletePermission = hasPermission('Bảo hành', 'xoa');
+
+
     warrantiesToDisplay.forEach((warranty) => {
-        tbody.innerHTML += `
+        let actionButtons = '';
+        if (hasEditPermission) {
+            actionButtons += `
+                <button class="btn btn-primary" onclick="editWarranty('${warranty.IdBaoHanh}')">Sửa</button>
+            `;
+        }
+        if (hasDeletePermission) {
+            actionButtons += `
+                <button class="btn btn-danger" onclick="deleteWarranty('${warranty.IdBaoHanh}')">Xóa</button>
+            `;
+        }
+        rows += `
             <tr>
                 <td>${warranty.IdBaoHanh}</td>
                 <td>${warranty.ThoiGianBaoHanh}</td>
                 <td>${warranty.TrangThai == 1 ? "Hoạt động" : "Ngừng hoạt động"}</td>
                 <td class="text-center">
-                    <button class="btn btn-primary" onclick="editWarranty('${warranty.IdBaoHanh}')">Sửa</button>
-                    <button class="btn btn-danger" onclick="deleteWarranty('${warranty.IdBaoHanh}')">Xóa</button>
+                    ${actionButtons || 'Không có quyền'}
                 </td>
             </tr>`;
     });
+    tbody.innerHTML = rows;
 }
 
 // Render nút phân trang
@@ -65,10 +117,10 @@ function renderPagination() {
     const paginationContainer = document.querySelector("#pagination");
     paginationContainer.innerHTML = "";
 
-    // Nút Previous
+    // Nút Previous - thay thành «
     const prevButton = document.createElement("button");
     prevButton.className = "btn btn-secondary mx-1";
-    prevButton.textContent = "Previous";
+    prevButton.textContent = "«";
     prevButton.disabled = currentPage === 1;
     prevButton.addEventListener("click", () => {
         if (currentPage > 1) {
@@ -92,10 +144,10 @@ function renderPagination() {
         paginationContainer.appendChild(pageButton);
     }
 
-    // Nút Next
+    // Nút Next - thay thành »
     const nextButton = document.createElement("button");
     nextButton.className = "btn btn-secondary mx-1";
-    nextButton.textContent = "Next";
+    nextButton.textContent = "»";
     nextButton.disabled = currentPage === totalPages;
     nextButton.addEventListener("click", () => {
         if (currentPage < totalPages) {

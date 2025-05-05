@@ -63,6 +63,15 @@ function buildQueryString(filters, page) {
 // Hàm xử lý sự kiện click nút tìm kiếm
 function handleClickSearch() {
     searchProducts(1);
+    
+    // Đóng offcanvas sau khi tìm kiếm (nếu đang mở)
+    const offcanvas = document.getElementById('navbarOffcanvas');
+    if (offcanvas) {
+        const bsOffcanvas = bootstrap.Offcanvas.getInstance(offcanvas);
+        if (bsOffcanvas) {
+            bsOffcanvas.hide();
+        }
+    }
 }
 
 // Gắn sự kiện nhấn Enter trên input tìm kiếm

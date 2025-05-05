@@ -47,8 +47,8 @@ function updatePriceRange() {
         return response.json();
     })
     .then(data => {
-        const minPrice = data.minPrice || 400000;
-        const maxPrice = data.maxPrice || 48500000;
+        const minPrice = parseInt(data.minPrice) || 400000;
+        const maxPrice = parseInt(data.maxPrice) || 48500000;
         initRangeSlider(minPrice, maxPrice);
     })
     .catch(error => {
@@ -158,10 +158,17 @@ function collectFilters() {
         }
     });
 
-    if (document.querySelector('#app1').checked) filters.priceRanges.push('0-3000000');
-    if (document.querySelector('#app2').checked) filters.priceRanges.push('3000000-6000000');
-    if (document.querySelector('#app3').checked)  filters.priceRanges.push('6000000-10000000');
-    if (document.querySelector('#app4').checked) filters.priceRanges.push('10000000-');
+    // Thêm kiểm tra null trước khi truy cập thuộc tính checked
+    const app1 = document.querySelector('#app1');
+    const app2 = document.querySelector('#app2');
+    const app3 = document.querySelector('#app3');
+    const app4 = document.querySelector('#app4');
+    const app5 = document.querySelector('#app5');
+
+    if (app1 && app1.checked) filters.priceRanges.push('0-3000000');
+    if (app2 && app2.checked) filters.priceRanges.push('3000000-6000000');
+    if ((app3 && app3.checked) || (app4 && app4.checked)) filters.priceRanges.push('6000000-10000000');
+    if (app5 && app5.checked) filters.priceRanges.push('10000000-');
 
     const minDisplay = document.querySelector('.min-price-display');
     const maxDisplay = document.querySelector('.max-price-display');
@@ -272,13 +279,56 @@ function loadProducts(page = 1, filters = null) {
 
         const totalPages = Math.ceil(data.total / data.limit);
         let paginationHTML = '';
-        for (let i = 1; i <= totalPages; i++) {
+
+        // Nút "Prev"
+        paginationHTML += `
+            <li class="page-item ${page === 1 ? 'disabled' : ''}">
+                <a class="page-link page-btn" href="#" data-page="${page - 1}">«</a>
+            </li>
+        `;
+
+        // Luôn hiển thị trang đầu tiên
+        paginationHTML += `
+            <li class="page-item ${page === 1 ? 'active' : ''}">
+                <a class="page-link page-btn" href="#" data-page="1">1</a>
+            </li>
+        `;
+
+        // Dấu ... nếu cần
+        if (page > 4) {
+            paginationHTML += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+        }
+
+        // Các trang gần currentPage
+        for (let i = Math.max(2, page - 2); i <= Math.min(totalPages - 1, page + 2); i++) {
             paginationHTML += `
                 <li class="page-item ${i === page ? 'active' : ''}">
                     <a class="page-link page-btn" href="#" data-page="${i}">${i}</a>
                 </li>
             `;
         }
+
+        // Dấu ... nếu cần
+        if (page < totalPages - 3) {
+            paginationHTML += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+        }
+
+        // Luôn hiển thị trang cuối cùng nếu có nhiều hơn 1 trang
+        if (totalPages > 1) {
+            paginationHTML += `
+                <li class="page-item ${page === totalPages ? 'active' : ''}">
+                    <a class="page-link page-btn" href="#" data-page="${totalPages}">${totalPages}</a>
+                </li>
+            `;
+        }
+
+        // Nút "Next"
+        paginationHTML += `
+            <li class="page-item ${page === totalPages ? 'disabled' : ''}">
+                <a class="page-link page-btn" href="#" data-page="${page + 1}">»</a>
+            </li>
+        `;
+
         document.querySelector('.pagination').innerHTML = paginationHTML;
 
         attachProductCardListeners();
@@ -369,13 +419,56 @@ function loadFilteredProducts(page, filters, limit, type) {
 
         const totalPages = Math.ceil(data.total / data.limit);
         let paginationHTML = '';
-        for (let i = 1; i <= totalPages; i++) {
+
+        // Nút "Prev"
+        paginationHTML += `
+            <li class="page-item ${page === 1 ? 'disabled' : ''}">
+                <a class="page-link page-btn" href="#" data-page="${page - 1}">« Prev</a>
+            </li>
+        `;
+
+        // Luôn hiển thị trang đầu tiên
+        paginationHTML += `
+            <li class="page-item ${page === 1 ? 'active' : ''}">
+                <a class="page-link page-btn" href="#" data-page="1">1</a>
+            </li>
+        `;
+
+        // Dấu ... nếu cần
+        if (page > 4) {
+            paginationHTML += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+        }
+
+        // Các trang gần currentPage
+        for (let i = Math.max(2, page - 2); i <= Math.min(totalPages - 1, page + 2); i++) {
             paginationHTML += `
                 <li class="page-item ${i === page ? 'active' : ''}">
                     <a class="page-link page-btn" href="#" data-page="${i}">${i}</a>
                 </li>
             `;
         }
+
+        // Dấu ... nếu cần
+        if (page < totalPages - 3) {
+            paginationHTML += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+        }
+
+        // Luôn hiển thị trang cuối cùng nếu có nhiều hơn 1 trang
+        if (totalPages > 1) {
+            paginationHTML += `
+                <li class="page-item ${page === totalPages ? 'active' : ''}">
+                    <a class="page-link page-btn" href="#" data-page="${totalPages}">${totalPages}</a>
+                </li>
+            `;
+        }
+
+        // Nút "Next"
+        paginationHTML += `
+            <li class="page-item ${page === totalPages ? 'disabled' : ''}">
+                <a class="page-link page-btn" href="#" data-page="${page + 1}">»</a>
+            </li>
+        `;
+
         const paginationContainer = document.querySelector('.pagination');
         if (paginationContainer) {
             paginationContainer.innerHTML = paginationHTML;

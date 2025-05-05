@@ -19,14 +19,14 @@
                 <button
                     type="button"
                     data-bs-target="#promoCarousel"
-                    data-bs-slide-to="2"
+                    data-bs-slide-to="2"    
                     aria-label="Slide 3"></button>
             </div>
 
             <!-- Slides -->
             <div class="carousel-inner">
                 <!-- Slide 1 -->
-                <div class="carousel-item active">
+                <div class="carousel-item active" data-idchsp="7" data-iddongsanpham="8" style="cursor: pointer;">
                     <!-- Placeholder for the image -->
                     <img
                         src="../../../public/img/slider1.jpg"
@@ -35,7 +35,7 @@
                 </div>
 
                 <!-- Slide 2 (Placeholder) -->
-                <div class="carousel-item">
+                <div class="carousel-item" data-idchsp="8" data-iddongsanpham="12" style="cursor: pointer;">
                     <img
                         src="../../../public/img/slider2.png"
                         alt="Person with phone"
@@ -43,7 +43,7 @@
                 </div>
 
                 <!-- Slide 3 (Placeholder) -->
-                <div class="carousel-item">
+                <div class="carousel-item" data-idchsp="1" data-iddongsanpham="5" style="cursor: pointer;">
                     <img
                         src="../../../public/img/slider3.png"
                         alt="Person with phone"

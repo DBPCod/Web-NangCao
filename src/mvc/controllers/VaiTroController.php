@@ -15,7 +15,11 @@ class VaiTroController {
 
         switch ($method) {
             case 'GET':
-                if (isset($_GET['idVaiTro'])) {
+                if (isset($_GET['permissions']) && isset($_GET['idVaiTro'])) {
+                    $data = $this->model->getPermissionsByRole($_GET['idVaiTro']);
+                } elseif (isset($_GET['allQuyen'])) {
+                    $data = $this->model->getAllQuyen();
+                } elseif (isset($_GET['idVaiTro'])) {
                     $data = $this->model->getVaiTroById($_GET['idVaiTro']);
                 } else {
                     $data = $this->model->getAllVaiTro();
@@ -24,20 +28,36 @@ class VaiTroController {
                 break;
 
             case 'POST':
-                $newVaiTro = $this->model->addVaiTro($input);
-                echo json_encode([
-                    "message" => "Thêm vai trò thành công",
-                    "vaitro" => $newVaiTro
-                ]);
+                if (empty($input['TenVaiTro'])) {
+                    echo json_encode(["message" => "Tên vai trò không hợp lệ"]);
+                    break;
+                }
+                try {
+                    $newVaiTro = $this->model->addVaiTro($input);
+                    echo json_encode([
+                        "message" => "Thêm vai trò thành công",
+                        "vaitro" => $newVaiTro
+                    ]);
+                } catch (Exception $e) {
+                    echo json_encode(["message" => $e->getMessage()]);
+                }
                 break;
 
             case 'PUT':
-                $json = file_get_contents("php://input");
-                $_PUT = json_decode($json, true);
-
+                if (empty($input['TenVaiTro'])) {
+                    echo json_encode(["message" => "Tên vai trò không hợp lệ"]);
+                    break;
+                }
+                
                 if (isset($_GET['idVaiTro'])) {
-                    $result = $this->model->updateVaiTro($_GET['idVaiTro'], $_PUT['TenVaiTro'], $_PUT['TrangThai']);
-                    echo json_encode(["message" => $result ? "Cập nhật vai trò thành công" : "Cập nhật vai trò thất bại"]);
+                    try {
+                        $result = $this->model->updateVaiTro($_GET['idVaiTro'], $input);
+                        echo json_encode(["message" => $result ? "Cập nhật vai trò thành công" : "Cập nhật vai trò thất bại"]);
+                    } catch (Exception $e) {
+                        echo json_encode(["message" => $e->getMessage()]);
+                    }
+                } else {
+                    echo json_encode(["message" => "Thiếu IdVaiTro"]);
                 }
                 break;
 
@@ -45,6 +65,8 @@ class VaiTroController {
                 if (isset($_GET['idVaiTro'])) {
                     $result = $this->model->deleteVaiTro($_GET['idVaiTro']);
                     echo json_encode(["message" => $result ? "Xóa vai trò thành công" : "Xóa vai trò thất bại"]);
+                } else {
+                    echo json_encode(["message" => "Thiếu IdVaiTro"]);
                 }
                 break;
 

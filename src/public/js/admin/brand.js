@@ -1,10 +1,44 @@
-// Số lượng thương hiệu mỗi trang
-var BRANDS_PER_PAGE = 8;
+
+var permissions = [];
+var BRANDS_PER_PAGE = 5;
 var currentPage = 1;
 var allBrands = []; // Lưu trữ toàn bộ dữ liệu thương hiệu
 
+// Hàm lấy dữ liệu quyền từ API
+async function loadPermissions() {
+    try {
+        const response = await fetch('/smartstation/src/mvc/controllers/get_permissions.php', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+        if (!response.ok) throw new Error('Lỗi khi lấy quyền: ' + response.status);
+        permissions = await response.json();
+        console.log('Permissions loaded:', permissions);
+    } catch (error) {
+        console.error('Lỗi khi lấy quyền:', error);
+        toast({
+            title: "Lỗi",
+            message: "Không thể tải dữ liệu quyền!",
+            type: "error",
+            duration: 3000,
+        });
+    }
+}
+
+// Hàm kiểm tra quyền
+function hasPermission(permissionName, action) {
+    return permissions.some(permission => 
+        permission.TenQuyen === permissionName && permission[action]
+    );
+}
+
 // Hàm tải danh sách thương hiệu
-function loadBrands() {
+async function loadBrands() {
+    // Chờ lấy quyền trước khi tải thương hiệu
+    await loadPermissions();
+
     fetch("/smartstation/src/mvc/controllers/ThuongHieuController.php", {
         method: "GET",
     })
@@ -16,6 +50,11 @@ function loadBrands() {
             allBrands = brands; // Lưu dữ liệu vào biến toàn cục
             renderBrandsByPage(currentPage); // Render trang đầu tiên
             renderPagination(); // Render nút phân trang
+
+            // Ẩn nút "Thêm thương hiệu" nếu không có quyền them
+            if (!hasPermission('Thương hiệu', 'them')) {
+                document.querySelector('.btn-success[data-bs-target="#addBrandModal"]').style.display = 'none';
+            }
         })
         .catch((error) => {
             console.error("Fetch error:", error);
@@ -27,7 +66,7 @@ function loadBrands() {
 // Render danh sách thương hiệu theo trang
 function renderBrandsByPage(page) {
     const tbody = document.getElementById("brandTableBody");
-    tbody.innerHTML = "";
+    let rows = '';
 
     if (!allBrands || allBrands.length === 0) {
         tbody.innerHTML = '<tr><td colspan="3">Không có thương hiệu nào</td></tr>';
@@ -39,17 +78,32 @@ function renderBrandsByPage(page) {
     const endIndex = startIndex + BRANDS_PER_PAGE;
     const brandsToDisplay = allBrands.slice(startIndex, endIndex);
 
+    const hasEditPermission = hasPermission('Thương hiệu', 'sua');
+    const hasDeletePermission = hasPermission('Thương hiệu', 'xoa');
+
+
     brandsToDisplay.forEach((brand) => {
-        tbody.innerHTML += `
+        let actionButtons = '';
+        if (hasEditPermission) {
+            actionButtons += `
+                <button class="btn btn-primary" onclick="editBrand('${brand.IdThuongHieu}')">Sửa</button>
+            `;
+        }
+        if (hasDeletePermission) {
+            actionButtons += `
+                <button class="btn btn-danger" onclick="deleteBrand('${brand.IdThuongHieu}')">Xóa</button>
+            `;
+        }
+        rows += `
             <tr>
                 <td>${brand.IdThuongHieu}</td>
                 <td>${brand.TenThuongHieu}</td>
                 <td class="text-center">
-                    <button class="btn btn-primary" onclick="editBrand('${brand.IdThuongHieu}')">Sửa</button>
-                    <button class="btn btn-danger" onclick="deleteBrand('${brand.IdThuongHieu}')">Xóa</button>
+                    ${actionButtons || 'Không có quyền'}
                 </td>
             </tr>`;
     });
+    tbody.innerHTML = rows;
 }
 
 // Render nút phân trang
@@ -58,58 +112,46 @@ function renderPagination() {
     const paginationContainer = document.querySelector("#pagination");
     paginationContainer.innerHTML = "";
 
-    // Helper để thêm nút
-    const addPage = (text, page, isActive = false, isDisabled = false) => {
-        const btn = document.createElement("button");
-        btn.innerText = text;
-        btn.className = `btn mx-1 ${isActive ? 'btn-primary' : 'btn-secondary'}`;
-        
-        if (isDisabled) {
-            btn.disabled = true;
-        } else {
-            btn.addEventListener("click", () => {
-                currentPage = page;
-                renderBrandsByPage(currentPage);
-                renderPagination();
-            });
+    // Nút Previous
+    const prevButton = document.createElement("button");
+    prevButton.className = "btn btn-secondary mx-1";
+    prevButton.textContent = "Previous";
+    prevButton.disabled = currentPage === 1;
+    prevButton.addEventListener("click", () => {
+        if (currentPage > 1) {
+            currentPage--;
+            renderBrandsByPage(currentPage);
+            renderPagination();
         }
-        paginationContainer.appendChild(btn);
-    };
+    });
+    paginationContainer.appendChild(prevButton);
 
-    // Nút "Prev"
-    addPage("« Prev", currentPage - 1, false, currentPage === 1);
-
-    // Luôn hiển thị trang đầu tiên
-    addPage("1", 1, currentPage === 1);
-
-    // Dấu ... nếu cần
-    if (currentPage > 4) {
-        const dots = document.createElement("span");
-        dots.innerText = "...";
-        dots.className = "mx-1";
-        paginationContainer.appendChild(dots);
+    // Nút số trang
+    for (let i = 1; i <= totalPages; i++) {
+        const pageButton = document.createElement("button");
+        pageButton.className = `btn mx-1 ${i === currentPage ? "btn-primary" : "btn-secondary"}`;
+        pageButton.textContent = i;
+        pageButton.addEventListener("click", () => {
+            currentPage = i;
+            renderBrandsByPage(currentPage);
+            renderPagination();
+        });
+        paginationContainer.appendChild(pageButton);
     }
 
-    // Các trang gần currentPage
-    for (let i = Math.max(2, currentPage - 2); i <= Math.min(totalPages - 1, currentPage + 2); i++) {
-        addPage(i.toString(), i, currentPage === i);
-    }
-
-    // Dấu ... nếu cần
-    if (currentPage < totalPages - 3) {
-        const dots = document.createElement("span");
-        dots.innerText = "...";
-        dots.className = "mx-1";
-        paginationContainer.appendChild(dots);
-    }
-
-    // Luôn hiển thị trang cuối cùng nếu có nhiều hơn 1 trang
-    if (totalPages > 1) {
-        addPage(totalPages.toString(), totalPages, currentPage === totalPages);
-    }
-
-    // Nút "Next"
-    addPage("Next »", currentPage + 1, false, currentPage === totalPages);
+    // Nút Next
+    const nextButton = document.createElement("button");
+    nextButton.className = "btn btn-secondary mx-1";
+    nextButton.textContent = "Next";
+    nextButton.disabled = currentPage === totalPages;
+    nextButton.addEventListener("click", () => {
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderBrandsByPage(currentPage);
+            renderPagination();
+        }
+    });
+    paginationContainer.appendChild(nextButton);
 }
 
 // Hàm thêm thương hiệu

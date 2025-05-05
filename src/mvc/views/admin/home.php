@@ -30,9 +30,83 @@
     <script src="../../../public/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="../../../public/toast_message/main.js"></script>
     <script>
-        $(document).ready(function() {
+        $(document).ready(async function() {
+            let permissions = [];
+
+            // Hàm lấy dữ liệu quyền từ API
+            async function loadPermissions() {
+                try {
+                    const response = await fetch('/smartstation/src/mvc/controllers/get_permissions.php', {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+                    if (!response.ok) throw new Error('Lỗi khi lấy quyền: ' + response.status);
+                    permissions = await response.json();
+                    console.log('Permissions loaded:', permissions);
+                } catch (error) {
+                    console.error('Lỗi khi lấy quyền:', error);
+                    alert('Không thể tải dữ liệu quyền!');
+                }
+            }
+
+            // Hàm kiểm tra quyền
+            function hasPermission(permissionName, action) {
+                return permissions.some(permission => 
+                    permission.TenQuyen === permissionName && permission[action]
+                );
+            }
+
+            // Ánh xạ section với TenQuyen
+            const sectionPermissions = {
+                'customers': 'Khách hàng',
+                'products': 'Danh sách sản phẩm',
+                'productLine': 'Dòng sản phẩm',
+                'productConfig': 'Cấu hình sản phẩm',
+                'brand': 'Thương hiệu',
+                'promotions': 'Khuyến mãi',
+                'warranty': 'Bảo hành',
+                'grn': 'Danh sách phiếu nhập',
+                'providers': 'Nhà cung cấp',
+                'orders': 'Đơn hàng',
+                'statistics': 'Thống kê',
+                'users': 'Quản trị'
+            };
+
+            // Tải dữ liệu quyền trước khi xử lý giao diện
+            await loadPermissions();
+
+            // Ẩn các section không có quyền truy cập
+            $(".nav-link[data-section]").each(function() {
+                const section = $(this).data("section");
+                const permissionName = sectionPermissions[section];
+                if (permissionName && !hasPermission(permissionName, "xem")) {
+                    $(this).hide();
+                }
+            });
+
+            // // Ẩn các menu cha nếu tất cả menu con bị ẩn
+            // const collapsibleMenus = [
+            //     { parent: '#userMenu', toggle: 'a[href="#userMenu"]' },
+            //     { parent: '#productMenu', toggle: 'a[href="#productMenu"]' },
+            //     { parent: '#grnMenu', toggle: 'a[href="#grnMenu"]' }
+            // ];
+
+            // collapsibleMenus.forEach(menu => {
+            //     const $collapse = $(menu.parent);
+            //     const $childLinks = $collapse.find('.nav-link[data-section]');
+            //     const allChildrenHidden = $childLinks.length > 0 && $childLinks.toArray().every(link => $(link).is(':hidden'));
+            //     if (allChildrenHidden) {
+            //         $(menu.toggle).hide();
+            //         $collapse.hide();
+            //     }
+            // });
+
+            // Load trang tổng quan ban đầu
             $("#contentArea").load("../../../mvc/views/admin/pages/overview.php");
 
+            // Xử lý click vào nav-link
             $(".nav-link[data-section]").click(function(e) {
                 e.preventDefault();
                 let section = $(this).data("section");
@@ -48,12 +122,14 @@
                         type: "GET",
                         success: function(data) {
                             $("#contentArea").html(data);
-                            // Gọi hàm loadProducts nếu section là products
                             if (section === 'products' && typeof loadProducts === 'function') {
                                 loadProducts();
                             }
-                            if (section === 'statistics' && typeof loadTopUsers === 'function'){
+                            if (section === 'statistics' && typeof loadTopUsers === 'function') {
                                 loadTopUsers();
+                            }
+                            if (section === 'users' && typeof loadRoles === 'function') {
+                                loadRoles();
                             }
                         },
                         error: function() {

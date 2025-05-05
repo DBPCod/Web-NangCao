@@ -1,6 +1,37 @@
 var GRNS_PER_PAGE = 8; // Số lượng phiếu nhập mỗi trang
 var currentPage = 1; // Trang hiện tại
 var allGRNs = []; // Lưu trữ toàn bộ dữ liệu phiếu nhập
+var permissions = [];
+
+// Hàm lấy dữ liệu quyền từ API
+async function loadPermissions() {
+    try {
+        const response = await fetch('/smartstation/src/mvc/controllers/get_permissions.php', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+        if (!response.ok) throw new Error('Lỗi khi lấy quyền: ' + response.status);
+        permissions = await response.json();
+        console.log('Permissions loaded:', permissions);
+    } catch (error) {
+        console.error('Lỗi khi lấy quyền:', error);
+        toast({
+            title: "Lỗi",
+            message: "Không thể tải dữ liệu quyền!",
+            type: "error",
+            duration: 3000,
+        });
+    }
+}
+
+// Hàm kiểm tra quyền
+function hasPermission(permissionName, action) {
+    return permissions.some(permission => 
+        permission.TenQuyen === permissionName && permission[action]
+    );
+}
 
 // Hàm tạo mã IMEI theo chuẩn Luhn
 function generateIMEI() {
@@ -59,7 +90,10 @@ async function getUniqueIMEI() {
 }
 
 // Hàm tải danh sách phiếu nhập
-function loadGRNs() {
+async function loadGRNs() {
+
+    await loadPermissions();
+
     fetch("/smartstation/src/mvc/controllers/PhieuNhapController.php", {
         method: "GET",
     })
@@ -71,6 +105,9 @@ function loadGRNs() {
             allGRNs = phieuNhaps; // Lưu dữ liệu vào biến toàn cục
             renderGRNsByPage(currentPage); // Render trang đầu tiên
             renderPagination(); // Render nút phân trang
+            if (!hasPermission('Danh sách phiếu nhập', 'them')) {
+                document.querySelector('.btn-success[data-bs-target="#addGRNModal"]').style.display = 'none';
+            }
         })
         .catch((error) => {
             console.error("Fetch error:", error);
@@ -88,7 +125,7 @@ function loadGRNs() {
 // Render danh sách phiếu nhập theo trang
 function renderGRNsByPage(page) {
     const tbody = document.getElementById("grnTableBody");
-    tbody.innerHTML = "";
+    let rows = '';
 
     if (!allGRNs || allGRNs.length === 0) {
         tbody.innerHTML = '<tr><td colspan="4">Không có phiếu nhập nào</td></tr>';
@@ -100,6 +137,8 @@ function renderGRNsByPage(page) {
     const endIndex = startIndex + GRNS_PER_PAGE;
     const phieuNhapsToDisplay = allGRNs.slice(startIndex, endIndex);
 
+    const hasDeletePermission = hasPermission('Danh sách phiếu nhập', 'xoa');
+
     Promise.all(phieuNhapsToDisplay.map(phieuNhap => 
         fetch(`/smartstation/src/mvc/controllers/NhaCungCapController.php?idNCC=${phieuNhap.IdNCC}`)
             .then(res => res.json())
@@ -110,16 +149,23 @@ function renderGRNsByPage(page) {
     ))
     .then(phieuNhapsWithDetails => {
         phieuNhapsWithDetails.forEach((phieuNhap) => {
-            tbody.innerHTML += `
+            let actionButtons = '';
+            if (hasDeletePermission) {
+                actionButtons += `
+                    <button class="btn btn-danger btn-sm" onclick="event.stopPropagation(); deleteGRN(${phieuNhap.IdPhieuNhap})">Xóa</button>
+                `;
+            }
+            rows += `
                 <tr onclick="viewGRN(${phieuNhap.IdPhieuNhap})" style="cursor: pointer;">
                     <td><span class="clickable-id">${phieuNhap.IdPhieuNhap}</span></td>
                     <td>${phieuNhap.TenNCC}</td>
                     <td>${phieuNhap.TongTien ? phieuNhap.TongTien.toLocaleString('vi-VN') + ' VNĐ' : 'Chưa xác định'}</td>
                     <td class="text-center">
-                        <button class="btn btn-danger btn-sm" onclick="event.stopPropagation(); deleteGRN(${phieuNhap.IdPhieuNhap})">Xóa</button>
+                        ${actionButtons || 'Không có quyền'}
                     </td>
                 </tr>`;
         });
+        tbody.innerHTML = rows;
     })
     .catch((error) => {
         console.error("Error fetching NCC details:", error);
@@ -156,8 +202,8 @@ function renderPagination() {
         paginationContainer.appendChild(btn);
     };
 
-    // Nút "Prev"
-    addPage("« Prev", currentPage - 1, false, currentPage === 1);
+    // Nút "Prev" - chỉ giữ lại «
+    addPage("«", currentPage - 1, false, currentPage === 1);
 
     // Luôn hiển thị trang đầu tiên
     addPage("1", 1, currentPage === 1);
@@ -188,8 +234,8 @@ function renderPagination() {
         addPage(totalPages.toString(), totalPages, currentPage === totalPages);
     }
 
-    // Nút "Next"
-    addPage("Next »", currentPage + 1, false, currentPage === totalPages);
+    // Nút "Next" - chỉ giữ lại »
+    addPage("»", currentPage + 1, false, currentPage === totalPages);
 }
 
 // Hàm xem chi tiết phiếu nhập
