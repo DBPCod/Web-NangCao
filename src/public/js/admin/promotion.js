@@ -336,10 +336,27 @@ document.getElementById("selectAll").addEventListener("change", function (e) {
 
 document.getElementById("addPromotionForm").addEventListener("submit", function (e) {
     e.preventDefault();
+    const ngayBatDau = document.getElementById("startDate").value;
+    const ngayKetThuc = document.getElementById("endDate").value;
+    const phanTramGiam = document.getElementById("discountPercent").value;
+    
+    // Validation
+    if (!isNotEmpty(ngayBatDau) || !isNotEmpty(ngayKetThuc)) {
+        return showValidationError("Vui lòng chọn ngày bắt đầu và ngày kết thúc!");
+    }
+    
+    if (new Date(ngayBatDau) > new Date(ngayKetThuc)) {
+        return showValidationError("Ngày bắt đầu phải trước ngày kết thúc!");
+    }
+    
+    if (!isPositiveNumber(phanTramGiam) || phanTramGiam > 100) {
+        return showValidationError("Phần trăm giảm phải là số dương và không quá 100!");
+    }
+    
     const promotionData = {
-        NgayBatDau: document.getElementById("startDate").value,
-        NgayKetThuc: document.getElementById("endDate").value,
-        PhanTramGiam: document.getElementById("discountPercent").value,
+        NgayBatDau: ngayBatDau,
+        NgayKetThuc: ngayKetThuc,
+        PhanTramGiam: phanTramGiam,
         TrangThai: 1
     };
 

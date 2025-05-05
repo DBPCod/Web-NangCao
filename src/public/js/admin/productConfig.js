@@ -211,15 +211,55 @@ function openEditModal(idCHSP) {
 
 // Lưu cấu hình (thêm hoặc sửa)
 function saveProductConfig() {
-    const idCHSP = document.getElementById("productConfigForm").dataset.idCHSP;
+    const form = document.getElementById("productConfigForm");
+    const idCHSP = form.dataset.idCHSP;
+    const ram = document.getElementById("ram").value.trim();
+    const rom = document.getElementById("rom").value.trim();
+    const manHinh = document.getElementById("manHinh").value.trim();
+    const pin = document.getElementById("pin").value.trim();
+    const mauSac = document.getElementById("mauSac").value.trim();
+    const camera = document.getElementById("camera").value.trim();
+    
+    // Validation
+    if (!isNotEmpty(ram)) {
+        return showValidationError("Vui lòng nhập thông tin RAM!");
+    }
+    
+    if (!isNotEmpty(rom)) {
+        return showValidationError("Vui lòng nhập thông tin ROM!");
+    }
+    
+    if (!isNotEmpty(manHinh)) {
+        return showValidationError("Vui lòng nhập thông tin màn hình!");
+    }
+    
+    if (!isNotEmpty(pin)) {
+        return showValidationError("Vui lòng nhập thông tin pin!");
+    }
+    
+    if (!isNotEmpty(mauSac)) {
+        return showValidationError("Vui lòng nhập thông tin màu sắc!");
+    }
+    
+    if (!isNotEmpty(camera)) {
+        return showValidationError("Vui lòng nhập thông tin camera!");
+    }
+    
+    // Thêm đơn vị vào các giá trị
+    const formattedRam = ram + "GB";
+    const formattedRom = rom + "GB";
+    const formattedManHinh = manHinh + " inch";
+    const formattedPin = pin + "mAh";
+    const formattedCamera = camera + "MP";
+    
     const data = {
-        Ram: document.getElementById("ram").value ? `${document.getElementById("ram").value}GB` : null,
-        Rom: document.getElementById("rom").value ? `${document.getElementById("rom").value}GB` : null,
-        ManHinh: document.getElementById("manHinh").value ? `${document.getElementById("manHinh").value} inch` : null,
-        Pin: document.getElementById("pin").value ? `${document.getElementById("pin").value}mAh` : null,
-        MauSac: document.getElementById("mauSac").value || null,
-        Camera: document.getElementById("camera").value ? `${document.getElementById("camera").value}MP` : null,
-        TrangThai: 1,
+        Ram: formattedRam,
+        Rom: formattedRom,
+        ManHinh: formattedManHinh,
+        Pin: formattedPin,
+        MauSac: mauSac,
+        Camera: formattedCamera,
+        TrangThai: 1
     };
 
     const method = idCHSP ? "PUT" : "POST";

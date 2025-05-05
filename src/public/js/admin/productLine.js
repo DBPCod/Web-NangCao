@@ -256,24 +256,12 @@ function saveProductLine() {
     const tenDong = document.getElementById("tenDong").value.trim();
     const idThuongHieu = document.getElementById("idThuongHieu").value;
 
-    if (!idThuongHieu) {
-        toast({
-            title: "Cảnh báo",
-            message: "Vui lòng chọn thương hiệu!",
-            type: "warning",
-            duration: 3000,
-        });
-        return;
+    if (!isNotEmpty(idThuongHieu)) {
+        return showValidationError("Vui lòng chọn thương hiệu!");
     }
 
-    if (!tenDong) {
-        toast({
-            title: "Cảnh báo",
-            message: "Vui lòng nhập tên dòng sản phẩm!",
-            type: "warning",
-            duration: 3000,
-        });
-        return;
+    if (!isNotEmpty(tenDong)) {
+        return showValidationError("Vui lòng nhập tên dòng sản phẩm!");
     }
 
     const isEdit = document.getElementById("tenDong").dataset.idDSP;

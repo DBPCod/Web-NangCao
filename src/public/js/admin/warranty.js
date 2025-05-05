@@ -163,14 +163,8 @@ function addWarranty() {
     const form = document.getElementById("addWarrantyForm");
     const thoiGianBaoHanh = form.querySelector("#thoiGianBaoHanh").value;
 
-    if (!thoiGianBaoHanh || isNaN(thoiGianBaoHanh) || thoiGianBaoHanh <= 0) {
-        toast({
-            title: "Lỗi",
-            message: "Thời gian bảo hành phải là một số dương hợp lệ.",
-            type: "error",
-            duration: 3000,
-        });
-        return;
+    if (!isPositiveNumber(thoiGianBaoHanh)) {
+        return showValidationError("Thời gian bảo hành phải là một số dương hợp lệ.");
     }
 
     fetch("/smartstation/src/mvc/controllers/BaohanhController.php", {
@@ -244,14 +238,8 @@ function updateWarranty() {
     const idBaoHanh = form.querySelector("#editIdBaoHanh").value;
     const thoiGianBaoHanh = form.querySelector("#editThoiGianBaoHanh").value;
 
-    if (!thoiGianBaoHanh || isNaN(thoiGianBaoHanh) || thoiGianBaoHanh <= 0) {
-        toast({
-            title: "Lỗi",
-            message: "Thời gian bảo hành phải là một số dương hợp lệ.",
-            type: "error",
-            duration: 3000,
-        });
-        return;
+    if (!isPositiveNumber(thoiGianBaoHanh)) {
+        return showValidationError("Thời gian bảo hành phải là một số dương hợp lệ.");
     }
 
     // Lấy TrangThai hiện tại để giữ nguyên

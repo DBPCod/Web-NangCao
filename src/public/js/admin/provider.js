@@ -260,54 +260,77 @@ function openEditModal(idProvider) {
 
 // Xử lý lưu (thêm hoặc sửa)
 document.getElementById("saveProviderBtn").addEventListener("click", function () {
-  const action = this.getAttribute("data-action");
-  const idProvider = this.getAttribute("data-id");
-  const formData = {
-      TenNCC: document.getElementById("tenNCC").value,
-      DiaChi: document.getElementById("diaChi").value,
-      SoDienThoai: document.getElementById("soDienThoai").value,
-      Email: document.getElementById("email").value,
-      TrangThai: document.getElementById("trangThai").value,
-  };
+    const action = this.getAttribute("data-action");
+    const idProvider = this.getAttribute("data-id");
+    const tenNCC = document.getElementById("tenNCC").value;
+    const diaChi = document.getElementById("diaChi").value;
+    const soDienThoai = document.getElementById("soDienThoai").value;
+    const email = document.getElementById("email").value;
+    const trangThai = document.getElementById("trangThai").value;
+    
+    // Validation
+    if (!isNotEmpty(tenNCC)) {
+        return showValidationError("Vui lòng nhập tên nhà cung cấp!");
+    }
+    
+    if (!isNotEmpty(diaChi)) {
+        return showValidationError("Vui lòng nhập địa chỉ!");
+    }
+    
+    if (!isValidPhone(soDienThoai)) {
+        return showValidationError("Số điện thoại không hợp lệ! Phải có 10 số và bắt đầu bằng số 0.");
+    }
+    
+    if (!isValidEmail(email)) {
+        return showValidationError("Email không hợp lệ!");
+    }
+    
+    const formData = {
+        TenNCC: tenNCC,
+        DiaChi: diaChi,
+        SoDienThoai: soDienThoai,
+        Email: email,
+        TrangThai: trangThai,
+    };
 
-  let url = "/smartstation/src/mvc/controllers/NhaCungCapController.php";
-  let method = "POST";
+    let url = "/smartstation/src/mvc/controllers/NhaCungCapController.php";
+    let method = "POST";
 
-  if (action === "edit") {
-      url += `?idNCC=${idProvider}`;
-      method = "PUT";
-  }
+    if (action === "edit") {
+        url += `?idNCC=${idProvider}`;
+        method = "PUT";
+    }
 
-  fetch(url, {
-      method: method,
-      headers: {
-          "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-  })
-      .then((response) => {
-          if (!response.ok) throw new Error("Network error: " + response.status);
-          return response.json();
-      })
-      .then((data) => {
-          toast({
-              title: "Thành công",
-              message: data.message,
-              type: "success",
-              duration: 3000,
-          });
-          bootstrap.Modal.getInstance(document.getElementById("providerModal")).hide();
-          loadProviders();
-      })
-      .catch((error) => {
-          console.error("Error:", error);
-          toast({
-              title: "Lỗi",
-              message: "Đã xảy ra lỗi khi lưu nhà cung cấp",
-              type: "error",
-              duration: 3000,
-          });
-      });
+    fetch(url, {
+        method: method,
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+    })
+        .then((response) => {
+            if (!response.ok) throw new Error("Network error: " + response.status);
+            return response.json();
+        })
+        .then((data) => {
+            toast({
+                title: "Thành công",
+                message: data.message,
+                type: "success",
+                duration: 3000,
+            });
+            bootstrap.Modal.getInstance(document.getElementById("providerModal")).hide();
+            loadProviders();
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+            toast({
+                title: "Lỗi",
+                message: "Đã xảy ra lỗi khi lưu nhà cung cấp",
+                type: "error",
+                duration: 3000,
+            });
+        });
 });
 
 // Xóa nhà cung cấp

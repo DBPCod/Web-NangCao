@@ -157,14 +157,8 @@ function renderPagination() {
 // Hàm thêm thương hiệu
 function submitAddBrand() {
     const tenThuongHieu = document.getElementById("tenThuongHieu").value;
-    if (tenThuongHieu.trim() === "") {
-        toast({
-            title: "Cảnh báo",
-            message: "Vui lòng nhập tên thương hiệu!",
-            type: "warning",
-            duration: 3000,
-        });
-        return;
+    if (!isNotEmpty(tenThuongHieu)) {
+        return showValidationError("Vui lòng nhập tên thương hiệu!");
     }
 
     fetch("/smartstation/src/mvc/controllers/ThuongHieuController.php", {
@@ -274,14 +268,8 @@ function submitEditBrand() {
     const idThuongHieu = document.getElementById("editIdThuongHieu").value;
     const tenThuongHieu = document.getElementById("editTenThuongHieu").value;
 
-    if (tenThuongHieu.trim() === "") {
-        toast({
-            title: "Cảnh báo",
-            message: "Vui lòng nhập tên thương hiệu!",
-            type: "warning",
-            duration: 3000,
-        });
-        return;
+    if (!isNotEmpty(tenThuongHieu)) {
+        return showValidationError("Vui lòng nhập tên thương hiệu!");
     }
 
     fetch(`/smartstation/src/mvc/controllers/ThuongHieuController.php?idThuongHieu=${idThuongHieu}`, {

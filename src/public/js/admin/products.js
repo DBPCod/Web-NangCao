@@ -270,14 +270,17 @@ async function submitAddProduct() {
     const soLuong = document.getElementById("soLuong").value;
     const imageFiles = document.getElementById("addProductImages").files;
 
-    if (!idDongSanPham || !idCHSP) {
-        toast({
-            title: "Cảnh báo",
-            message: "Vui lòng chọn dòng sản phẩm và cấu hình!",
-            type: "warning",
-            duration: 3000,
-        });
-        return;
+    // Validation
+    if (!isNotEmpty(idDongSanPham)) {
+        return showValidationError("Vui lòng chọn dòng sản phẩm!");
+    }
+    
+    if (!isNotEmpty(idCHSP)) {
+        return showValidationError("Vui lòng chọn cấu hình sản phẩm!");
+    }
+    
+    if (!isPositiveNumber(soLuong)) {
+        return showValidationError("Số lượng phải là số dương!");
     }
 
     // Dữ liệu sản phẩm
