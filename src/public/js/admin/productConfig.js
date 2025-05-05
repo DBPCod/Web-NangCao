@@ -2,9 +2,43 @@
 var CONFIGS_PER_PAGE = 8;
 var currentPage = 1;
 var allProductConfigs = []; // Lưu trữ toàn bộ dữ liệu cấu hình sản phẩm
+var permissions = [];
+
+// Hàm lấy dữ liệu quyền từ API
+async function loadPermissions() {
+    try {
+        const response = await fetch('/smartstation/src/mvc/controllers/get_permissions.php', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+        if (!response.ok) throw new Error('Lỗi khi lấy quyền: ' + response.status);
+        permissions = await response.json();
+        console.log('Permissions loaded:', permissions);
+    } catch (error) {
+        console.error('Lỗi khi lấy quyền:', error);
+        toast({
+            title: "Lỗi",
+            message: "Không thể tải dữ liệu quyền!",
+            type: "error",
+            duration: 3000,
+        });
+    }
+}
+
+// Hàm kiểm tra quyền
+function hasPermission(permissionName, action) {
+    return permissions.some(permission => 
+        permission.TenQuyen === permissionName && permission[action]
+    );
+}
 
 // Tải danh sách cấu hình sản phẩm
-function loadProductConfigs() {
+async function loadProductConfigs() {
+
+    await loadPermissions();
+
     console.log("A");
     fetch("/smartstation/src/mvc/controllers/CauHinhSanPhamController.php", {
         method: "GET",
@@ -17,6 +51,9 @@ function loadProductConfigs() {
             allProductConfigs = productConfigs; // Lưu dữ liệu vào biến toàn cục
             renderProductConfigsByPage(currentPage); // Render trang đầu tiên
             renderPagination(); // Render nút phân trang
+            if (!hasPermission('Cấu hình sản phẩm', 'them')) {
+                document.querySelector('.btn-success[data-bs-target="#productConfigModal"]').style.display = 'none';
+            }
         })
         .catch((error) => {
             console.error("Fetch error:", error);
@@ -28,7 +65,7 @@ function loadProductConfigs() {
 // Render danh sách cấu hình sản phẩm theo trang
 function renderProductConfigsByPage(page) {
     const tbody = document.getElementById("productConfigTableBody");
-    tbody.innerHTML = "";
+    rows = "";
 
     if (!allProductConfigs || allProductConfigs.length === 0) {
         tbody.innerHTML = '<tr><td colspan="8">Không có cấu hình sản phẩm nào</td></tr>';
@@ -40,8 +77,22 @@ function renderProductConfigsByPage(page) {
     const endIndex = startIndex + CONFIGS_PER_PAGE;
     const configsToDisplay = allProductConfigs.slice(startIndex, endIndex);
 
+    const hasEditPermission = hasPermission('Cấu hình sản phẩm', 'sua');
+    const hasDeletePermission = hasPermission('Cấu hình sản phẩm', 'xoa');
+
     configsToDisplay.forEach((config) => {
-        tbody.innerHTML += `
+        let actionButtons = '';
+        if (hasEditPermission) {
+            actionButtons += `
+                <button class="btn btn-primary" onclick="openEditModal(${config.IdCHSP})">Sửa</button>
+            `;
+        }
+        if (hasDeletePermission) {
+            actionButtons += `
+                 <button class="btn btn-danger" onclick="deleteProductConfig(${config.IdCHSP})">Xóa</button>
+            `;
+        }
+        rows += `
             <tr>
                 <td>${config.IdCHSP}</td>
                 <td>${config.Ram || "Không có"}</td>
@@ -51,11 +102,11 @@ function renderProductConfigsByPage(page) {
                 <td>${config.MauSac || "Không có"}</td>
                 <td>${config.Camera || "Không có"}</td>
                 <td class="text-center">
-                    <button class="btn btn-primary" onclick="openEditModal(${config.IdCHSP})">Sửa</button>
-                    <button class="btn btn-danger" onclick="deleteProductConfig(${config.IdCHSP})">Xóa</button>
+                    ${actionButtons || 'Không có quyền'}
                 </td>
             </tr>`;
     });
+    tbody.innerHTML = rows;
 }
 
 // Render nút phân trang

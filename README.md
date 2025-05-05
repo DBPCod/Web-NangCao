@@ -22,7 +22,10 @@ SmartStation là một website bán điện thoại di động với đầy đ�
 
 2. **Cài đặt mã nguồn**
    - Clone hoặc tải repository này
-   - Giải nén và copy thư mục `smartstation` vào thư mục `htdocs` của XAMPP (thường là `C:\xampp\htdocs\` trên Windows)
+     ```
+     git clone https://github.com/DBPCod/Web-NangCao.git
+     ``` 
+   - Đảm bảo vị trí thư mục `smartstation` ở thư mục `htdocs` của XAMPP (thường là `C:\xampp\htdocs\` trên Windows)
 
 3. **Cài đặt cơ sở dữ liệu**
    - Mở trình duyệt và truy cập http://localhost/phpmyadmin
@@ -34,7 +37,7 @@ SmartStation là một website bán điện thoại di động với đầy đ�
    - Trang quản trị: http://localhost/smartstation/src/mvc/views/admin/
    - Tài khoản admin mặc định: 
      - Tên đăng nhập: admin
-     - Mật khẩu: admin123
+     - Mật khẩu: 12345678
 
 ## Cấu trúc thư mục
 
@@ -55,10 +58,10 @@ smartstation/
 
 | STT | MSSV | Họ và tên | Email |
 |-----|------|-----------|-------|
-| 1   |      |           |       |
+| 1   |   3122410227   | Đoàn Phong Lưu           |   doanphongluu082@gmail.com    |
 | 2   |      |           |       |
 | 3   |      |           |       |
 | 4   |      |           |       |
-| 5   |      |           |       |
+
 
 

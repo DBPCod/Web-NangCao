@@ -3,9 +3,42 @@ var selectedProductLines = new Set();
 var allPromotions = []; // Lưu trữ toàn bộ dữ liệu khuyến mãi
 var PROMOTIONS_PER_PAGE = 8; // Số lượng khuyến mãi mỗi trang
 var currentPage = 1; // Trang hiện tại
+var permissions = [];
+// Hàm lấy dữ liệu quyền từ API
+async function loadPermissions() {
+    try {
+        const response = await fetch('/smartstation/src/mvc/controllers/get_permissions.php', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+        if (!response.ok) throw new Error('Lỗi khi lấy quyền: ' + response.status);
+        permissions = await response.json();
+        console.log('Permissions loaded:', permissions);
+    } catch (error) {
+        console.error('Lỗi khi lấy quyền:', error);
+        toast({
+            title: "Lỗi",
+            message: "Không thể tải dữ liệu quyền!",
+            type: "error",
+            duration: 3000,
+        });
+    }
+}
+
+// Hàm kiểm tra quyền
+function hasPermission(permissionName, action) {
+    return permissions.some(permission => 
+        permission.TenQuyen === permissionName && permission[action]
+    );
+}
 
 // Hàm tải danh sách khuyến mãi
-function loadPromotions() {
+async function loadPromotions() {
+
+    await loadPermissions();
+
     fetch("/smartstation/src/mvc/controllers/KhuyenMaiController.php", {
         method: "GET",
     })
@@ -17,6 +50,9 @@ function loadPromotions() {
             allPromotions = promotions; // Lưu dữ liệu vào biến toàn cục
             renderPromotionsByPage(currentPage); // Render trang đầu tiên
             renderPagination(); // Render nút phân trang
+            if (!hasPermission('Khuyến mãi', 'them')) {
+                document.querySelector('.btn-success[data-bs-target="#addPromotionModal"]').style.display = 'none';
+            }
         })
         .catch((error) => {
             console.error("Fetch error in loadPromotions:", error);
@@ -34,7 +70,7 @@ function loadPromotions() {
 // Render danh sách khuyến mãi theo trang
 function renderPromotionsByPage(page) {
     const tbody = document.getElementById("promotionTableBody");
-    tbody.innerHTML = "";
+    rows = "";
 
     if (!allPromotions || allPromotions.length === 0) {
         tbody.innerHTML = '<tr><td colspan="6">Không có khuyến mãi nào</td></tr>';
@@ -45,9 +81,17 @@ function renderPromotionsByPage(page) {
     const startIndex = (page - 1) * PROMOTIONS_PER_PAGE;
     const endIndex = startIndex + PROMOTIONS_PER_PAGE;
     const promotionsToDisplay = allPromotions.slice(startIndex, endIndex);
+    
+    const hasDeletePermission = hasPermission('Khuyến mãi', 'xoa');
 
     promotionsToDisplay.forEach((promotion) => {
-        tbody.innerHTML += `
+        let actionButtons = '';
+        if (hasDeletePermission) {
+            actionButtons += `
+                  <button class="btn btn-danger" onclick="deletePromotion('${promotion.IdKhuyenMai}'); event.stopPropagation();">Xóa</button>
+            `;
+        }
+        rows += `
             <tr onclick="viewPromotionDetails('${promotion.IdKhuyenMai}')" style="cursor: pointer;">
                 <td>${promotion.IdKhuyenMai}</td>
                 <td>${promotion.NgayBatDau}</td>
@@ -55,10 +99,11 @@ function renderPromotionsByPage(page) {
                 <td>${promotion.PhanTramGiam}%</td>
                 <td>${promotion.TrangThai == 1 ? "Hoạt động" : "Ngừng hoạt động"}</td>
                 <td class="text-center">
-                    <button class="btn btn-danger" onclick="deletePromotion('${promotion.IdKhuyenMai}'); event.stopPropagation();">Xóa</button>
+                     ${actionButtons || 'Không có quyền'}
                 </td>
             </tr>`;
     });
+    tbody.innerHTML = rows;
 }
 
 // Render nút phân trang
