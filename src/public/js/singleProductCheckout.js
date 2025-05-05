@@ -130,7 +130,20 @@ function handleClickMuaNgay() {
     if (elementDSP && elementCHSP) {
         const idDSP = elementDSP.getAttribute('iddsp');
         const idCHSP = elementCHSP.getAttribute('idchsp');
-        const priceProduct = document.querySelector('#modalProductPrice').innerText;
+        
+        // Lấy giá từ modalProductPrice
+        const priceElement = document.querySelector('#modalProductPrice');
+        let priceProduct = '';
+        
+        // Kiểm tra nếu có giá giảm (có thẻ span bên trong)
+        if (priceElement.querySelector('span')) {
+            // Lấy giá giảm (phần text sau thẻ span)
+            priceProduct = priceElement.childNodes[1].textContent.trim();
+        } else {
+            // Không có giảm giá, lấy giá gốc
+            priceProduct = priceElement.innerText;
+        }
+        
         getAnh(idCHSP, idDSP, priceProduct);
     } else {
         alert('Vui lòng chọn phiên bản sản phẩm!');
@@ -194,7 +207,7 @@ async function SetInfor(product) {
         const html = `
             <img src="${product.img}" alt="" class="product-image">
             <h4 class="mt-3">${productData.TenDong}</h4>
-            <h3 class="text-success" data-price="${product.price}">${product.price}</h3>
+            <h3 class="text-success" data-price="${product.price}" data-original-price="${productData.Gia}" data-discount-price="${productData.GiaGiam}">${product.price}</h3>
             <div class="config-container">
                 <div class="config-item">
                     <span class="config-label">RAM</span>
