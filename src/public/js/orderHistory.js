@@ -8,6 +8,7 @@ function getCookie(name) {
 
 // Format price with commas (e.g., 30190000 -> 30,190,000 đ)
 function formatPrice(price) {
+    console.log("aa");
     return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " đ";
 }
 
@@ -66,7 +67,7 @@ async function loadOrderHistory(page = 1, limit = 5, statusId = null) {
             const row = `
                 <tr>
                     <td>${formatDate(order.NgayTao)}</td>
-                    <td>${formatPrice(order.ThanhTien)}</td>
+                    <td>${formatPrice(order.ThanhTien * 1)}</td>
                     <td class="${status.class}">${status.text}</td>
                     <td>
                         <button class="btn btn-info btn-sm action-btn" onclick="viewOrderDetails(${order.IdHoaDon})">Xem chi tiết</button>
@@ -122,23 +123,13 @@ async function viewOrderDetails(idHoaDon) {
         // Fetch order details
         const response = await fetch(`/smartstation/src/mvc/controllers/HoaDonController.php?idHoaDon=${idHoaDon}`);
         const order = await response.json();
-
         // Populate modal fields
         document.getElementById('viewIdHoaDon').value = order.IdHoaDon;
         document.getElementById('viewTenKhachHang').value = order.HoVaTen || 'Không xác định';
         document.getElementById('viewNgayTao').value = formatDate(order.NgayTao);
-        document.getElementById('viewThanhTien').value = formatPrice(order.ThanhTien);
+        document.getElementById('viewThanhTien').value = formatPrice(order.ThanhTien * 1);
         document.getElementById('viewTrangThai').value = order.TrangThai === 1 ? "Hoạt động" : "Đã xóa";
         document.getElementById('viewTinhTrang').value = statusMap[order.IdTinhTrang]?.text || "Không xác định";
-
-        // // DIV để hiển thị mã vận chuyển
-        // const vanChuyenDiv = document.createElement('div');
-        // vanChuyenDiv.className = 'mb-3';
-        // vanChuyenDiv.innerHTML = `
-        //     <label class="form-label fw-bold">Mã vận chuyển</label>
-        //     <input type="text" class="form-control" id="viewMaVanChuyen" value="${order.MaVanChuyen || 'Không có'}" readonly>
-        // `;
-        // document.querySelector('#viewOrderModal .modal-body').insertBefore(vanChuyenDiv, document.querySelector('#viewOrderModal .modal-body .mb-3:nth-child(6)'));
 
         // Fetch product details (CTHoaDon)
         const ctResponse = await fetch(`/smartstation/src/mvc/controllers/CTHoaDonController.php?idHoaDon=${idHoaDon}`);
@@ -153,14 +144,18 @@ async function viewOrderDetails(idHoaDon) {
             const spData = await spResponse.json();
             const config = spData.Config || {};
             const configText = Object.entries(config).map(([key, value]) => `${key}: ${value}`).join(', ');
+            
+            // Định dạng giá tiền nhất quán
+            const donGia = formatPrice(ct.GiaTien * 1);
+            const thanhTien = formatPrice(ct.GiaTien * ct.SoLuong);
             const row = `
                 <tr>
                     <td>${ct.TenDong || 'Không xác định'}</td>
                     <td>${ct.Ram || 'N/A'}-${ct.Rom || 'N/A'}-${ct.MauSac || 'N/A'}</td>
                     <td>${ct.Imei}</td>
                     <td>${ct.SoLuong}</td>
-                    <td>${formatPrice(ct.GiaTien)}</td>
-                    <td>${formatPrice(ct.GiaTien * ct.SoLuong)}</td>
+                    <td>${donGia}</td>
+                    <td>${thanhTien}</td>
                 </tr>
             `;
             productList.innerHTML += row;
