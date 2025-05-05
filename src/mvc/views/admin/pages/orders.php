@@ -98,6 +98,8 @@
                                 <th>Số lượng</th>
                                 <th>Giá bán</th>
                                 <th>Thành tiền</th>
+                                <th>Bảo hành</th>
+                                <th>Tình trạng bảo hành</th>
                             </tr>
                         </thead>
                         <tbody id="viewProductList"></tbody>
