@@ -34,7 +34,7 @@ SmartStation là một website bán điện thoại di động với đầy đ�
    - Trang quản trị: http://localhost/smartstation/src/mvc/views/admin/
    - Tài khoản admin mặc định: 
      - Tên đăng nhập: admin
-     - Mật khẩu: admin123
+     - Mật khẩu: 12345678
 
 ## Cấu trúc thư mục
 
