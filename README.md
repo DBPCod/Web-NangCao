@@ -59,9 +59,9 @@ smartstation/
 | STT | MSSV | Họ và tên | Email |
 |-----|------|-----------|-------|
 | 1   |   3122410227   | Đoàn Phong Lưu           |   doanphongluu082@gmail.com    |
-| 2   |      |           |       |
-| 3   |      |           |       |
-| 4   |      |           |       |
+| 2   |   3122410188   | Vũ Đăng Khoa           |   khoavu1831@gmail.com   |
+| 3   |   3122410305   | Đinh Bá Phong           |   dinhbaphong123@gmail.com    |
+| 4   |   3123410222   | Nguyễn Tuấn Minh          |   ntminh16039999@gmail.com   |
 
 
 
