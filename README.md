@@ -55,7 +55,7 @@ smartstation/
 
 | STT | MSSV | Họ và tên | Email |
 |-----|------|-----------|-------|
-| 1   |      |           |       |
+| 1   |   3122410227   | Đoàn Phong Lưu           |   doanphongluu082@gmail.com    |
 | 2   |      |           |       |
 | 3   |      |           |       |
 | 4   |      |           |       |
