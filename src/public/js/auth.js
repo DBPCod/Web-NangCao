@@ -239,75 +239,190 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Xử lý form cập nhật thông tin
-    // Xử lý form cập nhật thông tin
-const updateProfileForm = document.querySelector('#updateProfileForm');
-if (updateProfileForm) {
-    let cookie = getCookie('username');
-    const updateProfileModal = document.getElementById('updateProfile');
-    updateProfileModal.addEventListener('show.bs.modal', function () {
-        SetInfor(cookie);
-    });
+    const updateProfileForm = document.querySelector('#updateProfileForm');
+    if (updateProfileForm) {
+        let cookie = getCookie('username');
+        const updateProfileModal = document.getElementById('updateProfile');
+        updateProfileModal.addEventListener('show.bs.modal', function () {
+            SetInfor(cookie);
+        });
 
-    updateProfileForm.addEventListener('submit', function (e) {
-        e.preventDefault();
+        updateProfileForm.addEventListener('submit', function (e) {
+            e.preventDefault();
 
-        // Get form values
-        const fullName = document.getElementById('updateFullName').value;
-        const phone = document.getElementById('updatePhone').value;
-        const email = document.getElementById('updateEmail').value;
-        const address = document.getElementById('updateAddress').value;
-        const currentPassword = document.getElementById('currentPassword').value;
-        const newPassword = document.getElementById('updatePassword').value;
-        const confirmPassword = document.getElementById('updateConfirmPassword').value;
+            // Get form values
+            const fullName = document.getElementById('updateFullName').value;
+            const phone = document.getElementById('updatePhone').value;
+            const email = document.getElementById('updateEmail').value;
+            const address = document.getElementById('updateAddress').value;
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('updatePassword').value;
+            const confirmPassword = document.getElementById('updateConfirmPassword').value;
 
-        // Determine which tab is active
-        const activeTab = document.querySelector('.tab-content.active').id;
-
-        if (activeTab === 'info') {
-            // Validate user information
-            if (!fullName || !phone || !email || !address) {
-                toast({
-                    title: 'Lỗi',
-                    message: 'Vui lòng điền đầy đủ thông tin!',
-                    type: 'error',
-                    duration: 3000
-                });
-                return;
+            // Validation functions
+            function isValidEmail(email) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return emailRegex.test(email);
             }
 
-            // Update user information
-            UpdateInfor(fullName, phone, email, address);
-            const updateModal = bootstrap.Modal.getInstance(document.getElementById('updateProfile'));
-            updateModal.hide();
-        } else if (activeTab === 'passwords') {
-            // Validate password fields
-            if (!currentPassword) {
-                document.getElementById('currentPasswordError').style.display = 'block';
-                document.getElementById('currentPassword').select();
-                return;
+            function isValidPhone(phone) {
+                const phoneRegex = /^0\d{9}$/;
+                return phoneRegex.test(phone);
             }
 
-            if (newPassword && newPassword.length < 8) {
+            // Determine which tab is active
+            const activeTab = document.querySelector('.tab-content.active').id;
+
+            if (activeTab === 'info') {
+                // Validate user information
+                let hasError = false;
+                
+                if (fullName.trim() === '') {
+                    document.getElementById('updateFullNameError').style.display = 'block';
+                    hasError = true;
+                } else {
+                    document.getElementById('updateFullNameError').style.display = 'none';
+                }
+                
+                if (!isValidPhone(phone)) {
+                    document.getElementById('updatePhoneError').style.display = 'block';
+                    hasError = true;
+                } else {
+                    document.getElementById('updatePhoneError').style.display = 'none';
+                }
+                
+                if (!isValidEmail(email)) {
+                    document.getElementById('updateEmailError').style.display = 'block';
+                    hasError = true;
+                } else {
+                    document.getElementById('updateEmailError').style.display = 'none';
+                }
+                
+                if (address.trim() === '') {
+                    document.getElementById('updateAddressError').style.display = 'block';
+                    hasError = true;
+                } else {
+                    document.getElementById('updateAddressError').style.display = 'none';
+                }
+                
+                if (hasError) {
+                    return;
+                }
+
+                // Update user information
+                UpdateInfor(fullName, phone, email, address);
+                const updateModal = bootstrap.Modal.getInstance(document.getElementById('updateProfile'));
+                updateModal.hide();
+            } else if (activeTab === 'passwords') {
+                // Validate password fields
+                if (!currentPassword) {
+                    document.getElementById('currentPasswordError').style.display = 'block';
+                    document.getElementById('currentPassword').select();
+                    return;
+                }
+
+                if (newPassword && newPassword.length < 8) {
+                    document.getElementById('updatePasswordLengthError').style.display = 'block';
+                    document.getElementById('updatePassword').select();
+                    return;
+                } else {
+                    document.getElementById('updatePasswordLengthError').style.display = 'none';
+                }
+
+                if (newPassword && newPassword !== confirmPassword) {
+                    document.getElementById('updatePasswordMatchError').style.display = 'block';
+                    document.getElementById('updateConfirmPassword').select();
+                    return;
+                } else {
+                    document.getElementById('updatePasswordMatchError').style.display = 'none';
+                }
+
+                // Verify current password and update new password
+                CheckPass(currentPassword, newPassword);
+            }
+        });
+    }
+
+    // Real-time validation for update profile form
+    if (updateProfileForm) {
+        const updateFullNameInput = document.getElementById('updateFullName');
+        const updatePhoneInput = document.getElementById('updatePhone');
+        const updateEmailInput = document.getElementById('updateEmail');
+        const updateAddressInput = document.getElementById('updateAddress');
+        const updatePasswordInput = document.getElementById('updatePassword');
+        const updateConfirmPasswordInput = document.getElementById('updateConfirmPassword');
+        
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        function isValidPhone(phone) {
+            const phoneRegex = /^0\d{9}$/;
+            return phoneRegex.test(phone);
+        }
+        
+        updateFullNameInput.addEventListener('input', function() {
+            if (this.value.trim() === '') {
+                document.getElementById('updateFullNameError').style.display = 'block';
+            } else {
+                document.getElementById('updateFullNameError').style.display = 'none';
+            }
+        });
+        
+        updatePhoneInput.addEventListener('input', function() {
+            if (!isValidPhone(this.value)) {
+                document.getElementById('updatePhoneError').style.display = 'block';
+            } else {
+                document.getElementById('updatePhoneError').style.display = 'none';
+            }
+        });
+        
+        updateEmailInput.addEventListener('input', function() {
+            if (!isValidEmail(this.value)) {
+                document.getElementById('updateEmailError').style.display = 'block';
+            } else {
+                document.getElementById('updateEmailError').style.display = 'none';
+            }
+        });
+        
+        updateAddressInput.addEventListener('input', function() {
+            if (this.value.trim() === '') {
+                document.getElementById('updateAddressError').style.display = 'block';
+            } else {
+                document.getElementById('updateAddressError').style.display = 'none';
+            }
+        });
+        
+        updatePasswordInput.addEventListener('input', function() {
+            if (this.value && this.value.length < 8) {
                 document.getElementById('updatePasswordLengthError').style.display = 'block';
-                document.getElementById('updatePassword').select();
-                return;
             } else {
                 document.getElementById('updatePasswordLengthError').style.display = 'none';
             }
-
-            if (newPassword && newPassword !== confirmPassword) {
+            
+            // Check match if confirm password has value
+            if (updateConfirmPasswordInput.value) {
+                if (this.value !== updateConfirmPasswordInput.value) {
+                    document.getElementById('updatePasswordMatchError').style.display = 'block';
+                    document.getElementById('updatePasswordMatchSuccess').style.display = 'none';
+                } else {
+                    document.getElementById('updatePasswordMatchError').style.display = 'none';
+                    document.getElementById('updatePasswordMatchSuccess').style.display = 'block';
+                }
+            }
+        });
+        
+        updateConfirmPasswordInput.addEventListener('input', function() {
+            if (updatePasswordInput.value !== this.value) {
                 document.getElementById('updatePasswordMatchError').style.display = 'block';
-                document.getElementById('updateConfirmPassword').select();
-                return;
+                document.getElementById('updatePasswordMatchSuccess').style.display = 'none';
             } else {
                 document.getElementById('updatePasswordMatchError').style.display = 'none';
+                document.getElementById('updatePasswordMatchSuccess').style.display = 'block';
             }
-
-            // Verify current password and update new password
-            CheckPass(currentPassword, newPassword);
-        }
-    });
-}
+        });
+    }
 
 // Verify current password and update new password
 function CheckPass(currentPassword, newPassword) {
