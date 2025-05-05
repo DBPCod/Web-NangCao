@@ -159,7 +159,7 @@ function renderGRNsByPage(page) {
                 <tr onclick="viewGRN(${phieuNhap.IdPhieuNhap})" style="cursor: pointer;">
                     <td><span class="clickable-id">${phieuNhap.IdPhieuNhap}</span></td>
                     <td>${phieuNhap.TenNCC}</td>
-                    <td>${phieuNhap.TongTien ? phieuNhap.TongTien.toLocaleString('vi-VN') + ' VNĐ' : 'Chưa xác định'}</td>
+                    <td>${phieuNhap.TongTien ? formatPrice(phieuNhap.TongTien) : 'Chưa xác định'}</td>
                     <td class="text-center">
                         ${actionButtons || 'Không có quyền'}
                     </td>
@@ -266,7 +266,7 @@ function viewGRN(idPhieuNhap) {
                             document.getElementById("viewIdPhieuNhap").value = phieuNhap.IdPhieuNhap;
                             document.getElementById("viewTenNCC").value = ncc ? ncc.TenNCC : "Không xác định";
                             document.getElementById("viewNgayNhap").value = phieuNhap.NgayNhap;
-                            document.getElementById("viewTongTien").value = phieuNhap.TongTien ? phieuNhap.TongTien.toLocaleString('vi-VN') + ' VNĐ' : "Chưa xác định";
+                            document.getElementById("viewTongTien").value = phieuNhap.TongTien ? formatPrice(phieuNhap.TongTien) : "Chưa xác định";
                             document.getElementById("viewTrangThai").value = phieuNhap.TrangThai === 1 ? "Hoạt động" : "Đã xóa";
 
                             // Điền danh sách sản phẩm từ ctphieunhap
@@ -308,7 +308,7 @@ function viewGRN(idPhieuNhap) {
                                                 <td>${ct.TenDong}</td>
                                                 <td>${ct.Ram} / ${ct.Rom} / ${ct.MauSac}</td>
                                                 <td>${ct.SoLuong}</td>
-                                                <td>${ct.GiaNhap.toLocaleString('vi-VN')} VNĐ</td>
+                                                <td>${formatPrice(ct.GiaNhap)}</td>
                                             </tr>`;
                                     });
                                     // Hiển thị modal
@@ -514,7 +514,7 @@ function updateTotalPriceIn() {
         const priceIn = parseInt(row.querySelector(".product-price-in").value) || 0;
         total += quantity * priceIn;
     });
-    document.getElementById("totalPriceIn").value = total.toLocaleString('vi-VN') + ' VNĐ';
+    document.getElementById("totalPriceIn").value = formatPrice(total);
 }
 
 // Hàm thêm dòng sản phẩm mới vào modal
@@ -759,3 +759,7 @@ document.querySelector('[data-bs-target="#addGRNModal"]').addEventListener("clic
 
 // Gọi khi trang được tải
 loadGRNs();
+// Thêm hoặc cập nhật hàm formatPrice ở đầu file
+function formatPrice(price) {
+    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " đ";
+}

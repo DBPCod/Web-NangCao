@@ -139,7 +139,7 @@ document.addEventListener("click", function (e) {
                         <tr>
                             <td>${order.IdHoaDon}</td>
                             <td>${order.NgayTao}</td>
-                            <td>${Number(order.ThanhTien).toLocaleString()} đ</td>
+                            <td>${formatPrice(order.ThanhTien)}</td>
                             <td>${order.TenTinhTrang}</td>
                             <td>
                                 <button class="btn btn-primary btn-xem-chitiet"
@@ -193,14 +193,14 @@ document.addEventListener("click", function (e) {
                         <tr>
                             <td>${orderDetail.TenDong}</td>
                             <td>${orderDetail.SoLuong}</td>
-                            <td>${Number(orderDetail.Gia).toLocaleString()} đ</td>
-                            <td>${Number(orderDetail.Gia).toLocaleString()}</td>
+                            <td>${formatPrice(orderDetail.Gia)}</td>
+                            <td>${formatPrice(orderDetail.Gia * orderDetail.SoLuong)}</td>
                         </tr>`;
                     }); 
                     tbody.insertAdjacentHTML("beforeend", `
                         <tr class="table-warning">
                             <td colspan="3" class="text-end"><strong>Tổng cộng:</strong></td>
-                            <td><strong>${Number(thanhtien).toLocaleString()} đ</strong></td>
+                            <td><strong>${formatPrice(thanhtien)}</strong></td>
                         </tr>
                     `);
                     
@@ -237,4 +237,9 @@ function getAddressUser(idNguoiDung)
             })
 }
 loadTopUsers();
+
+// Thêm hoặc cập nhật hàm formatPrice ở đầu file
+function formatPrice(price) {
+    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " đ";
+}
 

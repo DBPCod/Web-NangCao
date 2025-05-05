@@ -139,7 +139,7 @@ function renderOrdersByPage(page) {
             <tr>
                 <td>${hoaDon.IdHoaDon}</td>
                 <td>${hoaDon.HoVaTen || "Không xác định"}</td>
-                <td>${hoaDon.ThanhTien ? Number(hoaDon.ThanhTien).toLocaleString('vi-VN') + ' VNĐ' : 'Chưa xác định'}</td>
+                <td>${hoaDon.ThanhTien ? formatPrice(hoaDon.ThanhTien) : 'Chưa xác định'}</td>
                 <td class="${tinhTrangMap[hoaDon.IdTinhTrang].class}">${tinhTrangMap[hoaDon.IdTinhTrang].name}</td>
                 <td>${actionButtons}</td>
             </tr>`;
@@ -235,7 +235,7 @@ function viewOrder(idHoaDon) {
                             document.getElementById("viewIdHoaDon").value = hoaDon.IdHoaDon || '';
                             document.getElementById("viewTenKhachHang").value = hoaDon.HoVaTen || "Không xác định";
                             document.getElementById("viewNgayTao").value = hoaDon.NgayTao || '';
-                            document.getElementById("viewThanhTien").value = hoaDon.ThanhTien ? Number(hoaDon.ThanhTien).toLocaleString('vi-VN') + ' VNĐ' : "Chưa xác định";
+                            document.getElementById("viewThanhTien").value = hoaDon.ThanhTien ? formatPrice(hoaDon.ThanhTien) : "Chưa xác định";
                             document.getElementById("viewTrangThai").value = hoaDon.TrangThai === 1 ? "Hoạt động" : "Đã hủy";
 
                             // Điền select tình trạng
@@ -280,8 +280,8 @@ function viewOrder(idHoaDon) {
                                             <td>${ct.Ram || "N/A"} / ${ct.Rom || "N/A"} / ${ct.MauSac || "N/A"}</td>
                                             <td>${ct.Imei}</td>
                                             <td>${ct.SoLuong}</td>
-                                            <td>${Number(ct.GiaTien).toLocaleString('vi-VN')} VNĐ</td>
-                                            <td>${thanhTien.toLocaleString('vi-VN')} VNĐ</td>
+                                            <td>${formatPrice(ct.GiaTien)}</td>
+                                            <td>${formatPrice(thanhTien)}</td>
                                         </tr>`;
                                 });
                             }
@@ -444,3 +444,8 @@ document.getElementById("resetFilter").addEventListener("click", function () {
 // Gọi khi trang được tải
 loadTinhTrangOptions();
 loadOrders();
+
+// Thêm hàm formatPrice
+function formatPrice(price) {
+    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " đ";
+}

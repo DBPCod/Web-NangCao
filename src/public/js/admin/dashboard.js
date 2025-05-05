@@ -8,6 +8,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+function formatPrice(price) {
+    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " đ";
+}
+
 function loadDashboardData() {
     // Kiểm tra lại một lần nữa để đảm bảo các phần tử tồn tại
     const totalTaiKhoanElement = document.getElementById("totalTaiKhoan");
@@ -109,7 +113,7 @@ function loadDashboardData() {
         .then(data => {
             if (totalDoanhThuElement) {
                 const totalDoanhThu = data.totalRevenue || 0;
-                totalDoanhThuElement.textContent = Number(totalDoanhThu).toLocaleString('vi-VN') + ' đ';
+                totalDoanhThuElement.textContent = formatPrice(totalDoanhThu);
             }
         })
         .catch(error => {

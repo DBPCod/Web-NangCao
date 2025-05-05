@@ -34,6 +34,12 @@ function hasPermission(permissionName, action) {
     );
 }
 
+// Thêm hoặc cập nhật hàm formatPrice ở đầu file
+function formatPrice(price) {
+    console.log("aa");
+    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " đ";
+}
+
 // Hàm tải danh sách sản phẩm
 async function loadProducts() {
 
@@ -118,7 +124,7 @@ function renderProductsByPage(page) {
                     <td>${product.Ram}</td>
                     <td>${product.Rom}</td>
                     <td>${product.MauSac}</td>
-                    <td>${product.Gia.toLocaleString('vi-VN')} VNĐ</td>
+                    <td>${formatPrice(product.Gia)}</td>
                     <td>${product.SoLuong}</td>
                     <td class="text-center">
                        ${actionButtons || 'Không có quyền'}
@@ -378,7 +384,7 @@ function showProductDetail(idCHSP, idDSP) {
     .then(([sanPham, dongSanPham, cauHinh, thuongHieu, anhList]) => {
         document.getElementById("detailTenDong").textContent = dongSanPham.TenDong;
         document.getElementById("detailSoLuong").textContent = sanPham.SoLuong;
-        document.getElementById("detailGia").textContent = sanPham.Gia.toLocaleString('vi-VN') + " VNĐ";
+        document.getElementById("detailGia").textContent = formatPrice(sanPham.Gia);
         document.getElementById("detailThuongHieu").textContent = thuongHieu.TenThuongHieu;
         document.getElementById("detailRam").textContent = cauHinh.Ram;
         document.getElementById("detailRom").textContent = cauHinh.Rom;
