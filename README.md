@@ -22,6 +22,9 @@ SmartStation là một website bán điện thoại di động với đầy đ�
 
 2. **Cài đặt mã nguồn**
    - Clone hoặc tải repository này
+     ```
+     git clone https://github.com/DBPCod/Web-NangCao.git
+     ``` 
    - Giải nén và copy thư mục `smartstation` vào thư mục `htdocs` của XAMPP (thường là `C:\xampp\htdocs\` trên Windows)
 
 3. **Cài đặt cơ sở dữ liệu**
