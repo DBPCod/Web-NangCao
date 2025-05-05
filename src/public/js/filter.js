@@ -47,8 +47,8 @@ function updatePriceRange() {
         return response.json();
     })
     .then(data => {
-        const minPrice = data.minPrice || 400000;
-        const maxPrice = data.maxPrice || 48500000;
+        const minPrice = parseInt(data.minPrice) || 400000;
+        const maxPrice = parseInt(data.maxPrice) || 48500000;
         initRangeSlider(minPrice, maxPrice);
     })
     .catch(error => {
