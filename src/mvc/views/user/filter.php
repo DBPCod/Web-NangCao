@@ -12,6 +12,12 @@
     </button>
     <!-- Filter content -->
     <div class="filter-section collapse d-md-block" id="filterCollapse">
+        <h1>TÌM KIẾM NÂNG CAO</h1>
+        <!-- Filter Tên Sản Phẩm -->
+        <h5 class="mt-4">TÊN SẢN PHẨM</h5>
+        <div class="mb-3">
+            <input type="text" class="form-control product-name-filter" placeholder="Nhập tên sản phẩm...">
+        </div>
         <h5>LỰA CHỌN HÃNG</h5>
         <div class="brand-list"></div>
         <h5 class="mt-4">MỨC GIÁ</h5>
@@ -84,6 +90,7 @@
             <input class="form-check-input" type="checkbox" id="pin4" />
             <label class="form-check-label" for="pin4">5000mAh trở lên</label>
         </div>
+        
         <!-- Nút LỌC -->
         <div class="mt-4">
             <button class="btn btn-primary w-100" id="applyFilterBtn">LỌC</button>

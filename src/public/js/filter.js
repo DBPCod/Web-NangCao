@@ -149,7 +149,8 @@ function collectFilters() {
         priceMin: null,
         priceMax: null,
         rams: [],
-        pins: []
+        pins: [],
+        productName: null
     };
 
     document.querySelectorAll('.filter-section .form-check-input[data-brand]').forEach(checkbox => {
@@ -194,6 +195,12 @@ function collectFilters() {
         }
     });
 
+    // Add product name filter
+    const productNameInput = document.querySelector('.product-name-filter');
+    if (productNameInput && productNameInput.value.trim()) {
+        filters.productName = productNameInput.value.trim();
+    }
+
     return filters;
 }
 
@@ -224,6 +231,9 @@ function buildQueryString(filters, page) {
     }
     if (filters.sort) {
         params.append('sort', filters.sort);
+    }
+    if (filters.productName) {
+        params.append('productName', filters.productName);
     }
 
     return params.toString();

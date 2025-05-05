@@ -47,6 +47,7 @@ class SanPhamAPI {
         $pins = isset($filters['pins']) && $filters['pins'] !== '' ? array_map('trim', explode(',', filter_var($filters['pins'], FILTER_SANITIZE_STRING))) : [];
         $searchQuery = isset($filters['q']) && $filters['q'] !== '' ? trim(filter_var($filters['q'], FILTER_SANITIZE_STRING)) : '';
         $sort = isset($filters['sort']) ? filter_var($filters['sort'], FILTER_SANITIZE_STRING) : 'default';
+        $productName = isset($filters['productName']) && $filters['productName'] !== '' ? trim(filter_var($filters['productName'], FILTER_SANITIZE_STRING)) : '';
             // Xử lý đặc biệt cho "12GB trở lên"
             $hasRam12GBPlus = in_array('12GB trở lên', $rams) || in_array('12GB+', $rams);
             if ($hasRam12GBPlus) {
@@ -263,7 +264,18 @@ class SanPhamAPI {
                 error_log('Products count after pins filter: ' . count($products));
             }
 
-            // Bước 9: Sắp xếp lại theo NgayNhap nếu sort=latest
+            // Bước 9: Lọc theo tên sản phẩm
+            if ($hasFilters && $productName) {
+                $products = array_filter($products, function($product) use ($productName) {
+                    $nameLower = strtolower($product['name'] ?? '');
+                    $searchLower = strtolower($productName);
+                    return strpos($nameLower, $searchLower) !== false;
+                });
+                $products = array_values($products);
+                error_log('Products count after product name filter: ' . count($products));
+            }
+
+            // Bước 10: Sắp xếp lại theo NgayNhap nếu sort=latest
             error_log('Before sorting: ' . json_encode(array_map(function($p) {
                 return ['name' => $p['name'], 'ngayNhap' => $p['ngayNhap']];
             }, array_slice($products, 0, 5))));
@@ -321,7 +333,8 @@ $filters = [
     'rams' => isset($_GET['rams']) ? filter_var($_GET['rams'], FILTER_SANITIZE_STRING) : '',
     'pins' => isset($_GET['pins']) ? filter_var($_GET['pins'], FILTER_SANITIZE_STRING) : '',
     'q' => isset($_GET['q']) ? filter_var($_GET['q'], FILTER_SANITIZE_STRING) : '',
-    'sort' => isset($_GET['sort']) ? filter_var($_GET['sort'], FILTER_SANITIZE_STRING) : ''
+    'sort' => isset($_GET['sort']) ? filter_var($_GET['sort'], FILTER_SANITIZE_STRING) : '',
+    'productName' => isset($_GET['productName']) ? filter_var($_GET['productName'], FILTER_SANITIZE_STRING) : ''
 ];
 
 (new SanPhamAPI())->getProducts($page, 9, $filters);
