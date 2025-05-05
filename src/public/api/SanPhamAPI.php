@@ -324,5 +324,5 @@ $filters = [
     'sort' => isset($_GET['sort']) ? filter_var($_GET['sort'], FILTER_SANITIZE_STRING) : ''
 ];
 
-(new SanPhamAPI())->getProducts($page, 6, $filters);
+(new SanPhamAPI())->getProducts($page, 9, $filters);
 ?>

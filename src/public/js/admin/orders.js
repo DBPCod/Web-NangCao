@@ -238,51 +238,121 @@ function viewOrder(idHoaDon) {
                             document.getElementById("viewThanhTien").value = hoaDon.ThanhTien ? formatPrice(hoaDon.ThanhTien) : "Chưa xác định";
                             document.getElementById("viewTrangThai").value = hoaDon.TrangThai === 1 ? "Hoạt động" : "Đã hủy";
 
-                            // Điền select tình trạng
-                            const tinhTrangSelect = document.getElementById("viewTinhTrang");
-                            tinhTrangSelect.innerHTML = "";
-                            const allowedTinhTrang = getAllowedTinhTrang(hoaDon.IdTinhTrang);
-                            tinhTrangs.forEach(tt => {
-                                if (allowedTinhTrang.includes(parseInt(tt.IdTinhTrang))) {
-                                    tinhTrangSelect.innerHTML += `
-                                        <option value="${tt.IdTinhTrang}" ${tt.IdTinhTrang === hoaDon.IdTinhTrang ? 'selected' : ''}>
-                                            ${tt.TenTinhTrang}
-                                        </option>`;
-                                }
-                            });
-
-                            // Hiển thị gợi ý trạng thái
-                            const hintElement = document.getElementById("tinhTrangHint");
-                            if (hoaDon.IdTinhTrang >= 3) {
-                                hintElement.innerHTML = `Đơn hàng đã ở trạng thái "${tinhTrangMap[hoaDon.IdTinhTrang].name}". Không thể thay đổi thêm.`;
-                                tinhTrangSelect.disabled = true;
-                            } else {
-                                const nextStates = allowedTinhTrang
-                                    .filter(id => id !== parseInt(hoaDon.IdTinhTrang))
-                                    .map(id => tinhTrangMap[id].name)
-                                    .join(" hoặc ");
-                                hintElement.innerHTML = `Trạng thái hiện tại: "${tinhTrangMap[hoaDon.IdTinhTrang].name}". Có thể cập nhật thành: ${nextStates || "Không có tùy chọn"}.`;
-                                tinhTrangSelect.disabled = false; // Cho phép thay đổi nếu trạng thái cho phép
-                            }
-
                             // Điền danh sách sản phẩm
                             const productList = document.getElementById("viewProductList");
                             productList.innerHTML = "";
                             const ctHoaDonsArray = Array.isArray(ctHoaDons) ? ctHoaDons : ctHoaDons && typeof ctHoaDons === 'object' ? [ctHoaDons] : [];
+                            
                             if (!ctHoaDonsArray.length) {
-                                productList.innerHTML = '<tr><td colspan="6">Không có sản phẩm</td></tr>';
+                                productList.innerHTML = '<tr><td colspan="7">Không có sản phẩm</td></tr>';
                             } else {
+                                // Xử lý từng sản phẩm và lấy thông tin bảo hành
+                                let processedItems = 0;
                                 ctHoaDonsArray.forEach(ct => {
-                                    const thanhTien = Number(ct.GiaTien) * Number(ct.SoLuong);
-                                    productList.innerHTML += `
-                                        <tr>
-                                            <td>${ct.TenDong || "Không xác định"}</td>
-                                            <td>${ct.Ram || "N/A"} / ${ct.Rom || "N/A"} / ${ct.MauSac || "N/A"}</td>
-                                            <td>${ct.Imei}</td>
-                                            <td>${ct.SoLuong}</td>
-                                            <td>${formatPrice(ct.GiaTien)}</td>
-                                            <td>${formatPrice(thanhTien)}</td>
-                                        </tr>`;
+                                    // Lấy thông tin bảo hành cho sản phẩm
+                                    fetch(`/smartstation/src/mvc/controllers/SanPhamChiTietController.php?imei=${ct.Imei}`)
+                                        .then(spRes => spRes.json())
+                                        .then(spData => {
+                                            // Lấy thông tin bảo hành
+                                            if (spData && spData.IdBaoHanh) {
+                                                fetch(`/smartstation/src/mvc/controllers/BaoHanhController.php?idBaoHanh=${spData.IdBaoHanh}`)
+                                                    .then(bhRes => bhRes.json())
+                                                    .then(bhData => {
+                                                        console.log("Dữ liệu bảo hành:", bhData); // Log để debug
+                                                        const thanhTien = Number(ct.GiaTien) * Number(ct.SoLuong);
+                                                        
+                                                        // Xử lý thông tin bảo hành
+                                                        let baoHanhText = "Không có";
+                                                        let tinhTrangBaoHanh = "";
+                                                        
+                                                        if (bhData && bhData.ThoiGianBaoHanh) {
+                                                            // Hiển thị thời gian bảo hành
+                                                            baoHanhText = `${bhData.ThoiGianBaoHanh} tháng`;
+                                                            
+                                                            // Tính toán tình trạng bảo hành
+                                                            const ngayTao = new Date(hoaDon.NgayTao);
+                                                            const thoiGianBaoHanh = parseInt(bhData.ThoiGianBaoHanh);
+                                                            
+                                                            // Tính ngày hết hạn bảo hành
+                                                            const ngayHetHan = new Date(ngayTao);
+                                                            ngayHetHan.setMonth(ngayHetHan.getMonth() + thoiGianBaoHanh);
+                                                            
+                                                            // So sánh với ngày hiện tại
+                                                            const ngayHienTai = new Date();
+                                                            
+                                                            if (ngayHienTai <= ngayHetHan) {
+                                                                // Còn bảo hành
+                                                                const soNgayConLai = Math.ceil((ngayHetHan - ngayHienTai) / (1000 * 60 * 60 * 24));
+                                                                tinhTrangBaoHanh = `<span class="badge bg-success">Còn bảo hành (${soNgayConLai} ngày)</span>`;
+                                                            } else {
+                                                                // Hết bảo hành
+                                                                tinhTrangBaoHanh = `<span class="badge bg-danger">Hết hạn bảo hành</span>`;
+                                                            }
+                                                        }
+                                                        
+                                                        productList.innerHTML += `
+                                                            <tr>
+                                                                <td>${ct.TenDong || "Không xác định"}</td>
+                                                                <td>${ct.Ram || "N/A"} / ${ct.Rom || "N/A"} / ${ct.MauSac || "N/A"}</td>
+                                                                <td>${ct.Imei}</td>
+                                                                <td>${ct.SoLuong}</td>
+                                                                <td>${Number(ct.GiaTien).toLocaleString('vi-VN')} VNĐ</td>
+                                                                <td>${thanhTien.toLocaleString('vi-VN')} VNĐ</td>
+                                                                <td>${baoHanhText}</td>
+                                                                <td>${tinhTrangBaoHanh}</td>
+                                                            </tr>`;
+                                                        
+                                                        processedItems++;
+                                                    })
+                                                    .catch(() => {
+                                                        // Nếu không lấy được thông tin bảo hành
+                                                        const thanhTien = Number(ct.GiaTien) * Number(ct.SoLuong);
+                                                        productList.innerHTML += `
+                                                            <tr>
+                                                                <td>${ct.TenDong || "Không xác định"}</td>
+                                                                <td>${ct.Ram || "N/A"} / ${ct.Rom || "N/A"} / ${ct.MauSac || "N/A"}</td>
+                                                                <td>${ct.Imei}</td>
+                                                                <td>${ct.SoLuong}</td>
+                                                                <td>${Number(ct.GiaTien).toLocaleString('vi-VN')} VNĐ</td>
+                                                                <td>${thanhTien.toLocaleString('vi-VN')} VNĐ</td>
+                                                                <td>Không có</td>
+                                                            </tr>`;
+                                                        
+                                                        processedItems++;
+                                                    });
+                                            } else {
+                                                // Nếu không có IdBaoHanh
+                                                const thanhTien = Number(ct.GiaTien) * Number(ct.SoLuong);
+                                                productList.innerHTML += `
+                                                    <tr>
+                                                        <td>${ct.TenDong || "Không xác định"}</td>
+                                                        <td>${ct.Ram || "N/A"} / ${ct.Rom || "N/A"} / ${ct.MauSac || "N/A"}</td>
+                                                        <td>${ct.Imei}</td>
+                                                        <td>${ct.SoLuong}</td>
+                                                        <td>${Number(ct.GiaTien).toLocaleString('vi-VN')} VNĐ</td>
+                                                        <td>${thanhTien.toLocaleString('vi-VN')} VNĐ</td>
+                                                        <td>Không có</td>
+                                                    </tr>`;
+                                                
+                                                processedItems++;
+                                            }
+                                        })
+                                        .catch(() => {
+                                            // Nếu không lấy được thông tin sản phẩm
+                                            const thanhTien = Number(ct.GiaTien) * Number(ct.SoLuong);
+                                            productList.innerHTML += `
+                                                <tr>
+                                                    <td>${ct.TenDong || "Không xác định"}</td>
+                                                    <td>${ct.Ram || "N/A"} / ${ct.Rom || "N/A"} / ${ct.MauSac || "N/A"}</td>
+                                                    <td>${ct.Imei}</td>
+                                                    <td>${ct.SoLuong}</td>
+                                                    <td>${Number(ct.GiaTien).toLocaleString('vi-VN')} VNĐ</td>
+                                                    <td>${thanhTien.toLocaleString('vi-VN')} VNĐ</td>
+                                                    <td>Không có</td>
+                                                </tr>`;
+                                            
+                                            processedItems++;
+                                        });
                                 });
                             }
 
