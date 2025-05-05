@@ -1,88 +1,64 @@
-# Tên dự án
+# SmartStation - Website Bán Điện Thoại
 
-Trang web bán điện thoại, SMARTSTATION, 1 dự án của môn học Web - Nâng Cao.
+SmartStation là một website bán điện thoại di động với đầy đủ chức năng quản lý sản phẩm, đơn hàng, khách hàng và thống kê doanh thu.
 
-## Installation
+## Tính năng chính
 
-1. Clone the repository:
-   ```
-   https://github.com/DBPCod/Web-NangCao.git
-   ```
-2. Navigate to the project directory:
-   ```
-   cd project
-   ```
-3. Install the dependencies:
-   ```
-   npm install
-   ```
+- **Giao diện người dùng**: Hiển thị sản phẩm, tìm kiếm, lọc theo thương hiệu, giá
+- **Giỏ hàng và thanh toán**: Quản lý giỏ hàng, đặt hàng
+- **Quản lý tài khoản**: Đăng ký, đăng nhập, xem lịch sử đơn hàng
+- **Trang quản trị (Admin)**: Quản lý sản phẩm, đơn hàng, khách hàng, thống kê doanh thu
 
-## Usage
+## Yêu cầu hệ thống
 
-1. Start the development server:
-   ```
-   npm start
-   ```
-2. Open your web browser and navigate to `http://localhost:3000`.
+- XAMPP (PHP 8.0+, MySQL)
+- Trình duyệt web hiện đại (Chrome, Firefox, Edge)
 
-## API
+## Hướng dẫn cài đặt
 
-### `GET /api/data`
+1. **Cài đặt XAMPP**
+   - Tải và cài đặt XAMPP từ [trang chủ](https://www.apachefriends.org/download.html)
+   - Khởi động Apache và MySQL từ XAMPP Control Panel
 
-Retrieves data from the server.
+2. **Cài đặt mã nguồn**
+   - Clone hoặc tải repository này
+   - Giải nén và copy thư mục `smartstation` vào thư mục `htdocs` của XAMPP (thường là `C:\xampp\htdocs\` trên Windows)
 
-**Response**:
-```json
-[
-  {
-    "id": 1,
-    "name": "Item 1",
-    "description": "This is the first item."
-  },
-  {
-    "id": 2,
-    "name": "Item 2",
-    "description": "This is the second item."
-  }
-]
+3. **Cài đặt cơ sở dữ liệu**
+   - Mở trình duyệt và truy cập http://localhost/phpmyadmin
+   - Tạo database mới với tên `ss`
+   - Import file `ss.sql` từ thư mục `database` của dự án
+
+4. **Truy cập website**
+   - Trang người dùng: http://localhost/smartstation/src/mvc/views/user/
+   - Trang quản trị: http://localhost/smartstation/src/mvc/views/admin/
+   - Tài khoản admin mặc định: 
+     - Tên đăng nhập: admin
+     - Mật khẩu: admin123
+
+## Cấu trúc thư mục
+
+```
+smartstation/
+├── database/           # Chứa file SQL cơ sở dữ liệu
+├── src/
+│   ├── mvc/            # Mô hình MVC
+│   │   ├── controllers/ # Các controller
+│   │   ├── core/        # Core của ứng dụng
+│   │   ├── models/      # Các model tương tác với CSDL
+│   │   └── views/       # Giao diện người dùng
+│   └── public/          # Tài nguyên công khai (CSS, JS, hình ảnh)
+└── README.md           # Tài liệu hướng dẫn
 ```
 
-### `POST /api/data`
+## Thành viên nhóm
 
-Adds new data to the server.
+| STT | MSSV | Họ và tên | Email |
+|-----|------|-----------|-------|
+| 1   |      |           |       |
+| 2   |      |           |       |
+| 3   |      |           |       |
+| 4   |      |           |       |
+| 5   |      |           |       |
 
-**Request Body**:
-```json
-{
-  "name": "New Item",
-  "description": "This is a new item."
-}
-```
 
-**Response**:
-```json
-{
-  "id": 3,
-  "name": "New Item",
-  "description": "This is a new item."
-}
-```
-
-## Contributing
-
-1. Fork the repository.
-2. Create a new branch: `git checkout -b feature/your-feature`.
-3. Make your changes and commit them: `git commit -am 'Add some feature'`.
-4. Push to the branch: `git push origin feature/your-feature`.
-5. Submit a pull request.
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
-
-## Testing
-
-To run the tests, execute the following command:
-```
-npm test
-```
