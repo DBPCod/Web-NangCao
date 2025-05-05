@@ -1,12 +1,12 @@
-# Project Name
+# Tên dự án
 
-A brief description of the project.
+Trang web bán điện thoại, SMARTSTATION, 1 dự án của môn học Web - Nâng Cao.
 
 ## Installation
 
 1. Clone the repository:
    ```
-   git clone https://github.com/username/project.git
+   https://github.com/DBPCod/Web-NangCao.git
    ```
 2. Navigate to the project directory:
    ```
