@@ -134,7 +134,7 @@
                     </div>
                     <div class="row mt-4">
                         <div class="col-12">
-                            <button class="btn checkout-btn w-100" onclick="handleMultiProductCheckout()">Thanh toán</button>
+                            <button class="btn checkout-btn w-100" id="multiCheckoutBtn">Thanh toán</button>
                         </div>
                     </div>
                 </div>

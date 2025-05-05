@@ -262,28 +262,22 @@ async function getIdTaiKhoan(idNguoiDung) {
 
 // Handle checkout process
 async function handleCheckout() {
-    // Kiểm tra nếu đang xử lý thanh toán, không cho phép gọi lại
+    // Ngăn chặn nhiều lần nhấn
     if (isProcessingPayment) {
         return;
     }
     
-    // Đánh dấu đang xử lý thanh toán
-    isProcessingPayment = true;
-    
-    // Hiển thị loading spinner
+
+    // Lấy nút thanh toán
     const checkoutBtn = document.querySelector('#buyNowModal .btn-secondary');
-    
-    if (!checkoutBtn) {
-        console.error("Không tìm thấy nút thanh toán trong modal");
-        isProcessingPayment = false;
-        return;
-    }
-    
     const originalBtnText = checkoutBtn.innerHTML;
-    checkoutBtn.disabled = true;
-    checkoutBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Đang xử lý...';
     
     try {
+        // Đánh dấu đang xử lý và vô hiệu hóa nút
+        isProcessingPayment = true;
+        checkoutBtn.disabled = true;
+        checkoutBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Đang xử lý...';
+        
         // Get form data
         const radioBtn = document.getElementById('edit-address');
         const newAddress = document.getElementById('address-input').value;
@@ -393,12 +387,10 @@ async function handleCheckout() {
             duration: 5000,
         });
     } finally {
-        // Khôi phục trạng thái nút và biến theo dõi
-        if (checkoutBtn) {
-            checkoutBtn.disabled = false;
-            checkoutBtn.innerHTML = originalBtnText;
-        }
+        // Luôn đặt lại trạng thái và nút khi hoàn thành hoặc có lỗi
         isProcessingPayment = false;
+        checkoutBtn.disabled = false;
+        checkoutBtn.innerHTML = originalBtnText;
     }
 }
 

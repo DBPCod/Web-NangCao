@@ -513,7 +513,7 @@ function validateCheckoutForm() {
  * Handle multi-product checkout
  */
 async function handleMultiProductCheckout() {
-    // Kiểm tra nếu đang xử lý thanh toán, không cho phép gọi lại
+    // Ngăn chặn nhiều lần nhấn
     if (isProcessingMultiCheckout) {
         return;
     }
@@ -523,287 +523,304 @@ async function handleMultiProductCheckout() {
         return;
     }
     
-    // Đánh dấu đang xử lý thanh toán
-    isProcessingMultiCheckout = true;
-    
-    // Hiển thị loading spinner
+    // Lấy nút thanh toán
     const checkoutBtn = checkoutModal.querySelector('.checkout-btn');
     const originalBtnText = checkoutBtn.innerHTML;
-    checkoutBtn.disabled = true;
-    checkoutBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Đang xử lý...';
     
-    let idHoaDon = null;
-    const idNguoiDung = getCookie('user');
-    
-    if (!idNguoiDung) {
-        toast({
-            title: "Lỗi",
-            message: "Không tìm thấy thông tin người dùng. Vui lòng đăng nhập lại.",
-            type: "error",
-            duration: 3000,
-        });
-        checkoutBtn.disabled = false;
-        checkoutBtn.innerHTML = originalBtnText;
-        return;
-    }
-
     try {
-        // Get form data
-        const radioBtn = document.getElementById('checkoutEditAddress');
-        const newAddress = document.getElementById('checkoutAddressInput').value;
-        const products = productList.querySelectorAll('.product-details');
-        const currentDate = new Date().toISOString().slice(0, 10);
+        // Đánh dấu đang xử lý và vô hiệu hóa nút
+        isProcessingMultiCheckout = true;
+        checkoutBtn.disabled = true;
+        checkoutBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Đang xử lý...';
         
-        if (products.length === 0) {
-            throw new Error("Giỏ hàng trống!");
-        }
-
-        // Lấy ID tài khoản
-        let idTaiKhoan;
-        try {
-            idTaiKhoan = await getIdTaiKhoan(idNguoiDung);
-        } catch (error) {
-            throw new Error("Không thể lấy thông tin tài khoản: " + error.message);
-        }
-
-        // Calculate total price and collect product data
-        let totalPrice = 0;
-        const productData = [];
-        for (const product of products) {
-            const price = parseFormattedPrice(product.dataset.price);
-            const quantity = parseInt(product.querySelector('.quantity-value').textContent);
-            const idCHSP = product.dataset.idchsp;
-            const idDSP = product.dataset.iddsp;
-            totalPrice += price * quantity;
-            productData.push({ price, quantity, idCHSP, idDSP });
-        }
-
-        // Kiểm tra tồn kho trước khi tạo hóa đơn
-        for (let i = 0; i < productData.length; i++) {
-            const { quantity, idCHSP, idDSP } = productData[i];
-            const productName = products[i].querySelector('h6').textContent;
-            
-            try {
-                const stockResponse = await fetch(`/smartstation/src/mvc/controllers/SanPhamController.php?idDSP=${idDSP}&idCHSP=${idCHSP}`);
-                if (!stockResponse.ok) {
-                    throw new Error(`Không thể kiểm tra tồn kho cho sản phẩm "${productName}"`);
-                }
-                
-                const stockData = await stockResponse.json();
-                const availableStock = stockData.SoLuong || 0;
-                
-                if (availableStock < quantity) {
-                    throw new Error(`Sản phẩm "${productName}" chỉ còn ${availableStock} trong kho, không đủ ${quantity} sản phẩm bạn yêu cầu.`);
-                }
-            } catch (error) {
-                if (error.message.includes("chỉ còn")) {
-                    throw error;
-                }
-                console.warn(`Không thể kiểm tra tồn kho cho sản phẩm ${productName}:`, error);
-                // Tiếp tục mà không dừng lại, sẽ kiểm tra lại khi lấy IMEI
-            }
-        }
-
-        // Create invoice (HoaDon) with all products
-        const hoaDonData = {
-            IdTaiKhoan: idTaiKhoan,
-            NgayTao: currentDate,
-            ThanhTien: totalPrice,
-            TrangThai: 1,
-            IdTinhTrang: 1,
-            products: productData.map(p => ({
-                IdCHSP: p.idCHSP,
-                IdDongSanPham: p.idDSP,
-                SoLuong: p.quantity
-            }))
-        };
+        let idHoaDon = null;
+        const idNguoiDung = getCookie('user');
         
-        // Tạo hóa đơn
-        let hoaDonResponse;
-        try {
-            hoaDonResponse = await fetch('/smartstation/src/mvc/controllers/HoaDonController.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(hoaDonData)
+        if (!idNguoiDung) {
+            toast({
+                title: "Lỗi",
+                message: "Không tìm thấy thông tin người dùng. Vui lòng đăng nhập lại.",
+                type: "error",
+                duration: 3000,
             });
-            
-            if (!hoaDonResponse.ok) {
-                const responseText = await hoaDonResponse.text();
-                console.error("Lỗi từ server khi tạo hóa đơn:", responseText);
-                
-                // Kiểm tra nếu response là HTML thay vì JSON
-                if (responseText.includes("<br") || responseText.includes("<html")) {
-                    throw new Error("Lỗi server khi tạo hóa đơn. Vui lòng thử lại sau.");
-                }
-                
-                // Thử parse JSON
-                try {
-                    const errorData = JSON.parse(responseText);
-                    throw new Error("Thêm hóa đơn thất bại: " + (errorData.message || ""));
-                } catch (jsonError) {
-                    throw new Error("Thêm hóa đơn thất bại: " + responseText);
-                }
-            }
-            
-            const hoaDonDataResult = await hoaDonResponse.json();
-            if (!hoaDonDataResult.HoaDon) {
-                throw new Error("Thêm hóa đơn thất bại: " + (hoaDonDataResult.message || ""));
-            }
-
-            idHoaDon = hoaDonDataResult.HoaDon.IdHoaDon;
-        } catch (error) {
-            throw new Error("Lỗi khi tạo hóa đơn: " + error.message);
+            checkoutBtn.disabled = false;
+            checkoutBtn.innerHTML = originalBtnText;
+            return;
         }
 
-        // Update address if edited
-        if (radioBtn.checked && newAddress) {
+        try {
+            // Get form data
+            const radioBtn = document.getElementById('checkoutEditAddress');
+            const newAddress = document.getElementById('checkoutAddressInput').value;
+            const products = productList.querySelectorAll('.product-details');
+            const currentDate = new Date().toISOString().slice(0, 10);
+            
+            if (products.length === 0) {
+                throw new Error("Giỏ hàng trống!");
+            }
+
+            // Lấy ID tài khoản
+            let idTaiKhoan;
             try {
-                const response = await fetch(`/smartstation/src/mvc/controllers/NguoiDungController.php?idNguoiDung=${idNguoiDung}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ DiaChi: newAddress })
-                });
-                
-                if (!response.ok) {
-                    console.warn("Cập nhật địa chỉ thất bại:", await response.text());
-                    // Tiếp tục mà không dừng lại
-                }
+                idTaiKhoan = await getIdTaiKhoan(idNguoiDung);
             } catch (error) {
-                console.warn("Lỗi khi cập nhật địa chỉ:", error);
-                // Tiếp tục mà không dừng lại
+                throw new Error("Không thể lấy thông tin tài khoản: " + error.message);
             }
-        }
 
-        // Process each product for CTHoaDon
-        for (let i = 0; i < productData.length; i++) {
-            const { price, quantity, idCHSP, idDSP } = productData[i];
-            const productName = products[i].querySelector('h6').textContent;
-            
-            try {
-                // Lấy danh sách IMEI
-                let imeiResponse;
+            // Calculate total price and collect product data
+            let totalPrice = 0;
+            const productData = [];
+            for (const product of products) {
+                const price = parseFormattedPrice(product.dataset.price);
+                const quantity = parseInt(product.querySelector('.quantity-value').textContent);
+                const idCHSP = product.dataset.idchsp;
+                const idDSP = product.dataset.iddsp;
+                totalPrice += price * quantity;
+                productData.push({ price, quantity, idCHSP, idDSP });
+            }
+
+            // Kiểm tra tồn kho trước khi tạo hóa đơn
+            for (let i = 0; i < productData.length; i++) {
+                const { quantity, idCHSP, idDSP } = productData[i];
+                const productName = products[i].querySelector('h6').textContent;
+                
                 try {
-                    imeiResponse = await fetch(`/smartstation/src/mvc/controllers/SanPhamChiTietController.php?idCHSP=${idCHSP}&idDongSanPham=${idDSP}&quantity=${quantity}`, {
-                        method: 'GET',
-                        headers: { 'Content-Type': 'application/json' }
-                    });
+                    const stockResponse = await fetch(`/smartstation/src/mvc/controllers/SanPhamController.php?idDSP=${idDSP}&idCHSP=${idCHSP}`);
+                    if (!stockResponse.ok) {
+                        throw new Error(`Không thể kiểm tra tồn kho cho sản phẩm "${productName}"`);
+                    }
                     
-                    if (!imeiResponse.ok) {
-                        const errorText = await imeiResponse.text();
-                        console.error(`Lỗi khi lấy IMEI (${imeiResponse.status}):`, errorText);
-                        
-                        // Kiểm tra nếu response là HTML thay vì JSON
-                        if (errorText.includes("<br") || errorText.includes("<html")) {
-                            throw new Error(`Lỗi server khi lấy IMEI cho sản phẩm "${productName}". Vui lòng thử lại sau.`);
-                        }
-                        
-                        // Thử parse JSON từ lỗi
-                        try {
-                            const errorJson = JSON.parse(errorText);
-                            throw new Error(errorJson.message || `Lỗi khi lấy IMEI: ${imeiResponse.status}`);
-                        } catch (jsonError) {
-                            throw new Error(`Lỗi khi lấy IMEI cho sản phẩm "${productName}": ${errorText}`);
-                        }
+                    const stockData = await stockResponse.json();
+                    const availableStock = stockData.SoLuong || 0;
+                    
+                    if (availableStock < quantity) {
+                        throw new Error(`Sản phẩm "${productName}" chỉ còn ${availableStock} trong kho, không đủ ${quantity} sản phẩm bạn yêu cầu.`);
                     }
                 } catch (error) {
-                    throw new Error(`Lỗi khi lấy IMEI cho sản phẩm "${productName}": ${error.message}`);
+                    if (error.message.includes("chỉ còn")) {
+                        throw error;
+                    }
+                    console.warn(`Không thể kiểm tra tồn kho cho sản phẩm ${productName}:`, error);
+                    // Tiếp tục mà không dừng lại, sẽ kiểm tra lại khi lấy IMEI
                 }
-                
-                let imeiData;
-                try {
-                    imeiData = await imeiResponse.json();
-                } catch (error) {
-                    console.error("Lỗi khi parse JSON từ response IMEI:", error);
-                    throw new Error(`Lỗi khi xử lý dữ liệu IMEI cho sản phẩm "${productName}"`);
-                }
-                
-                if (!imeiData.Imeis) {
-                    throw new Error(`Không nhận được danh sách IMEI cho sản phẩm "${productName}"`);
-                }
-                
-                if (imeiData.Imeis.length < quantity) {
-                    throw new Error(`Sản phẩm "${productName}" chỉ còn ${imeiData.Imeis.length} trong kho, không đủ ${quantity} sản phẩm bạn yêu cầu.`);
-                }
-                
-                // Thêm chi tiết hóa đơn cho từng IMEI
-                for (let j = 0; j < quantity; j++) {
-                    const imei = imeiData.Imeis[j];
-                    const ctHoaDonData = {
-                        IdHoaDon: idHoaDon,
-                        GiaTien: price,
-                        SoLuong: 1,
-                        Imei: imei
-                    };
+            }
 
+            // Create invoice (HoaDon) with all products
+            const hoaDonData = {
+                IdTaiKhoan: idTaiKhoan,
+                NgayTao: currentDate,
+                ThanhTien: totalPrice,
+                TrangThai: 1,
+                IdTinhTrang: 1,
+                products: productData.map(p => ({
+                    IdCHSP: p.idCHSP,
+                    IdDongSanPham: p.idDSP,
+                    SoLuong: p.quantity
+                }))
+            };
+            
+            // Tạo hóa đơn
+            let hoaDonResponse;
+            try {
+                hoaDonResponse = await fetch('/smartstation/src/mvc/controllers/HoaDonController.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(hoaDonData)
+                });
+                
+                if (!hoaDonResponse.ok) {
+                    const responseText = await hoaDonResponse.text();
+                    console.error("Lỗi từ server khi tạo hóa đơn:", responseText);
+                    
+                    // Kiểm tra nếu response là HTML thay vì JSON
+                    if (responseText.includes("<br") || responseText.includes("<html")) {
+                        throw new Error("Lỗi server khi tạo hóa đơn. Vui lòng thử lại sau.");
+                    }
+                    
+                    // Thử parse JSON
                     try {
-                        const ctHoaDonResponse = await fetch('/smartstation/src/mvc/controllers/CTHoaDonController.php', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(ctHoaDonData)
+                        const errorData = JSON.parse(responseText);
+                        throw new Error("Thêm hóa đơn thất bại: " + (errorData.message || ""));
+                    } catch (jsonError) {
+                        throw new Error("Thêm hóa đơn thất bại: " + responseText);
+                    }
+                }
+                
+                const hoaDonDataResult = await hoaDonResponse.json();
+                if (!hoaDonDataResult.HoaDon) {
+                    throw new Error("Thêm hóa đơn thất bại: " + (hoaDonDataResult.message || ""));
+                }
+
+                idHoaDon = hoaDonDataResult.HoaDon.IdHoaDon;
+            } catch (error) {
+                throw new Error("Lỗi khi tạo hóa đơn: " + error.message);
+            }
+
+            // Update address if edited
+            if (radioBtn.checked && newAddress) {
+                try {
+                    const response = await fetch(`/smartstation/src/mvc/controllers/NguoiDungController.php?idNguoiDung=${idNguoiDung}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ DiaChi: newAddress })
+                    });
+                    
+                    if (!response.ok) {
+                        console.warn("Cập nhật địa chỉ thất bại:", await response.text());
+                        // Tiếp tục mà không dừng lại
+                    }
+                } catch (error) {
+                    console.warn("Lỗi khi cập nhật địa chỉ:", error);
+                    // Tiếp tục mà không dừng lại
+                }
+            }
+
+            // Process each product for CTHoaDon
+            for (let i = 0; i < productData.length; i++) {
+                const { price, quantity, idCHSP, idDSP } = productData[i];
+                const productName = products[i].querySelector('h6').textContent;
+                
+                try {
+                    // Lấy danh sách IMEI
+                    let imeiResponse;
+                    try {
+                        imeiResponse = await fetch(`/smartstation/src/mvc/controllers/SanPhamChiTietController.php?idCHSP=${idCHSP}&idDongSanPham=${idDSP}&quantity=${quantity}`, {
+                            method: 'GET',
+                            headers: { 'Content-Type': 'application/json' }
                         });
                         
-                        if (!ctHoaDonResponse.ok) {s
-                            const errorText = await ctHoaDonResponse.text();
-                            console.error(`Lỗi khi thêm chi tiết hóa đơn (${ctHoaDonResponse.status}):`, errorText);
+                        if (!imeiResponse.ok) {
+                            const errorText = await imeiResponse.text();
+                            console.error(`Lỗi khi lấy IMEI (${imeiResponse.status}):`, errorText);
                             
                             // Kiểm tra nếu response là HTML thay vì JSON
                             if (errorText.includes("<br") || errorText.includes("<html")) {
-                                throw new Error(`Lỗi server khi thêm chi tiết hóa đơn cho sản phẩm "${productName}". Vui lòng thử lại sau.`);
+                                throw new Error(`Lỗi server khi lấy IMEI cho sản phẩm "${productName}". Vui lòng thử lại sau.`);
                             }
                             
-                            throw new Error(`Thêm chi tiết hóa đơn cho sản phẩm "${productName}", IMEI ${imei} thất bại`);
-                        }
-                        
-                        const ctHoaDonResult = await ctHoaDonResponse.json();
-                        if (!ctHoaDonResult.message || !ctHoaDonResult.message.includes("thành công")) {
-                            throw new Error(`Thêm chi tiết hóa đơn cho sản phẩm "${productName}", IMEI ${imei} thất bại: ${ctHoaDonResult.message || ""}`);
+                            // Thử parse JSON từ lỗi
+                            try {
+                                const errorJson = JSON.parse(errorText);
+                                throw new Error(errorJson.message || `Lỗi khi lấy IMEI: ${imeiResponse.status}`);
+                            } catch (jsonError) {
+                                throw new Error(`Lỗi khi lấy IMEI cho sản phẩm "${productName}": ${errorText}`);
+                            }
                         }
                     } catch (error) {
-                        throw new Error(`Lỗi khi thêm chi tiết hóa đơn cho sản phẩm "${productName}", IMEI ${imei}: ${error.message}`);
+                        throw new Error(`Lỗi khi lấy IMEI cho sản phẩm "${productName}": ${error.message}`);
                     }
-                }
-            } catch (error) {
-                // Nếu có lỗi, thử xóa hóa đơn đã tạo
-                if (idHoaDon) {
+                    
+                    let imeiData;
                     try {
-                        await fetch(`/smartstation/src/mvc/controllers/HoaDonController.php?idHoaDon=${idHoaDon}`, {
-                            method: 'DELETE',
-                            headers: { 'Content-Type': 'application/json' }
-                        });
-                        console.log(`Đã xóa hóa đơn ${idHoaDon} sau khi xảy ra lỗi`);
-                    } catch (deleteError) {
-                        console.error("Không thể xóa hóa đơn sau khi xảy ra lỗi:", deleteError);
+                        imeiData = await imeiResponse.json();
+                    } catch (error) {
+                        console.error("Lỗi khi parse JSON từ response IMEI:", error);
+                        throw new Error(`Lỗi khi xử lý dữ liệu IMEI cho sản phẩm "${productName}"`);
                     }
+                    
+                    if (!imeiData.Imeis) {
+                        throw new Error(`Không nhận được danh sách IMEI cho sản phẩm "${productName}"`);
+                    }
+                    
+                    if (imeiData.Imeis.length < quantity) {
+                        throw new Error(`Sản phẩm "${productName}" chỉ còn ${imeiData.Imeis.length} trong kho, không đủ ${quantity} sản phẩm bạn yêu cầu.`);
+                    }
+                    
+                    // Thêm chi tiết hóa đơn cho từng IMEI
+                    for (let j = 0; j < quantity; j++) {
+                        const imei = imeiData.Imeis[j];
+                        const ctHoaDonData = {
+                            IdHoaDon: idHoaDon,
+                            GiaTien: price,
+                            SoLuong: 1,
+                            Imei: imei
+                        };
+
+                        try {
+                            const ctHoaDonResponse = await fetch('/smartstation/src/mvc/controllers/CTHoaDonController.php', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(ctHoaDonData)
+                            });
+                            
+                            if (!ctHoaDonResponse.ok) {s
+                                const errorText = await ctHoaDonResponse.text();
+                                console.error(`Lỗi khi thêm chi tiết hóa đơn (${ctHoaDonResponse.status}):`, errorText);
+                                
+                                // Kiểm tra nếu response là HTML thay vì JSON
+                                if (errorText.includes("<br") || errorText.includes("<html")) {
+                                    throw new Error(`Lỗi server khi thêm chi tiết hóa đơn cho sản phẩm "${productName}". Vui lòng thử lại sau.`);
+                                }
+                                
+                                throw new Error(`Thêm chi tiết hóa đơn cho sản phẩm "${productName}", IMEI ${imei} thất bại`);
+                            }
+                            
+                            const ctHoaDonResult = await ctHoaDonResponse.json();
+                            if (!ctHoaDonResult.message || !ctHoaDonResult.message.includes("thành công")) {
+                                throw new Error(`Thêm chi tiết hóa đơn cho sản phẩm "${productName}", IMEI ${imei} thất bại: ${ctHoaDonResult.message || ""}`);
+                            }
+                        } catch (error) {
+                            throw new Error(`Lỗi khi thêm chi tiết hóa đơn cho sản phẩm "${productName}", IMEI ${imei}: ${error.message}`);
+                        }
+                    }
+                } catch (error) {
+                    // Nếu có lỗi, thử xóa hóa đơn đã tạo
+                    if (idHoaDon) {
+                        try {
+                            await fetch(`/smartstation/src/mvc/controllers/HoaDonController.php?idHoaDon=${idHoaDon}`, {
+                                method: 'DELETE',
+                                headers: { 'Content-Type': 'application/json' }
+                            });
+                            console.log(`Đã xóa hóa đơn ${idHoaDon} sau khi xảy ra lỗi`);
+                        } catch (deleteError) {
+                            console.error("Không thể xóa hóa đơn sau khi xảy ra lỗi:", deleteError);
+                        }
+                    }
+                    
+                    throw error; // Ném lại lỗi để xử lý ở catch bên ngoài
                 }
-                
-                throw error; // Ném lại lỗi để xử lý ở catch bên ngoài
             }
-        }
 
-        // Clear cart after successful checkout
-        localStorage.removeItem('cart');
-        updateCartBadge(); // Gọi hàm cập nhật cart badge
-        toast({
-            title: "Thành công",
-            message: "Thanh toán thành công!",
-            type: "success",
-            duration: 3000,
-        });
-        const myModal = bootstrap.Modal.getInstance(checkoutModal);
-        myModal.hide();
-        productList.innerHTML = ''; // Clear product list
-        updateTotalPrice();
+            // Clear cart after successful checkout
+            localStorage.removeItem('cart');
+            updateCartBadge(); // Gọi hàm cập nhật cart badge
+            toast({
+                title: "Thành công",
+                message: "Thanh toán thành công! Cảm ơn bạn đã mua hàng.",
+                type: "success",
+                duration: 3000,
+            });
+            const myModal = bootstrap.Modal.getInstance(checkoutModal);
+            myModal.hide();
+            productList.innerHTML = ''; // Clear product list
+            updateTotalPrice();
 
-        // Cập nhật số lượng sản phẩm trong giỏ hàng trên giao diện
-        const cartCountElement = document.getElementById('cart-badge');
-        if (cartCountElement) {
-            cartCountElement.textContent = '0';
+            // Cập nhật số lượng sản phẩm trong giỏ hàng trên giao diện
+            const cartCountElement = document.getElementById('cart-badge');
+            if (cartCountElement) {
+                cartCountElement.textContent = '0';
+            }
+        } catch (error) {
+            console.error("Chi tiết lỗi thanh toán:", error);
+            console.error("Stack trace:", error.stack);
+            
+            // Hiển thị thông báo lỗi thân thiện hơn
+            toast({
+                title: "Lỗi thanh toán",
+                message: error.message || "Đã xảy ra lỗi trong quá trình thanh toán. Vui lòng thử lại sau.",
+                type: "error",
+                duration: 5000,
+            });
+        } finally {
+            // Đặt lại trạng thái khi hoàn thành
+            isProcessingMultiCheckout = false;
+            
+            // Khôi phục trạng thái nút thanh toán
+            checkoutBtn.disabled = false;
+            checkoutBtn.innerHTML = originalBtnText;
         }
     } catch (error) {
-        console.error("Chi tiết lỗi thanh toán:", error);
-        console.error("Stack trace:", error.stack);
-        
-        // Hiển thị thông báo lỗi thân thiện hơn
+        console.error("Lỗi thanh toán:", error);
         toast({
             title: "Lỗi thanh toán",
             message: error.message || "Đã xảy ra lỗi trong quá trình thanh toán. Vui lòng thử lại sau.",
@@ -811,10 +828,8 @@ async function handleMultiProductCheckout() {
             duration: 5000,
         });
     } finally {
-        // Đặt lại trạng thái khi hoàn thành
+        // Luôn đặt lại trạng thái và nút khi hoàn thành hoặc có lỗi
         isProcessingMultiCheckout = false;
-        
-        // Khôi phục trạng thái nút thanh toán
         checkoutBtn.disabled = false;
         checkoutBtn.innerHTML = originalBtnText;
     }
