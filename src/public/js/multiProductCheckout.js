@@ -73,7 +73,7 @@ function updateTotalPrice() {
     let total = 0;
     const products = productList.querySelectorAll('.product-details');
     products.forEach(product => {
-        const price = parseFormattedPrice(product.dataset.price);
+        const price = parseFloat(product.dataset.price);
         const quantity = parseInt(product.querySelector('.quantity-value').textContent);
         total += price * quantity;
     });
@@ -82,8 +82,8 @@ function updateTotalPrice() {
 }
 
 /**
- * Update product quantity buttons based on current quantity and stock
- * @param {Element} product - Product element
+ * Update product quantity buttons based on current quantity and max stock
+ * @param {HTMLElement} product - Product element
  * @param {number} currentQuantity - Current quantity
  * @param {number} maxStock - Maximum stock available
  */
@@ -91,19 +91,25 @@ function updateProductQuantityButtons(product, currentQuantity, maxStock) {
     const btnDecrement = product.querySelector('.btn-decrement');
     const btnIncrement = product.querySelector('.btn-increment');
     
+    if (!btnDecrement || !btnIncrement) return;
+    
+    // Disable decrement button if quantity is 1
     btnDecrement.disabled = currentQuantity <= 1;
+    
+    // Disable increment button if quantity is at max stock
     btnIncrement.disabled = currentQuantity >= maxStock;
     
-    if (currentQuantity >= maxStock) {
-        btnIncrement.classList.add('disabled');
-    } else {
-        btnIncrement.classList.remove('disabled');
-    }
-    
-    if (currentQuantity <= 1) {
+    // Add visual indication
+    if (btnDecrement.disabled) {
         btnDecrement.classList.add('disabled');
     } else {
         btnDecrement.classList.remove('disabled');
+    }
+    
+    if (btnIncrement.disabled) {
+        btnIncrement.classList.add('disabled');
+    } else {
+        btnIncrement.classList.remove('disabled');
     }
 }
 
@@ -115,76 +121,79 @@ function updateProductQuantityButtons(product, currentQuantity, maxStock) {
  */
 async function fetchStock(idCHSP, idDSP) {
     try {
+        console.log(`Đang kiểm tra tồn kho cho sản phẩm: idCHSP=${idCHSP}, idDSP=${idDSP}`);
         const response = await fetch(`/smartstation/src/mvc/controllers/SanPhamController.php?idDSP=${idDSP}&idCHSP=${idCHSP}`);
+        
         if (!response.ok) {
-            console.warn(`Lỗi khi lấy thông tin tồn kho: ${response.status}`);
-            return 0;
+            console.error(`Lỗi khi kiểm tra tồn kho: ${response.status} ${response.statusText}`);
+            throw new Error('Lỗi mạng khi lấy số lượng tồn kho');
         }
         
         const data = await response.json();
-        return data.SoLuong || 0;
+        console.log(`Kết quả kiểm tra tồn kho:`, data);
+        
+        // Trả về số lượng tồn kho
+        return data.SoLuong !== undefined ? parseInt(data.SoLuong) : 10; // Mặc định là 10 nếu không có dữ liệu
     } catch (error) {
-        console.error("Lỗi khi lấy thông tin tồn kho:", error);
-        return 0;
+        console.error(`Lỗi khi lấy số lượng tồn kho cho sản phẩm idCHSP=${idCHSP}, idDSP=${idDSP}:`, error);
+        return 10; // Mặc định là 10 nếu có lỗi
     }
 }
 
 /**
- * Setup quantity selectors for all products
+ * Setup product quantity selectors
  */
 async function setupQuantitySelectors() {
     if (isQuantitySelectorsSetup) return;
-
+    
     const products = productList.querySelectorAll('.product-details');
+    if (products.length === 0) return;
+    
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
-
-    // Lấy thông tin tồn kho cho tất cả sản phẩm
-    const stockPromises = [];
-    for (const product of products) {
-        const idCHSP = product.dataset.idchsp;
-        const idDSP = product.dataset.iddsp;
-        stockPromises.push(
-            fetchStock(idCHSP, idDSP)
-                .then(stock => ({
-                    idCHSP,
-                    idDSP,
-                    stock
-                }))
-        );
-    }
-
+    
+    // Hiển thị thông báo đang kiểm tra tồn kho
+    toast({
+        title: "Đang xử lý",
+        message: "Đang kiểm tra tồn kho sản phẩm...",
+        type: "info",
+        duration: 2000,
+    });
+    
     try {
-        const stockResults = await Promise.all(stockPromises);
-        const stockMap = {};
-        stockResults.forEach(result => {
-            stockMap[`${result.idCHSP}-${result.idDSP}`] = result.stock;
-            console.log(`Tồn kho cho sản phẩm ${result.idCHSP}-${result.idDSP}: ${result.stock}`);
-        });
-
-        products.forEach(product => {
+        // Kiểm tra tồn kho cho từng sản phẩm
+        for (const product of products) {
+            const idCHSP = product.dataset.idchsp;
+            const idDSP = product.dataset.iddsp;
+            const productName = product.querySelector('h6').textContent;
+            
+            console.log(`Kiểm tra tồn kho cho sản phẩm "${productName}": idCHSP=${idCHSP}, idDSP=${idDSP}`);
+            
+            const maxStock = await fetchStock(idCHSP, idDSP);
+            
+            console.log(`Kết quả tồn kho cho sản phẩm "${productName}": ${maxStock}`);
+            
             const btnDecrement = product.querySelector('.btn-decrement');
             const btnIncrement = product.querySelector('.btn-increment');
             const quantityElement = product.querySelector('.quantity-value');
-            const idCHSP = product.dataset.idchsp;
-            const idDSP = product.dataset.iddsp;
-            const stockKey = `${idCHSP}-${idDSP}`;
-            const maxStock = stockMap[stockKey] || 0;
-            const productName = product.querySelector('h6').textContent;
-
+            
             // Cập nhật số lượng ban đầu nếu vượt quá tồn kho
             let currentQuantity = parseInt(quantityElement.textContent);
+            
             if (maxStock === 0) {
                 // Sản phẩm hết hàng
+                console.log(`Sản phẩm "${productName}" hết hàng (tồn kho = 0)`);
                 product.classList.add('out-of-stock');
                 quantityElement.textContent = "0";
                 btnDecrement.disabled = true;
                 btnIncrement.disabled = true;
                 
                 // Thêm thông báo hết hàng
-                const outOfStockMsg = document.createElement('div');
-                outOfStockMsg.className = 'out-of-stock-msg';
-                outOfStockMsg.textContent = 'Hết hàng';
-                product.appendChild(outOfStockMsg);
+                if (!product.querySelector('.out-of-stock-msg')) {
+                    const outOfStockMsg = document.createElement('div');
+                    outOfStockMsg.className = 'out-of-stock-msg';
+                    outOfStockMsg.textContent = 'Hết hàng';
+                    product.appendChild(outOfStockMsg);
+                }
                 
                 // Cập nhật giỏ hàng
                 cart = cart.filter(item => item.idCHSP !== idCHSP);
@@ -197,6 +206,7 @@ async function setupQuantitySelectors() {
                     duration: 3000,
                 });
             } else if (currentQuantity > maxStock) {
+                console.log(`Sản phẩm "${productName}" vượt quá tồn kho: ${currentQuantity} > ${maxStock}`);
                 quantityElement.textContent = maxStock;
                 currentQuantity = maxStock;
                 
@@ -213,18 +223,20 @@ async function setupQuantitySelectors() {
                     type: "warning",
                     duration: 3000,
                 });
+            } else {
+                console.log(`Sản phẩm "${productName}" còn hàng: ${currentQuantity} <= ${maxStock}`);
             }
 
             // Cập nhật trạng thái nút
             updateProductQuantityButtons(product, currentQuantity, maxStock);
 
-            // Xóa event listener cũ (nếu có) để tránh duplicate
+            // Thay thế nút cũ bằng nút mới để tránh trùng lặp event listener
             const newBtnIncrement = btnIncrement.cloneNode(true);
             const newBtnDecrement = btnDecrement.cloneNode(true);
             btnIncrement.parentNode.replaceChild(newBtnIncrement, btnIncrement);
             btnDecrement.parentNode.replaceChild(newBtnDecrement, btnDecrement);
 
-            // Thêm event listener mới
+            // Thêm event listener cho nút tăng
             newBtnIncrement.addEventListener('click', () => {
                 if (maxStock === 0) return;
                 
@@ -239,16 +251,10 @@ async function setupQuantitySelectors() {
                         localStorage.setItem('cart', JSON.stringify(cart));
                     }
                     updateTotalPrice();
-                } else {
-                    toast({
-                        title: "Cảnh báo",
-                        message: `Số lượng tồn kho chỉ còn ${maxStock} sản phẩm!`,
-                        type: "warning",
-                        duration: 3000,
-                    });
                 }
             });
 
+            // Thêm event listener cho nút giảm
             newBtnDecrement.addEventListener('click', () => {
                 if (maxStock === 0) return;
                 
@@ -265,7 +271,7 @@ async function setupQuantitySelectors() {
                     updateTotalPrice();
                 }
             });
-        });
+        }
 
         isQuantitySelectorsSetup = true;
     } catch (error) {
@@ -287,22 +293,34 @@ function setupProductDetails() {
     products.forEach(product => {
         const detailsBtn = product.querySelector('.details-btn');
         
+        if (!detailsBtn) {
+            console.error('Không tìm thấy nút xem chi tiết trong sản phẩm');
+            return;
+        }
+        
         // Xóa event listener cũ (nếu có)
         const newDetailsBtn = detailsBtn.cloneNode(true);
         detailsBtn.parentNode.replaceChild(newDetailsBtn, detailsBtn);
         
         newDetailsBtn.addEventListener('click', () => {
-            const config = JSON.parse(product.dataset.config);
-            const configContainer = checkoutModal.querySelector('#config-container');
-            let html = '<h6>Chi tiết cấu hình:</h6>';
-            for (const [key, value] of Object.entries(config)) {
-                html += `
-                    <div class="config-item">
-                        <span class="config-label">${key}</span>
-                        <span class="config-value">${value}</span>
-                    </div>`;
+            try {
+                const configStr = product.dataset.config;
+                const config = configStr ? JSON.parse(configStr) : {};
+                const configContainer = checkoutModal.querySelector('#config-container');
+                let html = '<h6>Chi tiết cấu hình:</h6>';
+                for (const [key, value] of Object.entries(config)) {
+                    html += `
+                        <div class="config-item">
+                            <span class="config-label">${key}</span>
+                            <span class="config-value">${value}</span>
+                        </div>`;
+                }
+                configContainer.innerHTML = html;
+            } catch (error) {
+                console.error('Lỗi khi hiển thị chi tiết sản phẩm:', error);
+                const configContainer = checkoutModal.querySelector('#config-container');
+                configContainer.innerHTML = '<p>Không thể hiển thị chi tiết sản phẩm.</p>';
             }
-            configContainer.innerHTML = html;
         });
     });
 }
@@ -316,6 +334,12 @@ function setupProductDeletion() {
 
     products.forEach(product => {
         const deleteBtn = product.querySelector('.delete-btn');
+        
+        if (!deleteBtn) {
+            console.error('Không tìm thấy nút xóa trong sản phẩm');
+            return;
+        }
+        
         const idCHSP = product.dataset.idchsp;
         const productName = product.querySelector('h6').textContent;
         
@@ -343,12 +367,8 @@ function setupProductDeletion() {
                     }
                 }
                 
-                toast({
-                    title: "Thành công",
-                    message: `Đã xóa sản phẩm "${productName}" khỏi giỏ hàng`,
-                    type: "success",
-                    duration: 3000,
-                });
+                // Cập nhật số lượng sản phẩm trong giỏ hàng trên giao diện
+                updateCartBadge();
             }
         });
     });
@@ -846,35 +866,60 @@ function handleCloseModal(modalId) {
 }
 
 /**
- * Load product list from localStorage
+ * Load products from cart to checkout modal
  */
 function loadListProduct() {
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    productList.innerHTML = '';
+    
+    if (cart.length === 0) {
+        productList.innerHTML = '<p>Không có sản phẩm nào trong giỏ hàng.</p>';
+        return;
+    }
+    
     let html = '';
-    cart.forEach((product) => {
+    cart.forEach((product, index) => {
+        // Xử lý hiển thị giá
+        let priceDisplay = '';
+        let actualPrice = 0;
+        
+        if (product.discountPrice && product.discountPrice.trim() !== '') {
+            // Có giá khuyến mãi
+            priceDisplay = `<span class="text-decoration-line-through text-muted me-2">${product.price}</span><span class="text-success">${product.discountPrice}</span>`;
+            actualPrice = parseFormattedPrice(product.discountPrice);
+        } else {
+            // Không có giá khuyến mãi
+            priceDisplay = `<p class="text-success mb-0">${formatPrice(parseFormattedPrice(product.price))}</p>`;
+            actualPrice = parseFormattedPrice(product.price);
+        }
+        
+        // Tạo chuỗi JSON cho cấu hình sản phẩm
+        const config = {
+            "RAM": product.ram || "N/A",
+            "Bộ nhớ trong": product.rom || "N/A",
+            "Màn hình": product.screenSize || "N/A",
+            "Dung lượng pin": product.pin || "N/A",
+            "Màu sắc": product.color || "N/A",
+            "Camera": product.camera || "N/A"
+        };
+        
         html += `
-            <div class="product-details" data-config='{
-                "RAM": "${product.ram || 'N/A'}",
-                "Bộ nhớ trong": "${product.rom || 'N/A'}",
-                "Màn hình": "${product.screenSize || 'N/A'}",
-                "Dung lượng pin": "${product.pin || 'N/A'}",
-                "Màu sắc": "${product.color || 'N/A'}",
-                "Camera": "${product.camera || 'N/A'}"
-            }' data-price="${product.price}" data-idCHSP="${product.idCHSP}" data-idDSP="${product.idDSP}">
-                <img src="${product.img}" alt="${product.name}" class="product-image" style="width: 80px;">
-                <div class="flex-grow-1">
-                    <h6>${product.name}</h6>
-                    <p class="text-success mb-0">${product.price}</p>
-                </div>
-                <div class="quantity-selector">
-                    <button class="btn-decrement">-</button>
-                    <span class="quantity-value">${product.quantity || 1}</span>
-                    <button class="btn-increment">+</button>
-                </div>
-                <button class="details-btn">Xem chi tiết</button>
-                <button class="delete-btn">Xóa</button>
-            </div>`;
+        <div class="product-details" data-idchsp="${product.idCHSP}" data-iddsp="${product.idDSP}" data-price="${actualPrice}" data-config='${JSON.stringify(config)}'>
+            <img src="${product.img}" alt="${product.name}" class="product-image" style="width: 80px;">
+            <div class="flex-grow-1">
+                <h6>${product.name} - ${product.ram} - Màu ${product.color}</h6>
+                ${priceDisplay}
+            </div>
+            <div class="quantity-selector">
+                <button class="btn-decrement">-</button>
+                <span class="quantity-value">${product.quantity || 1}</span>
+                <button class="btn-increment">+</button>
+            </div>
+            <button class="details-btn">Xem chi tiết</button>
+            <button class="delete-btn">Xóa</button>
+        </div>`;
     });
+    
     productList.innerHTML = html;
     updateTotalPrice();
 }
@@ -888,6 +933,14 @@ function handleClickCheckout() {
         alert("Giỏ hàng trống!");
         return;
     }
+
+    // Kiểm tra dữ liệu trong giỏ hàng
+    console.log("Dữ liệu giỏ hàng:", cart);
+    cart.forEach((item, index) => {
+        console.log(`Sản phẩm ${index + 1}:`, item);
+        console.log(`- idCHSP: ${item.idCHSP}`);
+        console.log(`- idDSP: ${item.idDSP}`);
+    });
 
     if(!getCookieValue("username")) {
         toast({
@@ -950,7 +1003,5 @@ function updateCartBadge() {
     });
 }
 
-// Trong hàm handleMultiProductCheckout, sau khi xóa giỏ hàng:
-localStorage.removeItem('cart');
 updateCartBadge(); // Gọi hàm cập nhật cart badge
 
